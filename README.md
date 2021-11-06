@@ -7,7 +7,7 @@ I've used fsl's funpack here to clean the UKB data, e.g.:
 
 ## 2. Mining gp prescription and clinical events data 
 See https://biobank.ndph.ox.ac.uk/showcase/label.cgi?id=3001 for more information on UKB primary care data.
-```extract_diagnoses_from_primary_care.py``` and ```extract_prescriptions_from_primary_care.py```
+```extract_diagnoses_from_primary_care.py``` and ```extract_prescriptions_from_primary_care.py``` mine the clinical data for the read codes in ```read_codes.csv```.
 
 ## 3. Dementia risk prediction
 These scripts preprocess and run logistic regression analyses in the UK biobank cohort. 
