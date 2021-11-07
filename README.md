@@ -62,7 +62,7 @@ To do this:
 1. Select ```Launch Platform```
 2. Now installed as above, allow VMware to launch, and accept the disclaimer that appears.
 3. Your username should be present, if not, simply type this in the username field.
-4. For the passcode box, use your mobile authentication app and tap the **UKSeRP Mobile Authenticator line**, which will provide you with a code.
+4. For the passcode box, use your mobile authentication app and tap the ```UKSeRP Mobile Authenticator line```, which will provide you with a code.
 5. Type this code in the passcode box, and select login.
 6. If successful, a second password prompt will appear – simply type your password and select login.
 7. Double click on **DPUK Floating Desktop**.
