@@ -41,6 +41,7 @@ The main analysis is undertaken in a series of R scripts. A brief description of
 # Whitehall Analyses
 ## 1. Accessing data
 As we've applied for WHII data through the DPUK portal, you will first need to set a few things up on your laptop.
+
 Mark Newbury will send you a username and a QR code once you've been added to the project. Use this username (please use lower case) to reset a password at
 https://portal.dementiasplatform.uk/Account/ResetPasswordRequest.
 
