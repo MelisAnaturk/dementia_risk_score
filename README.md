@@ -33,5 +33,9 @@ Similarly, ```extract_prescriptions_from_primary_care.py``` mines the database c
 ### 2.2 Self-report prescription data
 To identify individuals taking hormone replacement therapies (HRTs), anti-hypertensive medications and other treatments of interest, I have grouped all of the drugs recorded in [data-field 20003](https://biobank.ndph.ox.ac.uk/showcase/field.cgi?id=20003) according to their ATC codes [Wu et al. 2019, Supplementary Figure 1]. The file ```Wu_et_al._ATC_med_codes.xlsx``` contains our classifications for HRT and other medications.
 
-## 3. Dementia risk prediction
-These scripts preprocess and run logistic regression analyses in the UK biobank cohort. 
+## 3. R scripts
+These scripts (starting from ```X.r``` to ```Y.r```) computes the external risk scores of interest (e.g., ANU-ADRI), subsets the sample to complete cases, conducts logistic LASSO regression analyses in the UK biobank cohort. 
+
+# Whitehall Analyses
+## 1. Accessing data
+As we've applied for WHII data through the DPUK portal, you will first need to set a few things up on your laptop.
