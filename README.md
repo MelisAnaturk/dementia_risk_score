@@ -27,14 +27,14 @@ loader            FMRIB_internal_info.txt FMRIBImaging
 Dementia cases were identified through HES records, death reports, primary care recodes and self-report (at baseline only, to exclude for pre-existing cases). Participants were classified as a dementia cases if they had a record of a primary or secondary diagnosis of dementia in their health/death records or had been prescribed a common 'dementia drugs' (e.g., memantine).
 
 I recommend first familiarizing yourself with the [Primary care data](https://biobank.ndph.ox.ac.uk/showcase/ukb/docs/primary_care_data.pdf).
-The script ```extract_diagnoses_from_primary_care.py``` searches through the gp clinical events records (i.e., ```gp_clinical.csv```) and identifies participants with read codes (e.g., bnf, dmd, read_v2) corresponding to several diseases of interest (e.g., dementia, stroke). 
+The script ```extract_diagnoses_from_primary_care.py``` searches through the gp clinical events records (i.e., ```gp_clinical.csv```) and identifies participants with read codes (e.g., bnf, dmd, read_v2) corresponding to several diseases of interest (e.g., dementia, stroke). The output is a csv file of all participants who have atleast one of the listed read codes of interest ("participants_with_dementia.csv"). These participants are then assigned a value of "1" and merged back to the original dataframe in the series of r scripts described below.
 Similarly, ```extract_prescriptions_from_primary_care.py``` mines the database containing prescription records (i.e. ```gp_scripts.csv```). The list of read codes for each disease/medication class of interest was created using [all_lkps_maps_v2](https://biobank.ndph.ox.ac.uk/showcase/refer.cgi?id=592), with the final list contained with ```read_codes.csv```.
 
 ### 2.2 Self-report prescription data
 To identify individuals taking hormone replacement therapies (HRTs), anti-hypertensive medications and other treatments of interest, I have grouped all of the drugs recorded in [data-field 20003](https://biobank.ndph.ox.ac.uk/showcase/field.cgi?id=20003) according to their ATC codes [Wu et al. 2019, Supplementary Figure 1]. The file ```Wu_et_al._ATC_med_codes.xlsx``` contains our classifications for HRT and other medications.
 
 ## 3. R scripts
-These scripts (starting from ```X.r``` to ```Y.r```) computes the external risk scores of interest (e.g., ANU-ADRI), subsets the sample to complete cases, conducts logistic LASSO regression analyses in the UK biobank cohort. 
+These scripts (starting from ```X.r``` to ```Y.r```) computes the external risk scores of interest (e.g., ANU-ADRI), subsets the sample to complete cases, conducts logistic LASSO regression analyses in the UK biobank cohort. A brief description of each script:
 
 # Whitehall Analyses
 ## 1. Accessing data
