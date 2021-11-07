@@ -1,4 +1,6 @@
 # Dementia risk project
+
+# UK Biobank Analyses
 ## 1. Initial data cleaning
 Fsl's funpack (https://git.fmrib.ox.ac.uk/fsl/funpack) was used to initially clean the UKB data (e.g., demographics), e.g.:
 
@@ -28,7 +30,7 @@ Dementia cases were identified through HES records, death reports, primary care 
 
 I recommend first familiarizing yourself with the [Primary care data](https://biobank.ndph.ox.ac.uk/showcase/ukb/docs/primary_care_data.pdf).
 The script ```extract_diagnoses_from_primary_care.py``` searches through the gp clinical events records (i.e., ```gp_clinical.csv```) and identifies participants with read codes (e.g., bnf, dmd, read_v2) corresponding to several diseases of interest (e.g., dementia, stroke). 
-Similarly, ```extract_prescriptions_from_primary_care.py``` mines the database containing prescription records (i.e. ```gp_scripts.csv```). The list of read codes for each disease/medication class of interest was created using [all_lkps_maps_v2](https://biobank.ndph.ox.ac.uk/showcase/refer.cgi?id=592). 
+Similarly, ```extract_prescriptions_from_primary_care.py``` mines the database containing prescription records (i.e. ```gp_scripts.csv```). The list of read codes for each disease/medication class of interest was created using [all_lkps_maps_v2](https://biobank.ndph.ox.ac.uk/showcase/refer.cgi?id=592), with the final list contained with ```read_codes.csv```.
 
 ### 2.2 Self-report prescription data
 To identify individuals taking hormone replacement therapies (HRTs), anti-hypertensive medications and other treatments of interest, I have grouped all of the drugs recorded in [data-field 20003](https://biobank.ndph.ox.ac.uk/showcase/field.cgi?id=20003) according to their ATC codes [Wu et al. 2019, Supplementary Figure 1]. The file ```Wu_et_al._ATC_med_codes.xlsx``` contains our classifications for HRT and other medications.
