@@ -6,7 +6,8 @@ Fsl's funpack (https://git.fmrib.ox.ac.uk/fsl/funpack) was used to initially cle
 
 Where myconfig.cfg is a configuration file including the following:
 
-```trust_types
+```
+trust_types
 noisy
 noisy
 noisy
@@ -18,7 +19,8 @@ unknown_vars_file unknowns.tsv
 description_file  descriptions.tsv
 summary_file      summary.tsv
 plugin_file       fmrib
-loader            FMRIB_internal_info.txt FMRIBImaging```
+loader            FMRIB_internal_info.txt FMRIBImaging
+```
 
 ## 2. Dementia ascertain
 ### 2.1 Mining gp prescription and clinical events data 
