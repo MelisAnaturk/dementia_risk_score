@@ -49,24 +49,24 @@ Should you experience problems logging in when following the instructions below,
 
 Instructions to connect are as follows:
 1. Navigate to https://portal.dpuk.ukserp.ac.uk
-2. For the Data Portal VDI connection, please download the latest version of VMware Horizon Client, which is towards the top right of the screen
-3. Please also download the FreeOTP app on your mobile phone/tablet – available on iOS or Android.
+2. For the Data Portal VDI connection, please download the latest version of **VMware Horizon Client**, which is towards the top right of the screen
+3. Please also download the **FreeOTP** app on your mobile phone/tablet – available on iOS or Android.
 4. Using your mobile device, open the FreeOTP and use the scan QR code function to scan the attached QR code on your PC screen. The app should recognise your user account and add this as a line below – this is now setup for use, and you do not need the QR code again.
 5. Returning to https://portal.dpuk.ukserp.ac.uk , you can proceed to login with your username and password. 
 
 To do this:
-1. Select Launch Platform
+1. Select ```Launch Platform```
 2. Now installed as above, allow VMware to launch, and accept the disclaimer that appears.
 3. Your username should be present, if not, simply type this in the username field.
-4. For the passcode box, use your mobile authentication app and tap the UKSeRP Mobile Authenticator line, which will provide you with a code.
+4. For the passcode box, use your mobile authentication app and tap the **UKSeRP Mobile Authenticator line**, which will provide you with a code.
 5. Type this code in the passcode box, and select login.
 6. If successful, a second password prompt will appear – simply type your password and select login.
-7. Double click on DPUK Floating Desktop.
+7. Double click on **DPUK Floating Desktop**.
 8. The desktop will launch as a new window on your own PC.
 
 You should then be able to access the 0346 study folder on the S Drive. The S Drive 0346 folder is to be used for shared work on the 0346 project. You will also find an individual user folder for your username on the P Drive.
 
  Any problems with logging in, contact Mark Newbury (m.s.newbury@swansea.ac.uk)
  
- ***Quick note about DPUK portal*** 
-You can copy text into the desktop accessed through the portal but it's more difficult to export things out of the portal. For textual and numerical information such as model results, I've just had to hand write these into the manuscript. For plots, you need to go through a formal process whereby your request to export this information needs to be approved through a formal committee. Worth asking Mark Newbury about this if required.
+ ***Quick note about DPUK portal:*** 
+**You can copy text into the desktop accessed through the portal but it's more difficult to export things out of the portal. For textual and numerical information such as model results, I've just had to hand write these into the manuscript. For plots, you need to go through a formal process whereby your request to export this information needs to be approved through a formal committee. Worth asking Mark Newbury about this if required.**
