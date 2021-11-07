@@ -1,5 +1,3 @@
-# Dementia risk project
-
 # UK Biobank Analyses
 ## 1. Initial data cleaning
 Fsl's funpack (https://git.fmrib.ox.ac.uk/fsl/funpack) was used to initially clean the UKB data (e.g., demographics), e.g.:
