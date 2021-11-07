@@ -69,4 +69,4 @@ You should then be able to access the 0346 study folder on the S Drive. The S Dr
  Any problems with logging in, contact Mark Newbury (m.s.newbury@swansea.ac.uk)
  
  ***Quick note about DPUK portal:*** 
-**You can copy text into the desktop accessed through the portal but it's more difficult to export things out of the portal. For textual and numerical information such as model results, I've just had to hand write these into the manuscript. For plots, you need to go through a formal process whereby your request to export this information needs to be approved through a formal committee. Worth asking Mark Newbury about this if required.**
+*You can copy text into the desktop accessed through the portal but it's more difficult to export things out of the portal. For textual and numerical information such as model results, I've just had to hand write these into the manuscript. For plots, you need to go through a formal process whereby your request to export this information needs to be approved through a formal committee. Worth asking Mark Newbury about this if required.*
