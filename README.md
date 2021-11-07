@@ -22,7 +22,7 @@ plugin_file       fmrib
 loader            FMRIB_internal_info.txt FMRIBImaging
 ```
 
-## 2. Dementia ascertain
+## 2. Dementia ascertain and identifying participants taking specific medications 
 ### 2.1 Mining gp prescription and clinical events data 
 Dementia cases were identified through HES records, death reports, primary care recodes and self-report (at baseline only, to exclude for pre-existing cases). Participants were classified as a dementia cases if they had a record of a primary or secondary diagnosis of dementia in their health/death records or had been prescribed a common 'dementia drugs' (e.g., memantine).
 
