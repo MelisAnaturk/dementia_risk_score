@@ -21,7 +21,7 @@ summary_file      summary.tsv
 plugin_file       fmrib
 loader            FMRIB_internal_info.txt FMRIBImaging
 ```
-Just a note that I've used ```funpack``` iteratively with various categories of variables taken from the larger dataframe. A log of the various commands I've used is included in ```fsl_funpack_log.txt```
+Just a note that I've used ```funpack``` iteratively with various categories of variables. A log of the various commands I've used is included in ```fsl_funpack_log.txt```
 
 ## 2. Dementia ascertain and identifying participants taking specific medications 
 ### 2.1 Mining gp prescription and clinical events data 
@@ -36,7 +36,11 @@ To identify individuals taking hormone replacement therapies (HRTs), anti-hypert
 
 ## 3. Main analysis
 The main analysis is undertaken in a series of R scripts. A brief description of each script is provided below:
-```test```
+1. ```1_derive_diagnoses.R```: First generates variables identifying an individual's disease status (i.e., "1" for dementia, "0" for no dementia) for various conditions based on primary and secondary care reports, death and self-report. It also derives corresponding ```dates_of_diagnosis``` and ```time_to_diagnosis``` variables. Next, we exclude people based on prespecified criteria, such as anyone reporting a diagnosis of dementia and baseline or who developed dementia within a year of enrolling into the UKB study. Finally, we also generate variables to reflect medication use (e.g., antidepressants). 
+2. ```2_anu_adri.R```: Recodes all demographic and genetic variables of interest according to scores reported in X et al. and computes the ANU-ADRI.
+3. ```3_caide.R```: Recodes all variables corresponding to components of the CAIDE according to scores reported in X et al. and computes the CAIDE. The predicted probability of developing dementia (according to the CAIDE) is also calculated. The CAIDE+APOE is used in our main analyses as it generally better at distinguishing between patients/controls than CAIDE without APOE.
+4. ```4_bdsi_retired.R```: Originally used to calculate the BDSI but this script has now been retired as some core components cannot (e.g. money problems) be calculated in the biobank sample due to lack of information. 
+5. ```5
 
 # Whitehall Analyses
 ## 1. Accessing data
