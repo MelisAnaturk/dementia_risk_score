@@ -44,7 +44,7 @@ As we've applied for WHII data through the DPUK portal, you will first need to s
 Mark Newbury will send you a username and a QR code once you've been added to the project. Use this username (please use lower case) to reset a password at
 https://portal.dementiasplatform.uk/Account/ResetPasswordRequest.
 
-(Should you experience problems logging in when following the instructions below, please try resetting your password at the following link instead of the link above: https://portal.dpuk.ukserp.ac.uk/RequestNewPassword).  
+Should you experience problems logging in when following the instructions below, please try resetting your password at the following link instead of the link above: https://portal.dpuk.ukserp.ac.uk/RequestNewPassword.  
 
 Instructions to connect are as follows:
 1. Navigate to https://portal.dpuk.ukserp.ac.uk
