@@ -21,6 +21,7 @@ summary_file      summary.tsv
 plugin_file       fmrib
 loader            FMRIB_internal_info.txt FMRIBImaging
 ```
+Just a note that I've used ```funpack``` iteratively with various categories of variables taken from the larger dataframe. A log of the various commands I've used is included in ```fsl_funpack_log.txt```
 
 ## 2. Dementia ascertain and identifying participants taking specific medications 
 ### 2.1 Mining gp prescription and clinical events data 
@@ -33,9 +34,33 @@ Similarly, ```extract_prescriptions_from_primary_care.py``` mines the database c
 ### 2.2 Self-report prescription data
 To identify individuals taking hormone replacement therapies (HRTs), anti-hypertensive medications and other treatments of interest, I have grouped all of the drugs recorded in [data-field 20003](https://biobank.ndph.ox.ac.uk/showcase/field.cgi?id=20003) according to their ATC codes [Wu et al. 2019, Supplementary Figure 1]. The file ```Wu_et_al._ATC_med_codes.xlsx``` contains our classifications for HRT and other medications.
 
-## 3. R scripts
-These scripts (starting from ```X.r``` to ```Y.r```) computes the external risk scores of interest (e.g., ANU-ADRI), subsets the sample to complete cases, conducts logistic LASSO regression analyses in the UK biobank cohort. A brief description of each script:
+## 3. Main analysis
+The main analysis is undertaken in a series of R scripts. A brief description of each script is provided below:
+```
 
 # Whitehall Analyses
 ## 1. Accessing data
 As we've applied for WHII data through the DPUK portal, you will first need to set a few things up on your laptop.
+Mark Newbury will send you a username and a QR code once you've been added to the project. Use this username (please use lower case) to reset a password at
+https://portal.dementiasplatform.uk/Account/ResetPasswordRequest.
+
+(Should you experience problems logging in when following the instructions below, please try resetting your password at the following link instead of the link above: https://portal.dpuk.ukserp.ac.uk/RequestNewPassword).  
+
+Instructions to connect are as follows:
+1. Navigate to https://portal.dpuk.ukserp.ac.uk
+2. For the Data Portal VDI connection, please download the latest version of VMware Horizon Client, which is towards the top right of the screen
+3. Please also download the FreeOTP app on your mobile phone/tablet – available on iOS or Android.
+4. Using your mobile device, open the FreeOTP and use the scan QR code function to scan the attached QR code on your PC screen. The app should recognise your user account and add this as a line below – this is now setup for use, and you do not need the QR code again.
+
+5. Returning to https://portal.dpuk.ukserp.ac.uk , you can proceed to login with your username and password. To do this:
+6. Select Launch Platform
+7. Now installed as above, allow VMware to launch, and accept the disclaimer that appears.
+8. Your username should be present, if not, simply type this in the username field.
+9. For the passcode box, use your mobile authentication app and tap the UKSeRP Mobile Authenticator line, which will provide you with a code. 10. Type this code in the passcode box, and select login.
+11. If successful, a second password prompt will appear – simply type your password and select login.
+12. Double click on DPUK Floating Desktop.
+13. The desktop will launch as a new window on your own PC.
+
+ You should then be able to access the 0346 study folder on the S Drive. The S Drive 0346 folder is to be used for shared work on the 0346 project. You will also find an individual user folder for your username on the P Drive.
+
+ Any problems with logging in, contact Mark Newbury (m.s.newbury@swansea.ac.uk)
