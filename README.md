@@ -23,7 +23,9 @@ loader            FMRIB_internal_info.txt FMRIBImaging
 ```
 
 ## 2. Mining gp prescription and clinical events data 
-See https://biobank.ndph.ox.ac.uk/showcase/label.cgi?id=3001 for more information on the linked UKB primary care data.
+Dementia cases were identified through HES records, death reports, primary care recodes and self-report (at baseline only, to exclude for pre-existing cases).
+
+I recommend first familiarizing yourself with the [Primary care data](https://biobank.ndph.ox.ac.uk/showcase/ukb/docs/primary_care_data.pdf).
 The script ```extract_diagnoses_from_primary_care.py``` searches through the gp clinical events records (i.e., ```gp_clinical.csv```) and identifies participants with read codes (e.g., bnf, dmd, read_v2) aligning to several diseases of interest (e.g., dementia, stroke). Similarly, ```extract_prescriptions_from_primary_care.py``` mines the data for prescription information for dementia. 
 
 ## 3. Dementia risk prediction
