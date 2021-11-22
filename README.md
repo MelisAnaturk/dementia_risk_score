@@ -35,19 +35,19 @@ Similarly, ```extract_prescriptions_from_primary_care.py``` mines the database c
 To identify individuals taking hormone replacement therapies (HRTs), anti-hypertensive medications and other treatments of interest, I have grouped all of the drugs recorded in [data-field 20003](https://biobank.ndph.ox.ac.uk/showcase/field.cgi?id=20003) according to their ATC codes [Wu et al. 2019, Supplementary Figure 1]. The file ```Wu_et_al._ATC_med_codes.xlsx``` contains our classifications for HRT and other medications.
 
 ## 3. Main analysis
-The main analysis is undertaken in a series of R scripts. A brief description of each script is provided below:
-1. ```1_derive_diagnoses.R```: First generates variables identifying an individual's disease status (i.e., "1" for dementia, "0" for no dementia) for various conditions based on primary and secondary care reports, death and self-report. It also derives corresponding ```dates_of_diagnosis``` and ```time_to_diagnosis``` variables. Next, we exclude people based on prespecified criteria, such as anyone reporting a diagnosis of dementia and baseline or who developed dementia within a year of enrolling into the UKB study. Finally, we also generate variables to reflect medication use (e.g., antidepressants). 
+The main analysis is performed using a series of R scripts. A brief description of each script is provided below:
+1. ```1_derive_diagnoses.R```: Generates variables corresponding to an individual's status for several diseases of interest (e.g,., "1" for dementia, "0" for no dementia). It also derives corresponding ```dates_of_diagnosis``` and ```time_to_diagnosis``` variables. Next, we exclude people based on prespecified criteria, such as anyone reporting a diagnosis of dementia at baseline or anyone who developed dementia within a year of enrolling into the UKB study. Finally, we also generate variables to reflect medication use (e.g., antidepressants). 
 ***Please note:*** *I've used a few ```for loops``` in the above script which isn't best practice when writing code in R (It was just a quick solution!) and if you do plan to make these scripts publicly available, please do rewrite them as functions that can be applied e.g. using ```lapply```.*
 
 2. ```2_anu_adri.R```: Recodes all demographic and genetic variables of interest to compute the ANU-ADRI.
 
-3. ```3_caide.R```: Recodes all variables corresponding to components of the CAIDE and computes this risk score, with the predicted probability of developing dementia (according to the CAIDE) also calculated. The CAIDE+APOE is used in our main analyses as it generally better at distinguishing between patients/controls than CAIDE without APOE.
+3. ```3_caide.R```: Recodes all relevant variables to compute the CAIDE, with the predicted probability of developing dementia (according to the CAIDE) also calculated. The version of CAIDE that includes APOE is used in our main analyses as it generally better at distinguishing between patients/controls than the version of this risk score without APOE information.
 
-4. ```4_bdsi_retired.R```: Originally used to calculate the BDSI but this script has now been retired as one of the core components cannot (e.g. money problems) be calculated in the biobank sample due to lack of information.
+4. ```4_bdsi_retired.R```: Originally used to calculate the BDSI but this script has now been retired as one of the core components cannot (e.g. money problems) be calculated in the biobank due to a lack of information.
  
 5. ```5_framingham.R```: Calculates several versions of the framingham risk score as well as predicted probability of developing CVD.
 
-6. ```6_recode_variables.R```: Here, we're recoding demographic and other variables of interest before our main analyses.
+6. ```6_recode_variables.R```: Here, we're recoding demographic and other variables of interest prior to our main analyses.
 
 7. ```7_logistic_LASSO_regression.r```: This is the main analysis of the
 
