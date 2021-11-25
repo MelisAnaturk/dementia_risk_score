@@ -49,7 +49,7 @@ The main analysis is performed using a series of R scripts. A brief description 
 
 6. ```6_recode_variables.R```: Here, we're recoding demographic and other variables of interest prior to our main analyses.
 
-7. ```7_logistic_LASSO_regression.r```: This is the main analysis of the
+7. ```7_logistic_LASSO_regression.r```: This is where the main analysis is performed. First LASSO and logistic regression.
 
 8. ```8_final_script..``` : calibration
 
