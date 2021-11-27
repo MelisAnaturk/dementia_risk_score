@@ -55,7 +55,7 @@ The main analysis is performed using a series of R scripts. A brief description 
  
 9. ```9_logistic_regression_LASSO.r```: This is where the main analysis is performed. First LASSO regression is performed for feature selection, followed by logistic regression to calculate the beta-weights to be used in the UKB-DRS.
 10. 
-11. ```10_discrimination_and_calibration.r``` : C# This r script computes the discriminative ability and calibration of each model.
+11. ```10_discrimination_and_calibration.r``` : This r script computes the discriminative ability and calibration of each model.
 
 # Whitehall Analyses
 ## 1. Accessing data
@@ -90,4 +90,4 @@ You should then be able to access the **0346** study folder on the S Drive. The 
 *You can copy text into the desktop accessed through the portal but it's more difficult to export things out of the portal. For textual and numerical information such as model results, I've just had to hand write these into the manuscript. For plots, you need to go through a formal process whereby your request to export this information needs to be approved through a formal committee. Worth asking Mark Newbury about this if required.*
 
 ## 2. Main analysis
-The scripts used on the Whitehall data are adapted from the UKB analyses described above. If you have any questions it's best just to drop me an email at melis.anaturk.14@ucl.ac.uk. The **important thing** to highlight here is that the "age" variable provided by DPUK is a **categorical variable**, age bins. I've had to recode this and ...
+The scripts used on the Whitehall data are adapted from the UKB analyses described above. If you have any questions it's best just to drop me an email at melis.anaturk.14@ucl.ac.uk. The **important thing** to highlight here is that the "age" variable provided by DPUK is a **categorical variable**, i.e. age is coded in age bins. I've therefore used the median across all age bins as Mika has previous done in his papers.
