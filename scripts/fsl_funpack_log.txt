@@ -1,0 +1,64 @@
+# Log of commands for extracting additional variables
+# submitted to fsl_sub for faster data extraction
+
+# adjust permissions to run ukbconv as a script and create csv file with all variables 
+
+chmod a+x ukbconv
+fsl_sub -q long.q ./ukbconv ukb40278_enc.ukb csv
+
+# use fsl funpack to extract variables of interest
+# here files.txt contains a list of variable numbers, one variable no. per line
+fsl_sub -q short.q funpack --tsv_sep "," -q -v files.txt add_vars.csv ukb40278.csv 
+fsl_sub -q short.q funpack --tsv_sep -q -v files.txt add_vars.csv ukb40278.csv 
+
+
+# extract dates of assessments
+fsl_sub -q short.q funpack --tsv_sep "," -q -v files_dates.txt add_vars2.csv ukb40278.csv 
+
+# extract current self-report depression
+fsl_sub -q short.q funpack --tsv_sep "," -q -v files_new.txt add_vars3.csv ukb40278.csv 
+
+# medications
+funpack --tsv_sep "," -q -v meds.txt add_vars_meds.csv ukb40278.csv 
+
+# townsend deprivation
+fsl_sub -q short.q funpack --tsv_sep "," -q -v town_send_deprivation.csv ukb40278.csv 
+
+# dates of diagnosis
+fsl_sub -q short.q funpack --tsv_sep "," -q -v dates_diagnosis.txt dates_of_diagnosis.csv ukb40278.csv 
+
+#-------- GENETIC INFO
+# extract PCA for genetic components/genetic ethnicity
+fsl_sub -q short.q funpack --tsv_sep "," -q -v files_genes.txt add_vars_genes.csv ukb40278.csv 
+
+#extract data for rs429358 and rs7412 for APOE status
+funpack  --tsv_sep "," -ow -co "affy16020316" -co "affy16020324"  genes.csv ukb40278.csv
+
+#merge together
+funpack -ow --tsv_sep "," -ms outer ukb_geneticinfo_unclean.csv  genes.csv genes_2.csv
+
+
+#-------- ICD9- ICD10
+fsl_sub -q short.q funpack --tsv_sep "," -q -v files_ICD9_ICD10.txt add_vars_ICD9_ICD10.csv ukb40278.csv 
+
+fsl_sub -q short.q funpack --tsv_sep "," -q -v files_ICD10_stroke_death.txt add_vars_stroke_death.csv ukb40278.csv
+
+
+#------- MRI DATA
+funpack ---tsv_sep "," -q ow -v 10340:11063 -v 11068:11208 --description_file  mri_data.csv ukb40278.csv
+
+funpack --tsv_sep "," --description_file  mri_data_col_names.csv mri_data.csv
+
+
+#------ DIAGNOSES
+
+ funpack -q -ow --tsv_sep "," -co 41202 -co 41203 -co 41204 -co 41205 icd9_icd10_diagnoses.csv ukb37763.csv
+
+
+#------- FAMILY HISTORY OF DEMENTIA & ALCOHOL
+
+funpack -q -ow --tsv_sep "," -v family_hist.txt family_history_alcohol.csv ukb40278.csv
+
+#------- MORE ALCOHOL
+
+funpack -q -ow --tsv_sep "," -v family_hist.txt family_history_alcohol.csv ukb40278.csv
