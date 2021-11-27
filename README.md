@@ -1,4 +1,6 @@
 # UK Biobank Analyses
+N.B. I'll forward the UKB data via Oxfiles and the WHII data will be accessible via the DPUK portal.
+
 ## 1. Initial data cleaning
 Fsl's funpack (https://git.fmrib.ox.ac.uk/fsl/funpack) was used to initially clean the UKB data (e.g., demographics), e.g.:
 
@@ -49,9 +51,11 @@ The main analysis is performed using a series of R scripts. A brief description 
 
 6. ```6_recode_variables.R```: Here, we're recoding demographic and other variables of interest prior to our main analyses.
 
-7. ```7_logistic_LASSO_regression.r```: This is where the main analysis is performed. First LASSO regression is performed for feature selection, followed by logistic regression to calculate the beta-weights to be used in the UKB-DRS.
-
-8. ```8_final_script..``` : calibration
+7. ```7_DRS.R```: Computing the DRS.
+ 
+9. ```9_logistic_regression_LASSO.r```: This is where the main analysis is performed. First LASSO regression is performed for feature selection, followed by logistic regression to calculate the beta-weights to be used in the UKB-DRS.
+10. 
+11. ```10_discrimination_and_calibration.r``` : C# This r script computes the discriminative ability and calibration of each model.
 
 # Whitehall Analyses
 ## 1. Accessing data
