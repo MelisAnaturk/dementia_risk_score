@@ -89,4 +89,6 @@ You should then be able to access the **0346** study folder on the S Drive. The 
 *You can copy text into the desktop accessed through the portal but it's more difficult to export things out of the portal. For textual and numerical information such as model results, I've just had to hand write these into the manuscript. For plots, you need to go through a formal process whereby your request to export this information needs to be approved through a formal committee. Worth asking Mark Newbury about this if required.*
 
 ## 2. Main analysis
-The scripts used on the Whitehall data are adapted from the UKB analyses described above. If you have any questions it's best just to drop me an email at melis.anaturk.14@ucl.ac.uk. The **important thing** to highlight here is that the "age" variable provided by DPUK is a **categorical variable**, i.e. age is coded in age bins. I've therefore used the median across all age bins as Mika has previous done in his papers.
+The scripts used on the Whitehall data are adapted from the UKB analyses described above. Data/scripts/ect can be found in the S Drive 0346, along with the workspace that can loaded into Rstudio. If you have any questions it's best just to drop me an email at melis.anaturk.14@ucl.ac.uk. The **important thing** to highlight here is that the "age" variable provided by DPUK is a **categorical variable**, i.e. age is coded in age bins. I've therefore used the median across all age bins as Mika has previous done in his papers.
+
+ 
