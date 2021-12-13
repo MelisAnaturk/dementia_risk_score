@@ -53,8 +53,8 @@ The main analysis is performed using a series of R scripts. A brief description 
 
 7. ```7_DRS.R```: Computing the DRS.
  
-9. ```9_logistic_regression_LASSO.r```: This is where the main analysis is performed. First LASSO regression is performed for feature selection, followed by logistic regression to calculate the beta-weights to be used in the UKB-DRS.
-10. ```10_discrimination_and_calibration.r``` : This r script computes the discriminative ability and calibration of each model.
+9. ```9_logistic_regression_LASSO.R```: This is where the main analysis is performed. First LASSO regression is performed for feature selection, followed by logistic regression to calculate the beta-weights to be used in the UKB-DRS.
+10. ```10_discrimination_and_calibration.R``` : This r script computes the discriminative ability and calibration of each model.
 
 # Whitehall Analyses
 ## 1. Accessing data
