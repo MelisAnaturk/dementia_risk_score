@@ -90,6 +90,6 @@ You should then be able to access the **0346** study folder on the S Drive. The 
 The scripts used on the Whitehall data are adapted from the UKB analyses described above. Data/scripts/ect can be found in the S Drive 0346, along with the workspace that can loaded into Rstudio. If you have any questions it's best just to drop me an email at melis.anaturk.14@ucl.ac.uk. The **important thing** to highlight here is that the "age" variable provided by DPUK is a **categorical variable**, i.e. age is coded in age bins. I've therefore used the median across all age bins as Mika has previous done in his papers.
 
 ## Suggested changes to manuscript (to be updated)
-- Double check TBI codes
+- **Rai:** Double check TBI codes
 - Minor change to study flow chart
  
