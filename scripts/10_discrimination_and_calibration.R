@@ -214,6 +214,21 @@ UKBDRS_APOE_LASSO_MAN  <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$UKBDR
 UKBDRS_LASSO  <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$UKBDRS_LASSO_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
 UKBDRS_LASSO_MAN  <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$UKBDRS_LASSO_MAN_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
 
+# plot ROC curves
+library(extrafont)
+g2 <- ggroc(list(Age_only=age_only, UKBDRS_Model1=UKBDRS_APOE_LASSO, UKBDRS_Model2=UKBDRS_LASSO, UKBDRS_Model3=UKBDRS_APOE_LASSO_MAN, UKBDRS_Model4=UKBDRS_LASSO_MAN, CAIDE_APOE = CAIDE, DRS = DRS, FRS = FRS, ANU_ADRI = ANU_ADRI))
+plot <- g2 + theme_minimal()  +  theme(legend.title = element_blank(), panel.grid.major = element_blank(), 
+                                                                      panel.grid.minor = element_blank(),
+                                                                      panel.background = element_rect(colour = "black", size=1), text = element_text(size=14, family="LM Roman 10")) 
+
+ggsave(paste0(savepath,"roc_plotted_all.pdf"), width = 10, height = 10, units = "cm")
+
+ggsave(paste0(savepath,"roc_plotted_all.pdf"), 
+       plot = plot, 
+       device = "pdf", 
+       dpi = 320)
+
+
 #run all comparisons
 all_tests <- combn(list(UKBDRS_LASSO, UKBDRS_LASSO_MAN, UKBDRS_APOE_LASSO, UKBDRS_APOE_LASSO_MAN,
                         ANU_ADRI),
