@@ -1,43 +1,10 @@
-#testing discrimination and calibration of models in specific age ranges
-
-#using 9_logistic_regression_LASSO.R and 10_discrimination_and_calibration.R as template
+#compute discrimination and calibration of models in specific age ranges
 
 #load required packages
-library(ggplot2)
-library(caret)
-library(tidyverse)
-library(broom)
-library(rcompanion)
-library(data.table)
-library(sjPlot)
 library(pROC)
-library(CalibrationCurves)
-library(epicalc)
 
-library(tidyverse)
-library(rms)
-library(Hmisc)
-library(knitr)
-library(broom)
-library(pander)
-library(ggbeeswarm)
-library(gridExtra)
-library(grid)
-library(sjPlot)
-library(sjmisc)
-library(sjlabelled)
-library(viridis)
-
-library(dplyr)
-library(tidyr)
-library(kableExtra)
-library(MASS)
-library(glmnet)
-library(lm.beta)
-library(extrafont)
-
-load(file="train_data_outliers_removed.rda")
-load(file="test_data_outliers_removed.rda")
+load(file="../../../raw_data/train_data_outliers_removed.rda")
+load(file="../../../raw_data/test_data_outliers_removed.rda")
 
 #### compute UKB-DRS ####
 #calculate linear predictor and predicted probabilities for the age-only and UKB-DRS models
@@ -90,7 +57,7 @@ models <- c("age_only", "UKBDRS_APOE_LASSO", "UKBDRS_LASSO",
             "UKBDRS_APOE_LASSO_MAN", "UKBDRS_LASSO_MAN", "CAIDE_APOE")
 
 #define dataframe to store results
-caide_auc=data.frame(matrix(ncol = 3, nrow = 6))
+caide_auc=data.frame(matrix(ncol = 2, nrow = 6))
 rownames(caide_auc)<-models
 colnames(caide_auc)<-datasets
 
@@ -113,8 +80,14 @@ for (d in datasets){
 }
 rm(caide_data)
 gc()
-
-
+caide_auc
+#train               test
+#age_only               0.7 [ 0.68 0.72 ]  0.7 [ 0.65 0.74 ]
+#UKBDRS_APOE_LASSO     0.75 [ 0.72 0.77 ] 0.73 [ 0.68 0.78 ]
+#UKBDRS_LASSO          0.73 [ 0.71 0.75 ] 0.73 [ 0.69 0.78 ]
+#UKBDRS_APOE_LASSO_MAN 0.76 [ 0.73 0.78 ] 0.73 [ 0.69 0.78 ]
+#UKBDRS_LASSO_MAN      0.75 [ 0.73 0.77 ] 0.74 [ 0.69 0.78 ]
+#CAIDE_APOE             0.68 [ 0.66 0.7 ]  0.64 [ 0.6 0.69 ]
 
 
 #### DRS ####
@@ -126,11 +99,11 @@ models <- c("age_only", "UKBDRS_APOE_LASSO", "UKBDRS_LASSO",
             "UKBDRS_APOE_LASSO_MAN", "UKBDRS_LASSO_MAN", "DRS")
 
 #define dataframe to store results
-drs_auc=data.frame(matrix(ncol = 3, nrow = 6))
+drs_auc=data.frame(matrix(ncol = 2, nrow = 6))
 rownames(drs_auc)<-models
 colnames(drs_auc)<-datasets
 
-#subset data into caide age range
+#subset data into drs age range
 drs_data <- subset(df_test, (Age_at_recruitment_0_0>=60 & Age_at_recruitment_0_0<=79))
 
 #compute auc for each model in both train and test data
@@ -149,31 +122,11 @@ for (d in datasets){
 }
 rm(drs_data)
 gc()
-
-#relatively low scores for both CAIDE and DRS in their age specific sets
-#lower than they perform in the full dataset
-#replicate SI table 5 to be sure I have correct data/formats/etc
-#ie run the above in full data, not age specific sets
-
-models <- c("age_only", "UKBDRS_APOE_LASSO", "UKBDRS_LASSO", 
-            "UKBDRS_APOE_LASSO_MAN", "UKBDRS_LASSO_MAN", "CAIDE_APOE","DRS","FRS")
-
-#define dataframe to store results
-ukb_auc=data.frame(matrix(ncol = 3, nrow = 8))
-rownames(ukb_auc)<-models
-colnames(ukb_auc)<-datasets
-
-for (d in datasets){
-  for (m in models){
-    data <- subset(df_test, dataset==d)
-    print(paste0('computing AUC for ', m, ' in ', d))
-    # AUC part
-    roc <- pROC::roc(data[, c("dementia_BIN_TOTAL")], data[, paste(m, "predicted_prob", sep="_")], plot=TRUE, smooth = FALSE, ci=TRUE)
-    print(roc$auc)
-    print(roc$ci)
-    roc_results<-paste(round(roc$auc,2), "[", round(roc$ci[1],2), round(roc$ci[3],2), "]",sep=" ")
-    ukb_auc[m,d]<-roc_results
-  }
-}
-#matches SI Table 5 - good.
-
+drs_auc
+#train               test
+#age_only              0.67 [ 0.65 0.69 ] 0.66 [ 0.62 0.69 ]
+#UKBDRS_APOE_LASSO     0.74 [ 0.72 0.75 ] 0.75 [ 0.71 0.78 ]
+#UKBDRS_LASSO           0.68 [ 0.66 0.7 ]  0.7 [ 0.67 0.74 ]
+#UKBDRS_APOE_LASSO_MAN 0.74 [ 0.72 0.76 ] 0.74 [ 0.71 0.78 ]
+#UKBDRS_LASSO_MAN       0.7 [ 0.68 0.71 ] 0.71 [ 0.67 0.74 ]
+#DRS                   0.66 [ 0.65 0.68 ] 0.68 [ 0.64 0.71 ]
