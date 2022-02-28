@@ -44,7 +44,7 @@ meds <- c("Dementia", "NSAIDs", "statins", "HRTs", "Diabetes_II")
 
 # 2.5 code anyone with a prescription code as "1" from primary care data
 for (x in meds){
-  df <- read.csv(sprintf('../../raw_data/participants_with_%s.csv', x), header = TRUE, sep =',', stringsAsFactors = FALSE)
+  df <- read.csv(sprintf('../../raw_data/participants_%s.csv', x), header = TRUE, sep =',', stringsAsFactors = FALSE)
   df <- df[c("eid", "issue_date_1")]
   df$eid <- as.character(df$eid)
   df[paste("primary_care_prescription_for", x, sep="_")] <- 1
