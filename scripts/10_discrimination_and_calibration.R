@@ -47,6 +47,8 @@ df_test <- rbind(test.data, train.data)
 
 datasets <- c("test")
 
+savepath = "../results/"
+
 for (m in models){
   for (d in datasets){
     data <- subset(df_test, dataset==d)

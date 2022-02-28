@@ -12,10 +12,10 @@ library(tidyverse)
 library(psych)
 
 # 1.2 set working directory
-setwd("~/Documents/Oxford_DPhil/Biobank_Analyses/Dementia_risk_project/ukb_data/raw_data/")
+setwd("./")
 
 # 1.3 data pathway
-data_pathway = "~/Documents/Oxford_DPhil/Biobank_Analyses/Dementia_risk_project/ukb_data/For_Rai/raw_data/"
+data_pathway = "../../raw_data/"
 
 #----------- 2. Primary care data ---------
 # 2.1 identifying dementia codes based on records derived from gp practices
@@ -29,7 +29,7 @@ disease <- c("dementia", "Depression", "Stroke", "TBI", "Diabetes","Diabetes_II"
 # lapply is much more efficient than a for loop in r - need to change this
 
 for (x in disease){
-  df <- read.csv(sprintf('/Users/melisanaturk/Documents/Oxford_DPhil/Biobank_Analyses/Dementia_risk_project/ukb_data/For_Rai/raw_data/participants_with_%s.csv', x), header = TRUE, sep =',', stringsAsFactors = FALSE)
+  df <- read.csv(sprintf('../../raw_data/participants_with_%s.csv', x), header = TRUE, sep =',', stringsAsFactors = FALSE)
   df$eid <- as.character(df$eid)
   df[paste('primary_care_diagnosis_for', x, sep="_")] <- 1
   print(sprintf('number of individuals with %s', x))
@@ -44,7 +44,7 @@ meds <- c("Dementia", "NSAIDs", "statins", "HRTs", "Diabetes_II")
 
 # 2.5 code anyone with a prescription code as "1" from primary care data
 for (x in meds){
-  df <- read.csv(sprintf('/Users/melisanaturk/Documents/Oxford_DPhil/Biobank_Analyses/Dementia_risk_project/ukb_data/For_Rai/raw_data/participants_with_%s.csv', x), header = TRUE, sep =',', stringsAsFactors = FALSE)
+  df <- read.csv(sprintf('../../raw_data/participants_with_%s.csv', x), header = TRUE, sep =',', stringsAsFactors = FALSE)
   df <- df[c("eid", "issue_date_1")]
   df$eid <- as.character(df$eid)
   df[paste("primary_care_prescription_for", x, sep="_")] <- 1
@@ -232,7 +232,7 @@ df_diagnoses_combined <- list(merged_diagnoses_df, df_self_report_diagnoses) %>%
 rm(df_diagnoses,df_self_report_diagnoses,primary_care_df)
 
 #------------- 6. Create final variables -----
-# 6.1 This is the original dataset transferred to me by Rai (merged with additional lifestyle/genetic variables)
+# 6.1 This is the original dataset downloaded from UKB, merged with additional lifestyle/genetic variables
 load(file = paste0(data_pathway, "ukb_data_orig_merged.rda"))
 
 # TOTAL N = 502,521
@@ -496,8 +496,8 @@ df$TIA_BIN_FINAL_0_0 <- as.factor(df$TIA_BIN_FINAL_0_0)
 summary(df$TIA_BIN_FINAL_0_0)
 
 # 9.8 atrial fibrillation - baseline 
-df_self_report_diagnoses <- read.csv('/Users/melisanaturk/Documents/Oxford_DPhil/Biobank_Analyses/Dementia_risk_project/ukb_data/raw_data/biobank_dload/add_vars_stroke_death.csv', header=TRUE, sep=",", stringsAsFactors = FALSE)
-cols_diagoses <- read.csv('/Users/melisanaturk/Documents/Oxford_DPhil/Biobank_Analyses/Dementia_risk_project/ukb_data/raw_data/biobank_dload/names_stroke_ICD.csv', header=TRUE, sep=",", stringsAsFactors = FALSE)
+df_self_report_diagnoses <- read.csv('../../raw_data/add_vars_stroke_death.csv', header=TRUE, sep=",", stringsAsFactors = FALSE)
+cols_diagoses <- read.csv('../../names_stroke_ICD.csv', header=TRUE, sep=",", stringsAsFactors = FALSE)
 df_self_report_diagnoses[df_self_report_diagnoses == "NA"] <- NA
 names(df_self_report_diagnoses) <- cols_diagoses[,2]
 df_self_report_diagnoses$eid <- as.character(df_self_report_diagnoses$eid)

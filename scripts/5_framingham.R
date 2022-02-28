@@ -19,7 +19,7 @@
 #library(dplyr)
 
 # 1.2 data pathway
-data_pathway = "~/Documents/Oxford_DPhil/Biobank_Analyses/Dementia_risk_project/ukb_data/For_Rai/raw_data/"
+data_pathway = "../../raw_data/"
 
 #------ 2. DATA RECODING ----
 # 2.1 Age

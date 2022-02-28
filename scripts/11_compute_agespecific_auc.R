@@ -3,8 +3,8 @@
 #load required packages
 library(pROC)
 
-load(file="../../../raw_data/train_data_outliers_removed.rda")
-load(file="../../../raw_data/test_data_outliers_removed.rda")
+load(file="../../raw_data/train_data_outliers_removed.rda")
+load(file="../../raw_data/test_data_outliers_removed.rda")
 
 #### compute UKB-DRS ####
 #calculate linear predictor and predicted probabilities for the age-only and UKB-DRS models

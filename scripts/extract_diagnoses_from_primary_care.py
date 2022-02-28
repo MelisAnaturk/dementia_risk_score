@@ -6,7 +6,7 @@ import pandas as pd
 #import seaborn as sns
 
 # ------- 1. Specify pathways and read in csv
-datapath = "/Users/melisanaturk/Documents/Oxford_DPhil/Biobank_Analyses/Dementia_risk_project/ukb_data/For_Rai/raw_data/"
+datapath = "../../raw_data/"
 ICD910_df = pd.read_csv(datapath + 'gp_clinical.csv')
 meds_list = pd.read_csv(datapath +'read_codes.csv')
 

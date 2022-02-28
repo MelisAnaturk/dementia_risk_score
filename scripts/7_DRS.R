@@ -12,7 +12,7 @@ library(data.table)
 library(tidyverse)
 
 # 1.2 data pathway
-data_pathway = "~/Documents/Oxford_DPhil/Biobank_Analyses/Dementia_risk_project/ukb_data/For_Rai/raw_data/"
+data_pathway = "../../raw_data/"
 
 # 1.3 subset data as DRS relies on quantiles of townsend deprivation
 myvars <- c("Age_when_attended_assesment_centre_0_0","education_years", "Townsend_deprivation_0_0", "BMI_0_0",

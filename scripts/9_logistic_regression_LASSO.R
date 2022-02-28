@@ -35,9 +35,9 @@ library(pROC)
 library(caret)
 
 # specify data, model and results pathway
-data_pathway = "~/Documents/Oxford_DPhil/Biobank_Analyses/Dementia_risk_project/ukb_data/For_Rai/raw_data/"
-model_pathway = "~/Documents/Oxford_DPhil/Biobank_Analyses/Dementia_risk_project/ukb_data/For_Rai/models/"
-save_pathway = "~/Documents/Oxford_DPhil/Biobank_Analyses/Dementia_risk_project/ukb_data/For_Rai/results/"
+data_pathway = "../../raw_data/"
+model_pathway = "../models/"
+save_pathway = "../results/"
 
 # load .rda file
 load(file = paste0(data_pathway,"ukb_data_orig_merged_ANU-ADRI_CAIDE_FRS_DRS_oct22_clean.rda"))
