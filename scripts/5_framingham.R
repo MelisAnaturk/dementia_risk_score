@@ -11,15 +11,18 @@
 
 #------ 1. DATA SET UP ----
 # 1.1 load packages
-#library(car)
-#library(sjstats)
-#library(pROC)
-#library(ggplot2)
+library(car)
+library(sjstats)
+library(pROC)
+library(ggplot2)
 #library(janitor)
-#library(dplyr)
+library(dplyr)
+library(psych)
+library(tidyverse)
 
 # 1.2 data pathway
 data_pathway = "../../raw_data/"
+load(file = paste0(data_pathway, "ukbdata_diagnoses_baseline_diseasestatus_baselinemedications_ANUADRI_CAIDE.rda"))
 
 #------ 2. DATA RECODING ----
 # 2.1 Age
@@ -102,7 +105,8 @@ df$FRS_BMI_pred_prob <-        ifelse(df$Sex==0, df$frs_female, ifelse(df$Sex==1
 summary(df$FRS_BMI_pred_prob)
 
 # check missingness at item level
+pMiss <- function(x){sum(is.na(x))/length(x)*100}
 apply(df[,grep("frs|FRS", names(df))],2,pMiss)
 
 # save file
-save(file = paste0(data_pathway,"ukb_data_orig_merged_ANU-ADRI_CAIDE_FRS_oct22.rda"))
+save(df, file = paste0(data_pathway,"ukbdata_diagnoses_baseline_diseasestatus_baselinemedications_ANUADRI_CAIDE_FRS.rda"))
