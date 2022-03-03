@@ -62,7 +62,7 @@ df_diagnoses <- read.table(paste0(data_pathway,"icd9-icd10.tsv"), header=TRUE, s
 diagnoses_list <- read.csv(paste0(data_pathway,"ICD9_10_codes.csv") , header = TRUE, sep =',', stringsAsFactors = FALSE)
 
 ### WHAT IS DATES OF DIAGNOSIS?
-dates_of_diagnosis <- read.csv(paste0(data_pathway,"ICD9_10_codes.csv"), header = TRUE, sep =',', stringsAsFactors = FALSE)
+#dates_of_diagnosis <- read.csv(paste0(data_pathway,"ICD9_10_codes.csv"), header = TRUE, sep =',', stringsAsFactors = FALSE)
 
 # 3.2 convert eid as character
 df_diagnoses$eid <- as.character(df_diagnoses$eid)
@@ -118,6 +118,8 @@ df_self_report_diagnoses$self_report_stroke_0_0 <- apply(df_self_report_diagnose
 # convert variable to factor
 df_self_report_diagnoses$self_report_stroke_0_0 <- as.factor(df_self_report_diagnoses$self_report_stroke_0_0)
 summary(df_self_report_diagnoses$self_report_stroke_0_0)
+#0      1 
+#495807   6699 
 
 # 4.4 baseline diagnosis of depression
 # 1286 = depression
@@ -134,6 +136,8 @@ df_self_report_diagnoses$self_report_depression_0_0 <- apply(df_self_report_diag
 
 df_self_report_diagnoses$self_report_depression_0_0 <- as.factor(df_self_report_diagnoses$self_report_depression_0_0)
 summary(df_self_report_diagnoses$self_report_depression_0_0)
+#0      1 
+#472738  29768
 
 # 4.5 identify participants with self-reported history of dementia at baseline
 # 1262 = parkinsons disease
@@ -149,9 +153,12 @@ df_self_report_diagnoses$self_report_dementia_0_0 <- apply(df_self_report_diagno
 
 df_self_report_diagnoses$self_report_dementia_0_0 <- as.factor(df_self_report_diagnoses$self_report_dementia_0_0)
 summary(df_self_report_diagnoses$self_report_dementia_0_0)
+#0      1 
+#501530    976 
 
 # merge using purr
-df <- list(df_merge,df_diagnoses_combined) %>% reduce(left_join, by = "eid")
+#df <- list(df_merge,df_diagnoses_combined) %>% reduce(left_join, by = "eid")
+#why is the above line here now? 
 
 # 4.6 One hot encoding for individuals with dementia (across all phases)
 df_self_report_diagnoses$self_report_dementia <- apply(df_self_report_diagnoses[, 37:172], 1, function(x) {
@@ -164,9 +171,14 @@ df_self_report_diagnoses$self_report_dementia <- apply(df_self_report_diagnoses[
 
 df_self_report_diagnoses$self_report_dementia <- as.factor(df_self_report_diagnoses$self_report_dementia)
 summary(df_self_report_diagnoses$self_report_dementia)
+#0      1 
+#501426   1080
 
-# 4.7 Diabetes 
-df_self_report_diagnoses <- list(df_self_report_diagnoses, df_merge[,c("eid","Diabetes_diagnosed_bydoctor_0_0")]) %>% reduce(left_join, by = "eid")
+# 4.7 Diabetes
+load(paste0(data_pathway,"df_ukb_raw.rda"))
+#df_self_report_diagnoses <- list(df_self_report_diagnoses, df_merge[,c("eid","Diabetes_diagnosed_bydoctor_0_0")]) %>% reduce(left_join, by = "eid")
+#rp replaced above with below
+df_self_report_diagnoses <- list(df_self_report_diagnoses, df_ukb_raw[,c("eid","Diabetes_diagnosed_bydoctor_0_0")]) %>% reduce(left_join, by = "eid")
 
 # 4.8 Diabetes II - baseline
 # 1223 = 	type 2 diabetes
@@ -180,6 +192,8 @@ df_self_report_diagnoses$self_report_diabetes_II_0_0 <- apply(df_self_report_dia
 
 df_self_report_diagnoses$self_report_diabetes_II_0_0 <- as.factor(df_self_report_diagnoses$self_report_diabetes_II_0_0)
 summary(df_self_report_diagnoses$self_report_diabetes_II_0_0)
+#0      1 
+#499130   3376 
 
 # 4.9 TIA - baseline
 # 1082 = transient ischaemic attack (tia)
@@ -194,6 +208,8 @@ df_self_report_diagnoses$self_report_TIA_0_0 <- apply(df_self_report_diagnoses[,
 
 df_self_report_diagnoses$self_report_TIA_0_0 <- as.factor(df_self_report_diagnoses$self_report_TIA_0_0)
 summary(df_self_report_diagnoses$self_report_TIA_0_0)
+#0      1 
+#500727   1779 
 
 # 4.10 Atrial fibrillation - baseline
 # 1471 = atrial fibrillation
@@ -207,6 +223,8 @@ df_self_report_diagnoses$self_report_atrial_fibrillation_0_0 <- apply(df_self_re
 })
 df_self_report_diagnoses$self_report_atrial_fibrillation_0_0 <- as.factor(df_self_report_diagnoses$self_report_atrial_fibrillation_0_0)
 summary(df_self_report_diagnoses$self_report_atrial_fibrillation_0_0)  
+#0      1 
+#498786   3720 
 
 #------------- 5. Death reports -------
 # identify dementia cases based on death reports
@@ -221,11 +239,13 @@ df_self_report_diagnoses$death_report_dementia <- apply(df_self_report_diagnoses
 
 df_self_report_diagnoses$death_report_dementia <- as.factor(df_self_report_diagnoses$death_report_dementia)
 summary(df_self_report_diagnoses$death_report_dementia)
+#0      1 
+#501799    707
 
-# merge primary care and self-report
+# merge primary care and self-report. merged_diagnoses_df contains primary and secondary care diagnosis
 df_diagnoses_combined <- list(merged_diagnoses_df, df_self_report_diagnoses) %>% reduce(left_join, by = "eid")
 
-# merge above with secondary care data
+# merge above with secondary care data. dont need this as merged_diganoses_df contins secondary care
 #df_diagnoses_combined <- merge(df_diagnoses_combined, df_diagnoses, by.c="eid", all.x=TRUE)
 
 # remove dfs
@@ -233,17 +253,26 @@ rm(df_diagnoses,df_self_report_diagnoses,primary_care_df)
 
 #------------- 6. Create final variables -----
 # 6.1 This is the original dataset downloaded from UKB, merged with additional lifestyle/genetic variables
+#rp is skipping this for now. i think i already have what this was with df_ukb_raw
 load(file = paste0(data_pathway, "ukb_data_orig_merged.rda"))
 
 # TOTAL N = 502,521
 
-names(df_diagnoses_combined[,c(1, 310:336, 508:514, 516)])
-df_diagnoses_combined <- df_diagnoses_combined[,c(1, 310:336, 508:514, 516)]
-save(df_diagnoses_combined, file = paste0(data_pathway,"merged_diagnoses.rda"))
+
+#following 3 lines adjusted by RP to get the columns needed with the column ordering I have
+#names(df_diagnoses_combined[,c(1, 310:336, 508:514, 516)])
+#df_diagnoses_combined <- df_diagnoses_combined[,c(1, 310:336, 508:514, 516)]
+#save(df_diagnoses_combined, file = paste0(data_pathway,"merged_diagnoses.rda"))
+
+names(df_diagnoses_combined[,c(1,310,315:340,512:520)])
+#it should just be 512:520 and not redefine atrial fib self report later
+df_diagnoses_combined <- df_diagnoses_combined[,c(1,310,315:340,512:520)]
+#save(df_diagnoses_combined, file = paste0(data_pathway,"merged_diagnoses.rda"))
 
 # 6.2 merge with purr
-df <- list(df_merge,df_diagnoses_combined) %>% reduce(left_join, by = "eid")
-
+#df <- list(df_merge,df_diagnoses_combined) %>% reduce(left_join, by = "eid")
+df <- list(df_ukb_raw,df_diagnoses_combined) %>% reduce(left_join, by = "eid")
+#rp good till now
 # 6.3 if a participant has a dementia code either in self-report data, secondary care data, primary care data or cause of death then code as a 1
 # BUG fixed: need to code primary care variables as numeric before coding dementia cases
 df$primary_care_diagnosis_for_dementia <- as.numeric(df$primary_care_diagnosis_for_dementia)
@@ -267,7 +296,8 @@ df$dementia_BIN_TOTAL <- apply(df[, myvars], 1, function(x) {
 
 df$dementia_BIN_TOTAL <- as.factor(df$dementia_BIN_TOTAL)
 summary(df$dementia_BIN_TOTAL)
-
+#0      1 
+#497757   4764 
 #View(df[,c("dementia_BIN_TOTAL", "primary_care_diagnosis_for_dementia", "primary_care_prescription_for_Dementia", "secondary_care_diagnosis_of_Dementia", "self_report_dementia", "death_report_dementia")])
 
 #------ 7. Time to diagnosis and disease status for dementia -----
@@ -280,9 +310,28 @@ df$date_of_death_all <- ifelse(is.na(df$death_date_1), df$death_date_2, df$death
 df$date_of_death_all <-  as.Date(df$date_of_death_all, format="%Y-%m-%d")
 
 # 7.2 remove impossible dates
-date_variables <- c("baseline_date", "date_all_cause_dementia_0_0", "primary_care_prescription_date_for_Dementia")
+#following chunk of code up until View command was what was here initially. i dont think it works. do a simple for loop
+#date_variables <- c("baseline_date", "date_all_cause_dementia_0_0", "primary_care_prescription_date_for_Dementia")
 
-remove_impossible_dates <- function(x){
+#remove_impossible_dates <- function(x){
+#  print(class(df[,x]))
+#  df[,x] <- as.Date(df[,x], format="%d/%m/%Y")
+#  df[,x][df[,x]=="1901-01-01"] <- NA
+#  df[,x][df[,x]=="1900-01-01"] <- NA
+#  df[,x][df[,x]=="1902-02-02"] <- NA
+#  df[,x][df[,x]=="1903-03-03"] <- NA
+#  df[,x][df[,x]=="2037-07-07"] <- NA
+#}
+
+#lapply(df, remove_impossible_dates)
+#summary(df[date_variables])
+#View(df[date_variables])
+
+date_variables <- c("baseline_date", "date_all_cause_dementia_0_0", "primary_care_prescription_date_for_Dementia")
+summary(df[date_variables]) #some impossible dates (1900-01-01)
+View(df[date_variables])
+
+for (x in date_variables){
   print(class(df[,x]))
   df[,x] <- as.Date(df[,x], format="%d/%m/%Y")
   df[,x][df[,x]=="1901-01-01"] <- NA
@@ -291,9 +340,7 @@ remove_impossible_dates <- function(x){
   df[,x][df[,x]=="1903-03-03"] <- NA
   df[,x][df[,x]=="2037-07-07"] <- NA
 }
-
-lapply(df, remove_impossible_dates)
-summary(df[date_variables])
+summary(df[date_variables]) #no impossible dates
 View(df[date_variables])
 
 # 7.3 Dementia cases: create a variable that reflects the earliest date of diagnosis
@@ -315,18 +362,23 @@ summary(as.factor(df$Date_of_all_cause_dementia_report_0_0))
 View(df[myvars])
 
 # save file
-save(df, file = paste0(data_pathway,"ukb_data_orig_merged.rda"))
+#save(df, file = paste0(data_pathway,"ukb_data_orig_merged.rda"))
+save(df, file = paste0(data_pathway,"ukbdata_diagnoses.rda"))
 
 # 7.5 clear working space
 rm(list=ls())
 
 # 7.6 load in .rda file
-load(file = paste0(data_pathway,"ukb_data_orig_merged.rda"))
+#load(file = paste0(data_pathway,"ukb_data_orig_merged.rda"))
+load(file = paste0(data_pathway,"ukbdata_diagnoses.rda"))
+#load(file="../../../raw_data/ukb_data_orig_merged_final_diseases_oct22.rda")
 
 # 7.7 create an index date for individuals without dementia (for individuals with dementia it is date of diagnosis)
 df$date_diff_healthy <- ifelse(is.na(df$date_diff_time_between_baseline_latest_follow_up), df$date_diff_time_between_baseline_death,
                         df$date_diff_time_between_baseline_latest_follow_up)
 summary(df$date_diff_healthy)
+#Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+#      4    1263    2098    2033    2786    4885  481249 
 View(df[c("date_diff_time_between_baseline_latest_follow_up", "date_diff_time_between_baseline_death", "date_diff_healthy")])
 
 # combine into same variables
@@ -348,7 +400,7 @@ df$date_diff_final <- ifelse(is.na(df$date_diff_all_cause_dementia_0_0), df$date
 summary(df$date_diff_final)
 
 # Checks
-#View(df[c("date_diff_final", "date_diff_baseline_all", "date_diff_all_cause_dementia_0_0")])
+View(df[c("date_diff_final", "date_diff_baseline_all", "date_diff_all_cause_dementia_0_0")])
 #View(df[c("earliest_dementia_date", "date_all_cause_dementia", "baseline_date", "years_diff_all_time", "dementia_BIN_TOTAL", "date_diff_all_cause_dementia_0_0", "final_date_diff")])
 #View(df[, c("date_diff_baseline_all","latest_follow_up_date_1", "date_of_latest_follow_up", "date_of_death_all", "Date_of_assessment_2_0_new", "Date_of_assessment_1_0_new", "baseline_date")])
 
@@ -359,12 +411,11 @@ summary(as.numeric(df$years_diff_all_time))
 #------- 8. Begin data subsetting -----
 # 8.1 exclude people without a baseline asssessment
 df <- subset(df, complete.cases(baseline_date))
-#  CURRENT N = 502,506
+#  CURRENT N = 502,506 
 
 # 8.2 exclude people with pre-existing dementia based on date_diff variable
 summary(df$date_diff_all_cause_dementia)
 df <- subset(df, date_diff_all_cause_dementia_0_0>0| is.na(date_diff_all_cause_dementia_0_0)) 
-summary(as.factor(df$dementia_BIN_TOTAL))
 # CURRENT N = 502,178
 
 summary(df$dementia_BIN_TOTAL)
@@ -385,6 +436,8 @@ df <- subset(df, self_report_dementia_0_0==0)
 df$years_diff_all_cause_dementia_0_0  <- df$date_diff_all_cause_dementia_0_0 /365.242 
 
 describe(as.numeric(df$years_diff_all_cause_dementia_0_0))
+#vars    n mean   sd median trimmed  mad  min   max range  skew kurtosis   se
+#X1    1 2947  5.8 2.17   6.09    5.93 2.19 0.03 10.71 10.68 -0.47     -0.4 0.04
 hist(as.numeric(df$years_diff_all_cause_dementia_0_0))
 
 # 8.6 exclude people who have developed dementia within a year of baseline (minimize reverse causation)
@@ -399,15 +452,36 @@ summary(df$dementia_BIN_TOTAL)
 #497742   3519  
 
 describe(as.numeric(df$years_diff_all_cause_dementia_0_0))
+#vars    n mean   sd median trimmed  mad min   max range  skew kurtosis   se
+#X1    1 2881 5.92 2.04   6.15    6.01 2.13   1 10.71   9.7 -0.36    -0.57 0.04
 hist(as.numeric(df$years_diff_all_cause_dementia_0_0))
 
 #------- 9. Dates for other diseases -----
 # 9.1 create vector of primary care diagnosis dates
 date_variables <- c("primary_care_diagnosis_date_for_Stroke", "primary_care_diagnosis_date_for_Depression", "primary_care_diagnosis_date_for_TIA", "primary_care_diagnosis_date_for_TBI", "primary_care_diagnosis_date_for_Diabetes", "primary_care_diagnosis_date_for_Diabetes_II")
-View(df[,date_variables]) #date_variables])
+#View(df[,date_variables]) #date_variables])
 
-lapply(date_variables, remove_impossible_dates)
-summary(df[date_variables])
+#lapply(date_variables, remove_impossible_dates)
+#summary(df[date_variables])
+#View(df[date_variables])
+sapply(df[date_variables], class) #they are characters, make them dates
+for (x in date_variables){
+  df[,x] <- as.Date(df[,x], format="%d/%m/%Y")
+}
+summary(df[date_variables]) #some impossible dates (1900-01-01, 1902-02-02, etc)
+View(df[date_variables])
+
+#remove impossible dates
+for (x in date_variables){
+  print(class(df[,x]))
+  df[,x] <- as.Date(df[,x], format="%d/%m/%Y")
+  df[,x][df[,x]=="1901-01-01"] <- NA
+  df[,x][df[,x]=="1900-01-01"] <- NA
+  df[,x][df[,x]=="1902-02-02"] <- NA
+  df[,x][df[,x]=="1903-03-03"] <- NA
+  df[,x][df[,x]=="2037-07-07"] <- NA
+}
+summary(df[date_variables]) #no impossible dates
 View(df[date_variables])
 
 # 9.2 Stroke
@@ -424,7 +498,11 @@ df$stroke_BIN_FINAL_0_0 <- ifelse(df$date_diff_stroke_diagnosis<=0&df$primary_ca
 df$stroke_BIN_FINAL_0_0[is.na(df$stroke_BIN_FINAL_0_0)] <- 0
 df$stroke_BIN_FINAL_0_0 <- as.factor(df$stroke_BIN_FINAL_0_0)
 summary(df$self_report_stroke_0_0)
+#0      1 
+#494616   6645 
 summary(df$stroke_BIN_FINAL_0_0)
+#0      1 
+#493455   7806 
 
 View(df[,c("stroke_BIN_FINAL_0_0", "primary_care_diagnosis_date_for_Stroke", "baseline_date","date_diff_stroke_diagnosis")])
 
@@ -438,13 +516,19 @@ df$primary_care_diagnosis_for_Depression[is.na(df$primary_care_diagnosis_for_Dep
 df$depression_BIN_FINAL_0_0 <- ifelse(df$date_diff_depression_diagnosis<=0&df$primary_care_diagnosis_for_Depression==1|df$self_report_depression_0_0==1,1,0) 
 df$depression_BIN_FINAL_0_0 <- as.factor(df$depression_BIN_FINAL_0_0)
 summary(df$depression_BIN_FINAL_0_0)
+#0      1   NA's 
+#443973  57280      8 
 
 # 9.4 TBI
 df$TBI_BIN_TOTAL <- ifelse(is.na(df[,c("primary_care_diagnosis_for_TBI")]),0,1)
 
 df$TBI_BIN_TOTAL <- as.factor(df$TBI_BIN_TOTAL)
 summary(df$TBI_BIN_TOTAL)
+#0      1 
+#484962  16299
 summary(as.factor(df$primary_care_diagnosis_for_TBI))
+#1   NA's 
+# 16299 484962 
 
 df$primary_care_diagnosis_date_for_TBI <-  as.Date(df$primary_care_diagnosis_date_for_TBI, format="%d/%m/%Y")
 df$date_diff_TBI_diagnosis <- df$primary_care_diagnosis_date_for_TBI - df$baseline_date
@@ -454,6 +538,8 @@ df$TBI_BIN_FINAL_0_0 <- ifelse(df$date_diff_TBI_diagnosis<=0&df$primary_care_dia
 df$TBI_BIN_FINAL_0_0[is.na(df$TBI_BIN_FINAL_0_0)] <- 0
 df$TBI_BIN_FINAL_0_0 <- as.factor(df$TBI_BIN_FINAL_0_0)
 summary(df$TBI_BIN_FINAL_0_0)
+#0      1 
+#490912  10349 
 
 # 9.5 Diabetes - BASELINE
 # incident + historic diabetes
@@ -466,7 +552,11 @@ df$Diabetes_BIN_FINAL_0_0 <- ifelse(df$date_diff_Diabetes_diagnosis<=0&df$primar
 df$Diabetes_BIN_FINAL_0_0[is.na(df$Diabetes_BIN_FINAL_0_0)] <- 0
 df$Diabetes_BIN_FINAL_0_0 <- as.factor(df$Diabetes_BIN_FINAL_0_0)
 summary(as.factor(df$Diabetes_diagnosed_bydoctor_0_0.x))
+#0      1   NA's 
+#472340  26317   2604  
 summary(df$Diabetes_BIN_FINAL_0_0)
+#0      1 
+#474608  26653 
 
 # 9.6 Type 2 Diabetes
 df$primary_care_diagnosis_date_for_Diabetes_II <-  as.Date(df$primary_care_diagnosis_date_for_Diabetes_II, format="%d/%m/%Y")
@@ -476,8 +566,10 @@ summary(as.factor(df$date_diff_Diabetes_II_diagnosis))
 df$Diabetes_II_BIN_FINAL_0_0 <- ifelse(df$date_diff_Diabetes_II_diagnosis<=0&df$primary_care_diagnosis_for_Diabetes_II==1,1,0) 
 df$Diabetes_II_BIN_FINAL_0_0[is.na(df$Diabetes_II_BIN_FINAL_0_0)] <- 0
 df$Diabetes_II_BIN_FINAL_0_0 <- as.factor(df$Diabetes_II_BIN_FINAL_0_0)
-summary(as.factor(df$Diabetes_diagnosed_bydoctor_0_0))
+summary(as.factor(df$Diabetes_diagnosed_bydoctor_0_0.x))
 summary(df$Diabetes_II_BIN_FINAL_0_0)
+#0      1 
+#491247  10014 
 
 View(df[,c("Diabetes_II_BIN_FINAL_0_0", "primary_care_diagnosis_for_Diabetes_II", "primary_care_diagnosis_date_for_Diabetes_II", "baseline_date")])
 
@@ -494,28 +586,30 @@ df$TIA_BIN_FINAL_0_0 <- ifelse(df$date_diff_TIA_diagnosis<=0&df$primary_care_dia
 df$TIA_BIN_FINAL_0_0[is.na(df$TIA_BIN_FINAL_0_0)] <- 0
 df$TIA_BIN_FINAL_0_0 <- as.factor(df$TIA_BIN_FINAL_0_0)
 summary(df$TIA_BIN_FINAL_0_0)
+#0      1 
+#499490   1771 
 
-# 9.8 atrial fibrillation - baseline 
-df_self_report_diagnoses <- read.csv('../../raw_data/add_vars_stroke_death.csv', header=TRUE, sep=",", stringsAsFactors = FALSE)
-cols_diagoses <- read.csv('../../names_stroke_ICD.csv', header=TRUE, sep=",", stringsAsFactors = FALSE)
-df_self_report_diagnoses[df_self_report_diagnoses == "NA"] <- NA
-names(df_self_report_diagnoses) <- cols_diagoses[,2]
-df_self_report_diagnoses$eid <- as.character(df_self_report_diagnoses$eid)
+# 9.8 atrial fibrillation - baseline #rp: atrial fib self report was already computed, no need to redo so 9.8, 9.9 commented out
+#df_self_report_diagnoses <- read.csv('../../raw_data/add_vars_stroke_death.csv', header=TRUE, sep=",", stringsAsFactors = FALSE)
+#cols_diagoses <- read.csv('../../names_stroke_ICD.csv', header=TRUE, sep=",", stringsAsFactors = FALSE)
+#df_self_report_diagnoses[df_self_report_diagnoses == "NA"] <- NA
+#names(df_self_report_diagnoses) <- cols_diagoses[,2]
+#df_self_report_diagnoses$eid <- as.character(df_self_report_diagnoses$eid)
 
-df_self_report_diagnoses$self_report_atrial_fibrillation_0_0 <- apply(df_self_report_diagnoses[, 37:70], 1, function(x) {
-  if(any(x %in% c("1471", "1483"))) {
-    return(1)
-  } else {
-    return(0)
-  }
-})
-df_self_report_diagnoses$self_report_atrial_fibrillation_0_0 <- as.factor(df_self_report_diagnoses$self_report_atrial_fibrillation_0_0)
-summary(df_self_report_diagnoses$self_report_atrial_fibrillation_0_0)  
+#df_self_report_diagnoses$self_report_atrial_fibrillation_0_0 <- apply(df_self_report_diagnoses[, 37:70], 1, function(x) {
+#  if(any(x %in% c("1471", "1483"))) {
+#    return(1)
+#  } else {
+#    return(0)
+#  }
+#})
+#df_self_report_diagnoses$self_report_atrial_fibrillation_0_0 <- as.factor(df_self_report_diagnoses$self_report_atrial_fibrillation_0_0)
+#summary(df_self_report_diagnoses$self_report_atrial_fibrillation_0_0)  
 
 # 9.9 merge with main df
-df_self_report_diagnoses <- df_self_report_diagnoses[, c(1, 33:173)]
-df <- list(df, df_self_report_diagnoses) %>% reduce(left_join, by = "eid")
-summary(df$self_report_atrial_fibrillation_0_0)
+#df_self_report_diagnoses <- df_self_report_diagnoses[, c(1, 33:173)]
+#df <- list(df, df_self_report_diagnoses) %>% reduce(left_join, by = "eid")
+#summary(df$self_report_atrial_fibrillation_0_0)
 
 df$primary_care_diagnosis_date_for_Atrial_fibrillation <-  as.Date(df$primary_care_diagnosis_date_for_Atrial_fibrillation, format="%d/%m/%Y")
 df$date_diff_Atrial_fibrillation_diagnosis <- df$primary_care_diagnosis_date_for_Atrial_fibrillation - df$baseline_date
@@ -525,10 +619,13 @@ df$Atrial_Fibrillation_BIN_FINAL_0_0 <- ifelse(df$date_diff_Atrial_fibrillation_
 df$Atrial_Fibrillation_BIN_FINAL_0_0[is.na(df$Atrial_Fibrillation_BIN_FINAL_0_0)] <- 0
 df$Atrial_Fibrillation_BIN_FINAL_0_0 <- as.factor(df$Atrial_Fibrillation_BIN_FINAL_0_0)
 summary(df$Atrial_Fibrillation_BIN_FINAL_0_0)
+#0      1 
+#495870   5391
 
 # 9.10 Save file
-save(df, file = paste0(data_pathway, "ukb_data_orig_merged_final_diseases_oct22.rda"))
-load(file = paste0(data_pathway,"ukb_data_orig_merged_final_diseases_oct22.rda"))
+#save(df, file = paste0(data_pathway, "ukb_data_orig_merged_final_diseases_oct22.rda"))
+#load(file = paste0(data_pathway,"ukb_data_orig_merged_final_diseases_oct22.rda"))
+save(df, file = paste0(data_pathway, "ukbdata_diagnoses_baseline_diseasestatus.rda"))
 
 #--------- 10. Medications 
 # read csv
@@ -555,7 +652,9 @@ View(names(df))
 meds_statins <- as.vector(as.character(na.omit(list_meds[,2])))
 print(meds_statins)
 
-df$statins_0_0 <- apply(df[, 893:940], 1, function(x) {  # 1230:1277
+#**MA has columns 893:940 as baseline treatment (Treatment_medication_code_0_*)
+#Rp instead has this as 753:800 because rp did not remerge cols 33:173 of df_self_report_diagnoses in 9.9
+df$statins_0_0 <- apply(df[, 753:800], 1, function(x) {  # 1230:1277
   if(any(x %in% meds_statins)) {
     return(1)
   } else {
@@ -565,12 +664,14 @@ df$statins_0_0 <- apply(df[, 893:940], 1, function(x) {  # 1230:1277
 
 df$statins_0_0 <- as.factor(df$statins_0_0)
 summary(df$statins_0_0)
+#0      1 
+#418982  82279
 
 # 10.2 HRT (baseline only)
 meds_HRT <- as.vector(as.character(na.omit(list_meds[,4])))
-print(meds_statins)
+print(meds_HRT)
 
-df$HRT_meds_0_0 <- apply(df[,  893:940], 1, function(x) {
+df$HRT_meds_0_0 <- apply(df[, 753:800], 1, function(x) {
   if(any(x %in% meds_HRT)) {
     return(1)
   } else {
@@ -580,12 +681,14 @@ df$HRT_meds_0_0 <- apply(df[,  893:940], 1, function(x) {
 
 df$HRT_meds_0_0 <- as.factor(df$HRT_meds_0_0)
 summary(df$HRT_meds_0_0)
+#0      1 
+#482940  18321 
 
 # 10.3 NSAIDs (Excluding Aspirin)
 meds_NSAIDs <- as.vector(as.character(na.omit(list_meds[,6])))
 print(meds_NSAIDs)
 
-df$NSAIDs_0_0 <- apply(df[,  893:940], 1, function(x) {
+df$NSAIDs_0_0 <- apply(df[,  753:800], 1, function(x) {
   if(any(x %in% meds_NSAIDs)) {
     return(1)
   } else {
@@ -595,12 +698,14 @@ df$NSAIDs_0_0 <- apply(df[,  893:940], 1, function(x) {
 
 df$NSAIDs_0_0  <- as.factor(df$NSAIDs_0_0)
 summary(df$NSAIDs_0_0)
+#0      1 
+#404450  96811 
 
 # 10.4 ASPIRIN
 meds_Aspirin <- as.vector(as.character(na.omit(list_meds[,14])))
 print(meds_Aspirin)
 
-df$Aspirin_0_0 <- apply(df[, 893:940], 1, function(x) {
+df$Aspirin_0_0 <- apply(df[, 753:800], 1, function(x) {
   if(any(x %in% meds_Aspirin)) {
     return(1)
   } else {
@@ -610,13 +715,14 @@ df$Aspirin_0_0 <- apply(df[, 893:940], 1, function(x) {
 
 df$Aspirin_0_0  <- as.factor(df$Aspirin_0_0)
 summary(df$Aspirin_0_0)
-
+#0      1 
+#431723  69538 
 
 # 10.5 Antihypertensive medications
 meds_Antihypertensive <- as.vector(as.character(na.omit(list_meds[,10])))
 print(meds_Antihypertensive)
 
-df$Antihypertensive_meds_0_0 <- apply(df[, 893:940], 1, function(x) {
+df$Antihypertensive_meds_0_0 <- apply(df[, 753:800], 1, function(x) {
   if(any(x %in% meds_Antihypertensive)) {
     return(1)
   } else {
@@ -626,12 +732,14 @@ df$Antihypertensive_meds_0_0 <- apply(df[, 893:940], 1, function(x) {
 
 df$Antihypertensive_meds_0_0  <- as.factor(df$Antihypertensive_meds_0_0)
 summary(df$Antihypertensive_meds_0_0)
+#0      1 
+#388112 113149
 
 # 10.6 Antidepressants
 meds_Antidepressants <- as.vector(as.character(na.omit(list_meds[,12])))
 print(meds_Antidepressants)
 
-df$Antidepressant_meds_0_0 <- apply(df[, 893:940], 1, function(x) {
+df$Antidepressant_meds_0_0 <- apply(df[, 753:800], 1, function(x) {
   if(any(x %in% meds_Antidepressants)) {
     return(1)
   } else {
@@ -641,12 +749,14 @@ df$Antidepressant_meds_0_0 <- apply(df[, 893:940], 1, function(x) {
 
 df$Antidepressant_meds_0_0  <- as.factor(df$Antidepressant_meds_0_0)
 summary(df$Antidepressant_meds_0_0)
+#0      1 
+#463791  37470 
 
 rm(col_names_meds,df_meds,list_meds)
 
 length(unique(df$eid))
 
 # Save file
-save(df, file = paste0(data_pathway, "ukb_data_orig_merged_final_diseases_oct22.rda"))
-load(file = paste0(data_pathway, "ukb_data_orig_merged_final_diseases_oct22.rda"))
-
+#save(df, file = paste0(data_pathway, "ukb_data_orig_merged_final_diseases_oct22.rda"))
+#load(file = paste0(data_pathway, "ukb_data_orig_merged_final_diseases_oct22.rda"))
+save(df, file = paste0(data_pathway, "ukbdata_diagnoses_baseline_diseasestatus_baselinemedications.rda"))
