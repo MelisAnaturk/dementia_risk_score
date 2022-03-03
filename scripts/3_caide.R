@@ -2,6 +2,18 @@
 # Modified by Melis Anaturk (Feb 2020)
 # This r script calculates two versions of the CAIDE score, with APOE and without
 
+library(car)
+library(sjstats)
+library(pROC)
+library(ggplot2)
+library(dplyr)
+library(psych)
+library(tidyverse)
+
+data_pathway = "../../raw_data/"
+
+load(file = paste0(data_pathway, "ukbdata_diagnoses_baseline_diseasestatus_baselinemedications_ANUADRI.rda"))
+
 # STEPS IN SCRIPT
 # 1. Data recoding
 # 2. Caide caculation
@@ -98,17 +110,27 @@ df$beta_caide_APOE_score <- df$beta_age_caide_APOE_recoded + df$beta_sex_caide_A
 
 hist(df$beta_caide_APOE_score)
 summary(df$beta_caide_APOE_score)
-
+#Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+#   0.00    1.87    2.69    2.52    3.21    6.67  200322 
+   
 # 2.3 check missingness
+pMiss <- function(x){sum(is.na(x))/length(x)*100}
+
 apply(df[,grep("CAIDE|caide", names(df))],2,pMiss)
 
 # 2.4 Calculate Probability(dementia) - CAIDE+APOE
 df$CAIDE_APOE_predicted_prob              <- (exp(-8.083 +    1.020 + (0.390*df$beta_caide_APOE_score)))/
                                            1+(exp(-8.083 + 1.020 + (0.390*df$beta_caide_APOE_score)))
 summary(df$CAIDE_APOE_predicted_prob*100)
-
+#Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+   #0.17    0.36    0.49    0.50    0.60    2.31  200322 
+   
 # 2.5 Calculate Probability(dementia) - CAIDE without APOE
 df$CAIDE_predicted_prob <- (exp(-7.406 + 0.796 + (0.401*df$beta_caide_APOE_score)))/
                            1+(exp(-7.406 + 0.796 + (0.401*df$beta_caide_APOE_score)))
 
 summary(df$CAIDE_predicted_prob*100)
+#Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+#   0.27    0.57    0.79    0.81    0.98    3.91  200322 
+
+save(df, file = paste0(data_pathway, "ukbdata_diagnoses_baseline_diseasestatus_baselinemedications_ANUADRI_CAIDE.rda"))
