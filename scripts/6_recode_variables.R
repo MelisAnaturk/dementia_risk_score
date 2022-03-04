@@ -6,16 +6,18 @@
 
 #------------- 1.  Data set-up ----
 # 1.1 load libraries
+library(car)
+library(sjstats)
+library(dplyr)
+library(psych)
+library(tidyverse)
 library(data.table)
 
 # 1.2 data pathway
 data_pathway = "../../raw_data/"
 
-# 1.3 set working directory 
-#setwd(data_pathway)
-
-# 1.4 load csv file
-load(file = paste0(data_pathway,"ukb_data_orig_merged_ANU-ADRI_CAIDE_FRS_oct22.rda"))
+# 1.3 load data
+load(file = paste0(data_pathway,"ukbdata_diagnoses_baseline_diseasestatus_baselinemedications_ANUADRI_CAIDE_FRS.rda"))
 
 # 1.5 load in townsend deprivation variables
 df_townsend_deprivation <- fread(paste0(data_pathway, "town_send_deprivation.csv"), header = TRUE, sep =',', stringsAsFactors = FALSE)
@@ -182,3 +184,5 @@ df$family_history_of_dementia <- apply(df[, c(596:605, 636:646)], 1, function(x)
 })
 summary(as.factor(df$family_history_of_dementia))
 rm(df_townsend_deprivation)
+
+save(df, file = paste0(data_pathway,"ukbdata_diagnoses_baseline_diseasestatus_baselinemedications_ANUADRI_CAIDE_FRS_recoded.rda"))
