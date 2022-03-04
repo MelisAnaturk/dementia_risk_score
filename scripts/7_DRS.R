@@ -8,11 +8,14 @@
 #------ 1. Data set up -----
 # 1.1 load libraries
 library(dvmisc)
+library(dplyr)
+library(psych)
 library(data.table)
 library(tidyverse)
 
 # 1.2 data pathway
 data_pathway = "../../raw_data/"
+load(file = paste0(data_pathway, "ukbdata_diagnoses_baseline_diseasestatus_baselinemedications_ANUADRI_CAIDE_FRS_recoded.rda"))
 
 # 1.3 subset data as DRS relies on quantiles of townsend deprivation
 myvars <- c("Age_when_attended_assesment_centre_0_0","education_years", "Townsend_deprivation_0_0", "BMI_0_0",
@@ -44,8 +47,8 @@ summary(df$dementia_BIN_TOTAL)
 #210999   1366 
 
 # 1.6 recode dementia variable such that only HES and primary care variables contribute to dementia ascertain
- myvars <- c("secondary_care_diagnosis_of_Dementia", "death_report_dementia", "primary_care_diagnosis_for_dementia", "primary_care_prescription_for_Dementia")
- sapply(df[myvars], class) 
+myvars <- c("secondary_care_diagnosis_of_Dementia", "death_report_dementia", "primary_care_diagnosis_for_dementia", "primary_care_prescription_for_Dementia")
+sapply(df[myvars], class) 
  
  df$dementia_BIN_TOTAL <- apply(df[, myvars], 1, function(x) {
    if(any(x %in% c("1", 1))) { # "1" or 1 so it looks for 1 coded as a factor and 1 as a numeric
@@ -55,8 +58,8 @@ summary(df$dementia_BIN_TOTAL)
    }
  })
  
- df$dementia_BIN_TOTAL <- as.factor(df$dementia_BIN_TOTAL) 
- summary(df$dementia_BIN_TOTAL)
+df$dementia_BIN_TOTAL <- as.factor(df$dementia_BIN_TOTAL) 
+summary(df$dementia_BIN_TOTAL)
  #0      1 
  #211040   1325
  
@@ -138,11 +141,14 @@ df$DRS_total <-  0.20921*(df$Age_when_attended_assesment_centre_0_0 - 65.608) + 
 # predicted probability
 df$DRS_predicted_prob <- 1-0.9969^exp(df$DRS_total)
 summary(df$DRS_total)
+#Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#-7.8012 -3.5006 -1.2628 -1.7710  0.1146  3.4190 
 summary(df$DRS_predicted_prob)
-
+#Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+#1.270e-06 9.370e-05 8.778e-04 2.648e-03 3.476e-03 9.046e-02 
 # examine missingness
 vars <- c("DRS_total", "DRS_predicted_prob", "DRS_sex_score", "DRS_hypertensive_med_score", "DRS_calendar_year_score", "DRS_Townsend_deprivation_0_0_group2", "DRS_Townsend_deprivation_0_0_group3", "DRS_Townsend_deprivation_0_0_group4", "DRS_Townsend_deprivation_0_0_group5", "DRS_ex_smoker_score", "DRS_current_smoker_score", "DRS_alcohol_score", "DRS_depression_score", "DRS_aspirin_score", "DRS_stroke_score", "DRS_atrial_fib_score", "DRS_diabetes_score")
 apply(df[vars],2,pMiss)
 
-save(df, file = paste0(data_pathway, "ukb_data_orig_merged_ANU-ADRI_CAIDE_FRS_DRS_oct22_clean.rda"))
+save(df, file = paste0(data_pathway, "ukbdata_diagnoses_baseline_diseasestatus_baselinemedications_ANUADRI_CAIDE_FRS_recoded_DRS.rda"))
 
