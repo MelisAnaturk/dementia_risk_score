@@ -33,6 +33,7 @@ library(lm.beta)
 library(extrafont)
 library(pROC)
 library(caret)
+library(psych)
 
 # specify data, model and results pathway
 data_pathway = "../../raw_data/"
@@ -40,7 +41,7 @@ model_pathway = "../models/"
 save_pathway = "../results/"
 
 # load .rda file
-load(file = paste0(data_pathway,"ukb_data_orig_merged_ANU-ADRI_CAIDE_FRS_DRS_oct22_clean.rda"))
+load(file = paste0(data_pathway,"ukbdata_diagnoses_baseline_diseasestatus_baselinemedications_ANUADRI_CAIDE_FRS_recoded_DRS.rda"))
 
 # Recode variables
 df$current_history_depression <- ifelse(df$depression_BIN_FINAL_0_0==1|df$Antidepressant_meds_0_0==1, 1,0)
@@ -177,7 +178,9 @@ new.x <- model.matrix(dementia_BIN_TOTAL~., test.data)[,-1]
 set.seed(2003)
 lasso.fit.cv <-  cv.glmnet(x, y, family = "binomial", alpha = 1, lambda = NULL, nfolds = 10)
 plot(lasso.fit.cv)
-#save(lasso.fit.cv, file = paste0(save_pathway, "lasso_fit_cv.rda"))
+
+#save fit
+save(lasso.fit.cv, file = paste0(save_pathway, "lasso_fit_cv.rda"))
 
 # Or otherwise load model into R
 load(file = paste0(save_pathway, "lasso_fit_cv.rda"))
@@ -231,7 +234,9 @@ coef(lasso.final.1, s = lasso.fit.cv$lambda.1se) #lambda.1se
 View(tidy(lasso.final.1))
 
 # save the list of selected predictors (to carry forward to logistic regression analyses)
-write.csv(tidy(lasso.final.1), paste0(model_pathway,"logistic_LASSO_results.csv"))
+#write.csv(tidy(lasso.final.1), paste0(model_pathway,"logistic_LASSO_results.csv"))
+#ma was writing out to the model folder, think it should be in results folder
+write.csv(tidy(lasso.final.1), paste0(save_pathway,"logistic_LASSO_results.csv"))
 
 # save the model
 save(lasso.final.1, file = paste0(model_pathway, "lasso_fit_final.rda"))
@@ -272,7 +277,7 @@ UKBDRS_APOE_LASSO_MAN <-   paste("dementia_BIN_TOTAL ~  Age_when_attended_assesm
                                  Diabetes_BIN_FINAL_0_0  +  current_history_depression + stroke_TIA_BIN_FINAL + family_history_of_dementia + APOE_genotype_bin")
 
 
-models <- c(age_only, UKBDRS_APOE_LASSO_models,UKBDRS_LASSO_models, UKBDRS_APOE_LASSO_MAN_models, UKBDRS_APOE_LASSO_MAN_models)
+#models <- c(age_only, UKBDRS_APOE_LASSO_models,UKBDRS_LASSO_models, UKBDRS_APOE_LASSO_MAN_models, UKBDRS_APOE_LASSO_MAN_models)
 
 
 # We've previously computed the linear predictor and predicted probabilties for CAIDE, FRS, ANU-ADRI and DRS
@@ -294,6 +299,9 @@ for (m in models){
   test.data[paste(m, "predicted_prob", sep="_")] <-   1/(1+exp(-test.data[paste(m, "linear_predictor", sep="_")])) # can also be computed with predict(model, newdata= test.data, type='response') 
 }
 
+#save train and test data
+save(train.data, file = paste0(data_pathway, "train_data_outliers_removed.rda"))
+save(test.data, file = paste0(data_pathway, "test_data_outliers_removed.rda"))
 # Above loop rewritten as function
 # model_discrimination <- function(m){
 #   print(paste0('applying logistic regression model for ', m))
