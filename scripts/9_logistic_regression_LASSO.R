@@ -128,7 +128,14 @@ cont_vars <- c("Age_when_attended_assesment_centre_0_0", "education_years", "LDL
 df_filtered <- remove_outliers(df, cont_vars)
 
 # exclude people who only have one assessment date
-
+#redefine myvars to not include total cholesterol
+myvars <- c("Age_when_attended_assesment_centre_0_0","education_years", "Townsend_deprivation_Groups_0_0", "BMI_0_0",
+            "Sex", "Sleeplesness_insomnia_0_0_bin", "family_history_of_dementia", 
+            "Diabetes_BIN_FINAL_0_0", "LDL_0_0","HDL_cholesterol_0_0",
+            "current_history_depression","TBI_BIN_FINAL_0_0", "stroke_TIA_BIN_FINAL", "Smoker_bin", "units_combined",
+            "Systolic_BP_auto_mean", "IPAQ_activity_group_0_0", "Hearing_prob", "Sleep_duration_0_0", "Antihypertensive_meds_0_0",
+            "total_fish_intake_per_week_0_0", "Social_engagement_0_2", "Atrial_Fibrillation_BIN_FINAL_0_0",
+            "Number_in_household_0_0","dementia_BIN_TOTAL", "APOE_genotype_bin", "NSAIDs_0_0", "HRT_0_0", "statins_0_0", "Aspirin_0_0")
 #----- 2. LASSO REGRESSION ------------------------------------------
 # LASSO logistic regression is first run to identify the subset of predictors to be used in our risk score
 # IF you would like to run a cox proportional hazard equivalent, check out:
