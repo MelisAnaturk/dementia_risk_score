@@ -17,7 +17,7 @@ library(data.table)
 library(sjPlot)
 library(pROC)
 library(CalibrationCurves)
-library(epicalc)
+#library(epicalc)
 
 library(tidyverse)
 library(rms)
@@ -37,11 +37,13 @@ library(viridis)
 #----- 1. ASSESS DISCRIMINATIVE ABILITY
 # report the AUC and 95% confidence intervals for each risk model (using predicted probabilities)
 
+load(file="../../raw_data/train_data_outliers_removed.rda")
+load(file="../../raw_data/test_data_outliers_removed.rda")
+
 #NB. Anu-adri has to be excluded from calibration calculations
 models <- c("age_only", "UKBDRS_LASSO", "UKBDRS_LASSO_MAN", "UKBDRS_APOE_LASSO", "UKBDRS_APOE_LASSO_MAN", "CAIDE_APOE", "FRS", "DRS")
 
 test.data$dataset <- "test"
-train.data$dataset <- "train"
 
 df_test <- rbind(test.data, train.data) 
 
@@ -217,11 +219,16 @@ UKBDRS_LASSO  <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$UKBDRS_LASSO_p
 UKBDRS_LASSO_MAN  <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$UKBDRS_LASSO_MAN_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
 
 # plot ROC curves
+#rp: this is plotting curves of ukb drs in the anu adri subset, i think it should use the ukb drs data from full sample, so move up to just be low the ANU_ADRI line
+#before ukb drs roc redefined for anu adri subset
 library(extrafont)
 g2 <- ggroc(list(Age_only=age_only, UKBDRS_Model1=UKBDRS_APOE_LASSO, UKBDRS_Model2=UKBDRS_LASSO, UKBDRS_Model3=UKBDRS_APOE_LASSO_MAN, UKBDRS_Model4=UKBDRS_LASSO_MAN, CAIDE_APOE = CAIDE, DRS = DRS, FRS = FRS, ANU_ADRI = ANU_ADRI))
 plot <- g2 + theme_minimal()  +  theme(legend.title = element_blank(), panel.grid.major = element_blank(), 
                                                                       panel.grid.minor = element_blank(),
                                                                       panel.background = element_rect(colour = "black", size=1), text = element_text(size=14, family="LM Roman 10")) 
+plot <- g2 + theme_minimal()  +  theme(legend.title = element_blank(), panel.grid.major = element_blank(), 
+                                       panel.grid.minor = element_blank(),
+                                       panel.background = element_rect(colour = "black", size=1), text = element_text(size=14)) 
 
 ggsave(paste0(savepath,"roc_plotted_all.pdf"), width = 10, height = 10, units = "cm")
 
@@ -260,6 +267,7 @@ tidy_results <- lapply(all_tests, broom::tidy)
 comparison_list <- as.data.frame(tests_names)
 lstData <- Map(as.data.frame, tidy_results)
 AUC_comparisons <- rbindlist(lstData) #fill=TRUE)
+AUC_comparisons <- rbindlist(lstData, fill=TRUE) #fill=TRUE)
 
 # add a column to serve as a key variable
 AUC_comparisons$Number <- 1:nrow(AUC_comparisons) 
@@ -297,7 +305,7 @@ for (m in models){for (d in c("train")){
   print(roc$ci)
   print('potential cut-off based on 80% sensitivity')
   perform<-data.frame(pROC::coords(roc, x = "all", ret=c("threshold", "specificity", "sensitivity","npv", "ppv"), transpose = FALSE))
-  perform <- round(perform[perform$sensitivity >= .8 & perform$sensitivity <= 0.801, ],3)
+  perform <- round(perform[perform$sensitivity >= .8 & perform$sensitivity <= 0.811, ],3)
   print(perform)
   print('potential cut-off based on 85% sensitivity')
   perform<-data.frame(pROC::coords(roc, x = "all", ret=c("threshold", "specificity", "sensitivity","npv", "ppv"), transpose = FALSE))
