@@ -84,10 +84,10 @@ df$Townsend_deprivation_Groups_0_0 <- as.factor(df$Townsend_deprivation_Groups_0
 summary(df$Townsend_deprivation_Groups_0_0)
 
 df$Townsend_deprivation_Groups_0_0 <- ifelse(df$Townsend_deprivation_Groups_0_0=="[-6.26,-3.98]", 0,
-                                      ifelse(df$Townsend_deprivation_Groups_0_0=="(-3.98,-2.87]", 1,
-                                      ifelse(df$Townsend_deprivation_Groups_0_0=="(-2.87,-1.5]", 2,
-                                      ifelse(df$Townsend_deprivation_Groups_0_0=="(-1.5,0.973]", 3,
-                                      ifelse(df$Townsend_deprivation_Groups_0_0=="(0.973,10.6]", 4,NA)))))
+                                             ifelse(df$Townsend_deprivation_Groups_0_0=="(-3.98,-2.87]", 1,
+                                                    ifelse(df$Townsend_deprivation_Groups_0_0=="(-2.87,-1.5]", 2,
+                                                           ifelse(df$Townsend_deprivation_Groups_0_0=="(-1.5,0.972]", 3,
+                                                                  ifelse(df$Townsend_deprivation_Groups_0_0=="(0.972,10.6]", 4,NA)))))
 
 summary(df$Townsend_deprivation_Groups_0_0)
 
