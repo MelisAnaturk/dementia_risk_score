@@ -150,12 +150,12 @@ for (m in models){
     #print('========================================================')
     
     
-    pdf(file=paste0(savepath,"calibration_plot_for_",m, "_",d,"set_intercept_slope.pdf"))
+    #pdf(file=paste0(savepath,"calibration_plot_for_",m, "_",d,"set_intercept_slope.pdf"))
     #pdf(file=paste0(savepath,"calibration_plot_for_",m, "_",d,"set_LATEST.pdf"))
-    plot <- val.prob(data[, paste(m, "predicted_prob", sep="_")], data$y, g=10, pl=TRUE, smooth=TRUE, logistic.cal=FALSE, lim=c(0,0.4))
+    #plot <- val.prob(data[, paste(m, "predicted_prob", sep="_")], data$y, g=10, pl=TRUE, smooth=TRUE, logistic.cal=FALSE, lim=c(0,0.4))
     #plot <- val.prob(data[, paste(m, "predicted_prob_intercept_slope_update", sep="_")], data$y, g=10, pl=TRUE, smooth=TRUE, logistic.cal=FALSE, lim=c(0,1))
-    print(plot)
-    dev.off()
+    #print(plot)
+    #dev.off()
   }}
 
 #---- Model comparison
@@ -277,7 +277,7 @@ comparison_list$Number <- 1:nrow(comparison_list)
 # merge based on key variable
 merged_results2 <- merge(AUC_comparisons, comparison_list, by.c="Number", all.x=TRUE)
 merged_results <- rbind(merged_results,merged_results2)
-
+merged_results <- rbind(merged_results,merged_results2, fill=TRUE)
 # sort according to p-value
 attach(merged_results)
 merged_results <- merged_results[order(p.value),]
