@@ -44,7 +44,7 @@ load(file="../../raw_data/test_data_outliers_removed.rda")
 models <- c("age_only", "UKBDRS_LASSO", "UKBDRS_LASSO_MAN", "UKBDRS_APOE_LASSO", "UKBDRS_APOE_LASSO_MAN", "CAIDE_APOE", "FRS", "DRS")
 
 test.data$dataset <- "test"
-test.data$dataset <- "train"
+train.data$dataset <- "train"
 
 df_test <- rbind(test.data, train.data) 
 
