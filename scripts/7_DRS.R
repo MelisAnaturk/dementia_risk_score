@@ -121,6 +121,9 @@ df$DRS_atrial_fib_score <- ifelse(df$Atrial_Fibrillation_BIN_FINAL_0_0==1,1,0)
 
 # 2.11 Diabetes
 df$DRS_diabetes_score <- ifelse(df$Diabetes_II_BIN_FINAL_0_0==1,1,0)
+#mar 7 rp tries:
+#df$DRS_diabetes_score <- ifelse(df$Diabetes_BIN_FINAL_0_0==1,1,0)
+#keeping definition based on Diabetes_II_BIN for now, to confirm.
 
 # 2.12 Calendar year
 df$DRS_calendar_year_score <- as.integer(format(df$baseline_date, "%Y"))
@@ -151,4 +154,5 @@ vars <- c("DRS_total", "DRS_predicted_prob", "DRS_sex_score", "DRS_hypertensive_
 apply(df[vars],2,pMiss)
 
 save(df, file = paste0(data_pathway, "ukbdata_diagnoses_baseline_diseasestatus_baselinemedications_ANUADRI_CAIDE_FRS_recoded_DRS.rda"))
+
 
