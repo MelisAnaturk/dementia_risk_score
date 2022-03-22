@@ -243,12 +243,12 @@ merged_results <- dplyr::filter(merged_results, grepl('Model', comparison_names)
 
 # Now to ANU-ADRI (due to some missing data on this risk score)
 # exclude ppl with missing ANU-ADRI
-test.data <- subset(test.data, complete.cases(ANU_ADRI))
-ANU_ADRI  <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$ANU_ADRI, plot=TRUE, smooth = FALSE, ci=TRUE)
-UKBDRS_APOE_LASSO  <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$UKBDRS_APOE_LASSO_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
-UKBDRS_APOE_LASSO_MAN  <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$UKBDRS_APOE_LASSO_MAN_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
-UKBDRS_LASSO  <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$UKBDRS_LASSO_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
-UKBDRS_LASSO_MAN  <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$UKBDRS_LASSO_MAN_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
+anu.test.data <- subset(test.data, complete.cases(ANU_ADRI))
+ANU_ADRI  <-pROC::roc(anu.test.data$dementia_BIN_TOTAL, anu.test.data$ANU_ADRI, plot=TRUE, smooth = FALSE, ci=TRUE)
+UKBDRS_APOE_LASSO_anu  <-pROC::roc(anu.test.data$dementia_BIN_TOTAL, anu.test.data$UKBDRS_APOE_LASSO_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
+UKBDRS_APOE_LASSO_MAN_anu  <-pROC::roc(anu.test.data$dementia_BIN_TOTAL, anu.test.data$UKBDRS_APOE_LASSO_MAN_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
+UKBDRS_LASSO_anu  <-pROC::roc(anu.test.data$dementia_BIN_TOTAL, anu.test.data$UKBDRS_LASSO_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
+UKBDRS_LASSO_MAN_anu  <-pROC::roc(anu.test.data$dementia_BIN_TOTAL, anu.test.data$UKBDRS_LASSO_MAN_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
 
 # plot ROC curves
 #rp: this is plotting curves of ukb drs in the anu adri subset, i think it should use the ukb drs data from full sample, so move up to just be low the ANU_ADRI line
