@@ -161,7 +161,7 @@ for (m in models){
     
     # HOSLEM TEST
     #print(paste0("HL test for ", m, " in ", d))
-    #hl <- hoslem.test(data$y, data[, paste(m, "predicted_prob", sep="_")], g=10)
+    #hl <- hoslem.test(data$y, data[, paste(m, "predicted_prob", sep="_")], g=10) 
     #print(hl)
     #print('========================================================')
     #print('========================================================')
@@ -186,13 +186,13 @@ UKBDRS_APOE_LASSO_MAN  <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$UKBDR
 UKBDRS_LASSO  <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$UKBDRS_LASSO_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
 UKBDRS_LASSO_MAN  <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$UKBDRS_LASSO_MAN_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
 
-FRS    <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$FRS_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
-CAIDE  <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$CAIDE_APOE_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
+#FRS    <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$FRS_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
+CAIDE  <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$CAIDE_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
 DRS    <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$DRS_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
 
 #run all comparisons
 all_tests <- combn(list(age_only, UKBDRS_LASSO, UKBDRS_LASSO_MAN, UKBDRS_APOE_LASSO, UKBDRS_APOE_LASSO_MAN,
-                        FRS, CAIDE, DRS),
+                        CAIDE, DRS),
                    FUN = function(x, ...) roc.test(x[[1]], x[[2]]),
                    m = 2,
                    simplify = FALSE, 
@@ -203,7 +203,7 @@ all_tests <- combn(list(age_only, UKBDRS_LASSO, UKBDRS_LASSO_MAN, UKBDRS_APOE_LA
 
 # create list of names
 tests_names <-combn(list("age_only", "UKBDRS_LASSO", "UKBDRS_LASSO_MAN", "UKBDRS_APOE_LASSO", "UKBDRS_APOE_LASSO_MAN",
-                         "FRS", "CAIDE", "DRS"), 
+                         "CAIDE", "DRS"), 
                     m = 2, 
                     FUN = paste, 
                     simplify = TRUE, 
