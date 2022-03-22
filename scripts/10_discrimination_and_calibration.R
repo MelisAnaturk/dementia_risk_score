@@ -251,8 +251,6 @@ UKBDRS_LASSO_anu  <-pROC::roc(anu.test.data$dementia_BIN_TOTAL, anu.test.data$UK
 UKBDRS_LASSO_MAN_anu  <-pROC::roc(anu.test.data$dementia_BIN_TOTAL, anu.test.data$UKBDRS_LASSO_MAN_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
 
 # plot ROC curves
-#rp: this is plotting curves of ukb drs in the anu adri subset, i think it should use the ukb drs data from full sample, so move up to just be low the ANU_ADRI line
-#before ukb drs roc redefined for anu adri subset
 library(extrafont)
 g2 <- ggroc(list(Age_only=age_only, UKBDRS_Model1=UKBDRS_APOE_LASSO, UKBDRS_Model2=UKBDRS_LASSO, UKBDRS_Model3=UKBDRS_APOE_LASSO_MAN, UKBDRS_Model4=UKBDRS_LASSO_MAN, CAIDE_APOE = CAIDE, DRS = DRS, FRS = FRS, ANU_ADRI = ANU_ADRI))
 plot <- g2 + theme_minimal()  +  theme(legend.title = element_blank(), panel.grid.major = element_blank(), 
