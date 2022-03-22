@@ -202,7 +202,17 @@ all_tests <- combn(list(age_only, UKBDRS_LASSO, UKBDRS_LASSO_MAN, UKBDRS_APOE_LA
 )
 
 # create list of names
-tests_names <-combn(list("age_only", "UKBDRS_LASSO", "UKBDRS_LASSO_MAN", "UKBDRS_APOE_LASSO", "UKBDRS_APOE_LASSO_MAN",
+#tests_names <-combn(list("age_only", "UKBDRS_LASSO", "UKBDRS_LASSO_MAN", "UKBDRS_APOE_LASSO", "UKBDRS_APOE_LASSO_MAN",
+#                         "CAIDE", "DRS"), 
+#                    m = 2, 
+#                    FUN = paste, 
+#                    simplify = TRUE, 
+#                    collapse = "_"
+#)
+
+
+#create list of model names to be compared, using naming convention in paper
+comparison_names <-combn(list("ageonly", "Model2", "Model4", "Model1", "Model3",
                          "CAIDE", "DRS"), 
                     m = 2, 
                     FUN = paste, 
@@ -210,22 +220,26 @@ tests_names <-combn(list("age_only", "UKBDRS_LASSO", "UKBDRS_LASSO_MAN", "UKBDRS
                     collapse = "_"
 )
 
+comparison_names<-data.frame(comparison_names)
+#separate the combined comparison names into two new columns, for easy sorting
+comparison_names_reorg <- comparison_names %>% separate(comparison_names, c("Score1","Score2"), sep="_", remove = FALSE)
+
 # clean up results
-all_tests <- setNames(all_tests, tests_names)
+all_tests <- setNames(all_tests, comparison_names)
 tidy_results <- lapply(all_tests, broom::tidy)
 
 # convert lists to df
-comparison_list <- as.data.frame(tests_names)
+comparison_list <- as.data.frame(comparison_names)
 lstData <- Map(as.data.frame, tidy_results)
 AUC_comparisons <- rbindlist(lstData) #fill=TRUE)
 
 # add a column to serve as a key variable
 AUC_comparisons$Number <- 1:nrow(AUC_comparisons) 
-comparison_list$Number <- 1:nrow(comparison_list) 
+comparison_names_reorg$Number <- 1:nrow(comparison_names_reorg) 
 
 # merge based on key variable
-merged_results <- merge(AUC_comparisons, comparison_list, by.c="Number", all.x=TRUE)
-merged_results <- dplyr::filter(merged_results, grepl('UKBDRS_', tests_names))
+merged_results <- merge(AUC_comparisons, comparison_names_reorg, by.c="Number", all.x=TRUE)
+merged_results <- dplyr::filter(merged_results, grepl('Model', comparison_names))
 
 # Now to ANU-ADRI (due to some missing data on this risk score)
 # exclude ppl with missing ANU-ADRI
