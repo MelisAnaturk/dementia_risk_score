@@ -316,20 +316,37 @@ for (m in models){
 #save train and test data
 save(train.data, file = paste0(data_pathway, "train_data_outliers_removed.rda"))
 save(test.data, file = paste0(data_pathway, "test_data_outliers_removed.rda"))
-# Above loop rewritten as function
-# model_discrimination <- function(m){
-#   print(paste0('applying logistic regression model for ', m))
-#   model <- glm(as.formula(m), data=train.data, family="binomial")
-#   
-#   print(paste0('UKB training set : calculating linear predictor and predicted probabilities for ', m))
-#   train.data[paste(m, "linear_predictor", sep="_")] <- predict(model, train.data)
-#   train.data[paste(m, "predicted_prob", sep="_")] <-   1/(1+exp(-train.data[paste(m, "linear_predictor", sep="_")])) # can also be computed with predict(model, type='response')
-#   
-#   print(paste0('UKB test set : calculating linear predictor and predicted probabilities for ', m))
-#   test.data[paste(m, "linear_predictor", sep="_")] <- predict(model, test.data)
-#   test.data[paste(m, "predicted_prob", sep="_")] <-   1/(1+exp(-test.data[paste(m, "linear_predictor", sep="_")])) # can also be computed with predict(model, newdata= test.data, type='response') 
-# return(list(train.data, test.data))
-#        }
 
-# apply function to calculate linear predictor and predicted probabilities (still working on this..)
-#final_df <- lapply(models, model_discrimination)
+#load train and test data, if necessary
+load(file = paste0(data_pathway,"train_data_outliers_removed.rda"))
+load(file = paste0(data_pathway,"test_data_outliers_removed.rda"))
+
+table2_models <- c("UKBDRS_APOE_LASSO","UKBDRS_LASSO", "UKBDRS_APOE_LASSO_MAN", "UKBDRS_LASSO_MAN")
+
+df_table2<-data.frame(matrix(ncol=6))
+names(df_table2)<-c("Predictor","beta","lower","upper","OR","p")
+
+for (m in table2_models){
+  print(paste0('applying logistic regression model for ', m))
+  model <- glm(as.formula(m), data=train.data, family="binomial")
+  print(sprintf("storing results from %s",m))
+  df_table2<-rbind(df_table2, format_modelcoefs(model))
+}
+
+df_table2$FDR_BH = p.adjust(df_table2$p, method = "BH")
+
+format_modelcoefs <-function(lr_out){
+  betas<-coef(lr_out)
+  odds<-exp(coef(lr_out))
+  ci<-confint(lr_out)
+  odds_ci<-exp(confint(lr_out))
+  df_model<-data.frame(cbind(names(betas),
+                             as.vector(round(betas,3)),
+                             as.vector(round(ci,3)[,1]),
+                             as.vector(round(ci,3)[,2]),
+                             paste(as.vector(round(odds,2)), " [",as.vector(round(odds_ci,2)[,1]), ", ",as.vector(round(odds_ci,2)[,2]), "]",sep=""),
+                             as.vector(summary(model)$coefficients[,4])))
+  
+  names(df_model)<-c("Predictor","beta","lower","upper","OR","p")
+  return(df_model)
+}
