@@ -121,12 +121,12 @@ rescale_Brier = function(B, y){  # takes in brier score and vector of outcomes (
 }
 
 # create empty df tos save results
-df_calibration <- data.frame(matrix(nrow = 0,ncol=7))
+df_calibration_table2 <- data.frame(matrix(nrow = 0,ncol=7))
 
 # change model headings
-names(df_calibration) <- c("Model", "Intercept", "Slope", "Chi-squared", "Brier_Score", "Spiegelhalter_z_test", "p.value")
+names(df_calibration_table2) <- c("Model", "Intercept", "Slope", "Chi-squared", "Brier_Score", "Spiegelhalter_z_test", "p.value")
 
-# for loop to populate df_calibration
+# for loop to populate df_calibration_table2
 for (m in models){
   for (d in datasets){
     data <- subset(df_test, dataset==d)
@@ -154,7 +154,7 @@ for (m in models){
     
     names(df_calib_stats) <- c("Model", "Intercept", "Slope", "Brier_Score", "Spiegelhalter_z_test", "p.value")
     
-    df_calibration <- rbind(df_calibration,df_calib_stats)
+    df_calibration_table2 <- rbind(df_calibration_table2,df_calib_stats)
     
     print(paste0("Intercept: ",round(vec[12],2)))
     print(paste0("Slope: ",round(vec[13],2)))
