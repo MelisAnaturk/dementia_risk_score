@@ -333,7 +333,12 @@ merged_results
 # filter data to include only significant
 AUC_comparisons_corrected <- dplyr::filter(merged_results, FDR_BH <= 0.05)
 
-
+#si table 6 only needs some of this, select necessary columns for easy transfer
+df_sitable6<-data.frame(cbind(AUC_comparisons_corrected$Score1, AUC_comparisons_corrected$Score2,
+                   round(AUC_comparisons_corrected$estimate1,2), round(AUC_comparisons_corrected$estimate2,2),
+                   round(AUC_comparisons_corrected$statistic,2), AUC_comparisons_corrected$p.value,
+                   AUC_comparisons_corrected$FDR_BH))
+names(df_sitable6)<-c("Risk Score 1","Risk Score 2","AUC 1","AUC 2","Z","p","pcorr")
 
 #----- 3. RISK SCORE CUT-OFF
 # getting threshold at specific sensitivities/specificities" https://stackoverflow.com/questions/33125558/get-optimal-threshold-with-at-least-75-sensitivity-with-proc-in-r
