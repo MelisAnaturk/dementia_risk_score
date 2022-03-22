@@ -283,32 +283,44 @@ all_tests <- combn(list(UKBDRS_LASSO, UKBDRS_LASSO_MAN, UKBDRS_APOE_LASSO, UKBDR
 
 
 # create list of names
-tests_names <-combn(list("UKBDRS_LASSO", "UKBDRS_LASSO_MAN", "UKBDRS_APOE_LASSO", "UKBDRS_APOE_LASSO_MAN",
-                         "ANU_ADRI"), 
-                    m = 2, 
-                    FUN = paste, 
-                    simplify = TRUE, 
-                    collapse = "_"
+#tests_names <-combn(list("UKBDRS_LASSO", "UKBDRS_LASSO_MAN", "UKBDRS_APOE_LASSO", "UKBDRS_APOE_LASSO_MAN",
+#                         "ANU_ADRI"), 
+#                    m = 2, 
+#                    FUN = paste, 
+#                    simplify = TRUE, 
+#                    collapse = "_"
+#)
+
+#create list of model names to be compared, using naming convention in paper
+comparison_names <-combn(list("Model2", "Model4", "Model1", "Model3",
+                              "ANUADRI"), 
+                         m = 2, 
+                         FUN = paste, 
+                         simplify = TRUE, 
+                         collapse = "_"
 )
+comparison_names<-data.frame(comparison_names)
+#separate the combined comparison names into two new columns, for easy sorting
+comparison_names_reorg <- comparison_names %>% separate(comparison_names, c("Score1","Score2"), sep="_", remove = FALSE)
 
 # clean up results
-all_tests <- setNames(all_tests, tests_names)
+all_tests <- setNames(all_tests, comparison_names$comparison_names)
 tidy_results <- lapply(all_tests, broom::tidy)
 
 # convert lists to df
-comparison_list <- as.data.frame(tests_names)
+comparison_list <- as.data.frame(comparison_names)
 lstData <- Map(as.data.frame, tidy_results)
-AUC_comparisons <- rbindlist(lstData) #fill=TRUE)
 AUC_comparisons <- rbindlist(lstData, fill=TRUE) #fill=TRUE)
 
 # add a column to serve as a key variable
 AUC_comparisons$Number <- 1:nrow(AUC_comparisons) 
-comparison_list$Number <- 1:nrow(comparison_list) 
+comparison_names_reorg$Number <- 1:nrow(comparison_names_reorg) 
 
 # merge based on key variable
-merged_results2 <- merge(AUC_comparisons, comparison_list, by.c="Number", all.x=TRUE)
-merged_results <- rbind(merged_results,merged_results2)
+merged_results2 <- merge(AUC_comparisons, comparison_names_reorg, by.c="Number", all.x=TRUE)
 merged_results <- rbind(merged_results,merged_results2, fill=TRUE)
+
+
 # sort according to p-value
 attach(merged_results)
 merged_results <- merged_results[order(p.value),]
@@ -320,6 +332,7 @@ merged_results
 
 # filter data to include only significant
 AUC_comparisons_corrected <- dplyr::filter(merged_results, FDR_BH <= 0.05)
+
 
 
 #----- 3. RISK SCORE CUT-OFF
