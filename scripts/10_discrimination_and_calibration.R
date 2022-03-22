@@ -41,7 +41,7 @@ load(file="../../raw_data/train_data_outliers_removed.rda")
 load(file="../../raw_data/test_data_outliers_removed.rda")
 
 #NB. Anu-adri has to be excluded from calibration calculations
-models <- c("age_only", "UKBDRS_LASSO", "UKBDRS_LASSO_MAN", "UKBDRS_APOE_LASSO", "UKBDRS_APOE_LASSO_MAN", "CAIDE_APOE", "FRS", "DRS")
+models <- c("age_only", "UKBDRS_LASSO", "UKBDRS_LASSO_MAN", "UKBDRS_APOE_LASSO", "UKBDRS_APOE_LASSO_MAN", "CAIDE", "DRS")
 
 test.data$dataset <- "test"
 train.data$dataset <- "train"
