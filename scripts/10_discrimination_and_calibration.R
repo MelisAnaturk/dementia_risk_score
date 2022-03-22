@@ -52,26 +52,43 @@ datasets <- c("test")
 
 savepath = "../results/"
 
+#dataframe for storing/organizing auc results for each model
+df_sitable5<-data.frame(matrix(ncol=3))
+names(df_sitable5)<-c("Model","train","test")
+
+#cycle through train/test for each model, store auc
 for (m in models){
-  for (d in datasets){
+  df_auc<-data.frame(matrix(ncol=3))
+  names(df_auc)<-c("Model","train","test")
+  df_auc$Model<-m
+  for (d in c("train","test")){
     data <- subset(df_test, dataset==d)
     print(paste0('computing AUC for ', m, ' in ', d))
     # AUC part
     roc <- pROC::roc(data[, c("dementia_BIN_TOTAL")], data[, paste(m, "predicted_prob", sep="_")], plot=TRUE, smooth = FALSE, ci=TRUE)
     print(roc$auc)
     print(roc$ci)
+    df_auc[d]<-paste(round(roc$auc[1],2), " [", round(roc$ci[1],2), ",", round(roc$ci[2],2),"]",sep="")
     print('========================================================')
     print('========================================================')
-  }}
+  }
+  df_sitable5<-rbind(df_sitable5, df_auc)
+}
 
 # for anu_adri only
-for (d in datasets){
+df_auc<-data.frame(matrix(ncol=3))
+names(df_auc)<-c("Model","train","test")
+df_auc$Model<-"ANU_ADRI"
+for (d in c("train","test")){
   data <- subset(df_test, dataset==d)
   print(paste0('AUC for anu-adri in ', d))  
   roc <- pROC::roc(data[, c("dementia_BIN_TOTAL")], data[, c("ANU_ADRI")], plot=TRUE, smooth = FALSE, ci=TRUE)
   print(roc$auc)
   print(roc$ci)
+  df_auc[d]<-paste(round(roc$auc[1],2), " [", round(roc$ci[1],2), ",", round(roc$ci[2],2),"]",sep="")
 }
+df_sitable5<-rbind(df_sitable5, df_auc)
+
 
 # pairwise comparisons of AUC
 
