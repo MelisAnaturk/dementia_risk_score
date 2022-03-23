@@ -341,7 +341,7 @@ format_modelcoefs <-function(lr_out){
   ci<-confint(lr_out)
   odds_ci<-exp(confint(lr_out))
   df_model<-data.frame(cbind(names(betas),
-                             as.vector(round(betas,3)),
+                             as.vector(round(betas,5)),
                              as.vector(round(ci,3)[,1]),
                              as.vector(round(ci,3)[,2]),
                              paste(as.vector(round(odds,2)), " [",as.vector(round(odds_ci,2)[,1]), ", ",as.vector(round(odds_ci,2)[,2]), "]",sep=""),
