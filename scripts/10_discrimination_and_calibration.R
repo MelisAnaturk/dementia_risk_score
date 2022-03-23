@@ -68,7 +68,7 @@ for (m in models){
     roc <- pROC::roc(data[, c("dementia_BIN_TOTAL")], data[, paste(m, "predicted_prob", sep="_")], plot=TRUE, smooth = FALSE, ci=TRUE)
     print(roc$auc)
     print(roc$ci)
-    df_auc[d]<-paste(round(roc$auc[1],5), " [", round(roc$ci[1],5), ",", round(roc$ci[2],5),"]",sep="")
+    df_auc[d]<-paste(round(roc$auc[1],5), " [", round(roc$ci[1],5), ",", round(roc$ci[3],5),"]",sep="")
     print('========================================================')
     print('========================================================')
   }
@@ -85,7 +85,7 @@ for (d in c("train","test")){
   roc <- pROC::roc(data[, c("dementia_BIN_TOTAL")], data[, c("ANU_ADRI")], plot=TRUE, smooth = FALSE, ci=TRUE)
   print(roc$auc)
   print(roc$ci)
-  df_auc[d]<-paste(round(roc$auc[1],5), " [", round(roc$ci[1],5), ",", round(roc$ci[2],5),"]",sep="")
+  df_auc[d]<-paste(round(roc$auc[1],5), " [", round(roc$ci[1],5), ",", round(roc$ci[3],5),"]",sep="")
 }
 df_sitable5<-rbind(df_sitable5, df_auc)
 
