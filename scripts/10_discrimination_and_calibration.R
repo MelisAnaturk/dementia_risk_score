@@ -321,7 +321,12 @@ comparison_names_reorg$Number <- 1:nrow(comparison_names_reorg)
 
 # merge based on key variable
 merged_results2 <- merge(AUC_comparisons, comparison_names_reorg, by.c="Number", all.x=TRUE)
-merged_results <- rbind(merged_results,merged_results2, fill=TRUE)
+
+#we are only interested inthe comparisons with anu adri, not the within ukbdrs comparisons in the anu only set
+#filter for comparisons containing anu adri
+anu_comparisons_toadd <- dplyr::filter(merged_results2, grepl('ANUADRI', comparison_names))
+
+merged_results <- rbind(merged_results,anu_comparisons_toadd, fill=TRUE)
 
 
 # sort according to p-value
