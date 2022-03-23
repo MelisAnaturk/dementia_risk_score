@@ -267,6 +267,11 @@ ggsave(paste0(savepath,"roc_plotted_all.pdf"),
        device = "pdf", 
        dpi = 320)
 
+ggsave(paste0(savepath,"roc_plotted_all.png"), 
+       plot = plot, 
+       device = "png", 
+       dpi = 320)
+
 
 #run all comparisons
 all_tests <- combn(list(UKBDRS_LASSO, UKBDRS_LASSO_MAN, UKBDRS_APOE_LASSO, UKBDRS_APOE_LASSO_MAN,
