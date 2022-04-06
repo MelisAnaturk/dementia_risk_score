@@ -173,7 +173,21 @@ for (m in models){
     #plot <- val.prob(data[, paste(m, "predicted_prob_intercept_slope_update", sep="_")], data$y, g=10, pl=TRUE, smooth=TRUE, logistic.cal=FALSE, lim=c(0,1))
     #print(plot)
     #dev.off()
+    
+    png(file=paste0(savepath,"calibration_plot_for_",m, "_",d,"set_intercept_slope.png"))
+    #pdf(file=paste0(savepath,"calibration_plot_for_",m, "_",d,"set_LATEST.pdf"))
+    plot <- val.prob(data[, paste(m, "predicted_prob", sep="_")], data$y, g=10, pl=TRUE, smooth=TRUE, logistic.cal=FALSE, lim=c(0,0.4), legendloc=FALSE)
+    #plot <- val.prob(data[, paste(m, "predicted_prob_intercept_slope_update", sep="_")], data$y, g=10, pl=TRUE, smooth=TRUE, logistic.cal=FALSE, lim=c(0,1))
+    print(plot)
+    dev.off()
   }}
+
+png(file=paste0(savepath,"calibration_plot_for_",m, "_",d,"set_intercept_slope_legend.png"))
+#pdf(file=paste0(savepath,"calibration_plot_for_",m, "_",d,"set_LATEST.pdf"))
+plot <- val.prob(data[, paste(m, "predicted_prob", sep="_")], data$y, g=10, pl=TRUE, smooth=TRUE, logistic.cal=FALSE, lim=c(0,0.4))
+#plot <- val.prob(data[, paste(m, "predicted_prob_intercept_slope_update", sep="_")], data$y, g=10, pl=TRUE, smooth=TRUE, logistic.cal=FALSE, lim=c(0,1))
+print(plot)
+dev.off()
 
 #---- Model comparison
 # adding variables to the baseline model
