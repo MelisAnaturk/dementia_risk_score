@@ -8,7 +8,7 @@ import pandas as pd
 #import seaborn as sns
 
 # ------- 1. Specify pathways and read in csv
-datapath = "/Users/melisanaturk/Documents/Oxford_DPhil/Biobank_Analyses/Dementia_risk_project/ukb_data/For_Rai/raw_data"
+datapath = "../../raw_data"
 
 #meds_df.head(5)
 #col_names = pd.DataFrame(list(meds_df))

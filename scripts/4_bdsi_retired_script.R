@@ -18,7 +18,7 @@
 #library(dplyr)
 
 # 1.2 data pathway
-data_pathway = "~/Documents/Oxford_DPhil/Biobank_Analyses/Dementia_risk_project/ukb_data/For_Rai/raw_data/"
+data_pathway = "../../raw_data/"
 
 # 1.3 read in csv files
 #df <- read.csv('ukb_demo-phys-cog-dementia-depression-tbi-stroke-edu_clean.csv', header=TRUE, sep=",", stringsAsFactors = FALSE)

@@ -17,7 +17,7 @@ library(data.table)
 library(sjPlot)
 library(pROC)
 library(CalibrationCurves)
-library(epicalc)
+#library(epicalc)
 
 library(tidyverse)
 library(rms)
@@ -37,8 +37,11 @@ library(viridis)
 #----- 1. ASSESS DISCRIMINATIVE ABILITY
 # report the AUC and 95% confidence intervals for each risk model (using predicted probabilities)
 
+load(file="../../raw_data/train_data_outliers_removed.rda")
+load(file="../../raw_data/test_data_outliers_removed.rda")
+
 #NB. Anu-adri has to be excluded from calibration calculations
-models <- c("age_only", "UKBDRS_LASSO", "UKBDRS_LASSO_MAN", "UKBDRS_APOE_LASSO", "UKBDRS_APOE_LASSO_MAN", "CAIDE_APOE", "FRS", "DRS")
+models <- c("age_only", "UKBDRS_LASSO", "UKBDRS_LASSO_MAN", "UKBDRS_APOE_LASSO", "UKBDRS_APOE_LASSO_MAN", "CAIDE", "DRS")
 
 test.data$dataset <- "test"
 train.data$dataset <- "train"
@@ -47,26 +50,45 @@ df_test <- rbind(test.data, train.data)
 
 datasets <- c("test")
 
+savepath = "../results/"
+
+#dataframe for storing/organizing auc results for each model
+df_sitable5<-data.frame(matrix(ncol=3))
+names(df_sitable5)<-c("Model","train","test")
+
+#cycle through train/test for each model, store auc
 for (m in models){
-  for (d in datasets){
+  df_auc<-data.frame(matrix(ncol=3))
+  names(df_auc)<-c("Model","train","test")
+  df_auc$Model<-m
+  for (d in c("train","test")){
     data <- subset(df_test, dataset==d)
     print(paste0('computing AUC for ', m, ' in ', d))
     # AUC part
     roc <- pROC::roc(data[, c("dementia_BIN_TOTAL")], data[, paste(m, "predicted_prob", sep="_")], plot=TRUE, smooth = FALSE, ci=TRUE)
     print(roc$auc)
     print(roc$ci)
+    df_auc[d]<-paste(round(roc$auc[1],5), " [", round(roc$ci[1],5), ",", round(roc$ci[3],5),"]",sep="")
     print('========================================================')
     print('========================================================')
-  }}
+  }
+  df_sitable5<-rbind(df_sitable5, df_auc)
+}
 
 # for anu_adri only
-for (d in datasets){
+df_auc<-data.frame(matrix(ncol=3))
+names(df_auc)<-c("Model","train","test")
+df_auc$Model<-"ANU_ADRI"
+for (d in c("train","test")){
   data <- subset(df_test, dataset==d)
   print(paste0('AUC for anu-adri in ', d))  
   roc <- pROC::roc(data[, c("dementia_BIN_TOTAL")], data[, c("ANU_ADRI")], plot=TRUE, smooth = FALSE, ci=TRUE)
   print(roc$auc)
   print(roc$ci)
+  df_auc[d]<-paste(round(roc$auc[1],5), " [", round(roc$ci[1],5), ",", round(roc$ci[3],5),"]",sep="")
 }
+df_sitable5<-rbind(df_sitable5, df_auc)
+
 
 # pairwise comparisons of AUC
 
@@ -99,12 +121,12 @@ rescale_Brier = function(B, y){  # takes in brier score and vector of outcomes (
 }
 
 # create empty df tos save results
-df_calibration <- data.frame(matrix(nrow = 0,ncol=7))
+df_calibration_table3 <- data.frame(matrix(nrow = 0,ncol=7))
 
 # change model headings
-names(df_calibration) <- c("Model", "Intercept", "Slope", "Chi-squared", "Brier_Score", "Spiegelhalter_z_test", "p.value")
+names(df_calibration_table3) <- c("Model", "Intercept", "Slope", "Chi-squared", "Brier_Score", "Spiegelhalter_z_test", "p.value")
 
-# for loop to populate df_calibration
+# for loop to populate df_calibration_table3
 for (m in models){
   for (d in datasets){
     data <- subset(df_test, dataset==d)
@@ -132,26 +154,40 @@ for (m in models){
     
     names(df_calib_stats) <- c("Model", "Intercept", "Slope", "Brier_Score", "Spiegelhalter_z_test", "p.value")
     
-    df_calibration <- rbind(df_calibration,df_calib_stats)
+    df_calibration_table3 <- rbind(df_calibration_table3,df_calib_stats)
     
     print(paste0("Intercept: ",round(vec[12],2)))
     print(paste0("Slope: ",round(vec[13],2)))
     
     # HOSLEM TEST
     #print(paste0("HL test for ", m, " in ", d))
-    #hl <- hoslem.test(data$y, data[, paste(m, "predicted_prob", sep="_")], g=10)
+    #hl <- hoslem.test(data$y, data[, paste(m, "predicted_prob", sep="_")], g=10) 
     #print(hl)
     #print('========================================================')
     #print('========================================================')
     
     
-    pdf(file=paste0(savepath,"calibration_plot_for_",m, "_",d,"set_intercept_slope.pdf"))
+    #pdf(file=paste0(savepath,"calibration_plot_for_",m, "_",d,"set_intercept_slope.pdf"))
     #pdf(file=paste0(savepath,"calibration_plot_for_",m, "_",d,"set_LATEST.pdf"))
-    plot <- val.prob(data[, paste(m, "predicted_prob", sep="_")], data$y, g=10, pl=TRUE, smooth=TRUE, logistic.cal=FALSE, lim=c(0,0.4))
+    #plot <- val.prob(data[, paste(m, "predicted_prob", sep="_")], data$y, g=10, pl=TRUE, smooth=TRUE, logistic.cal=FALSE, lim=c(0,0.4))
+    #plot <- val.prob(data[, paste(m, "predicted_prob_intercept_slope_update", sep="_")], data$y, g=10, pl=TRUE, smooth=TRUE, logistic.cal=FALSE, lim=c(0,1))
+    #print(plot)
+    #dev.off()
+    
+    png(file=paste0(savepath,"calibration_plot_for_",m, "_",d,"set_intercept_slope.png"))
+    #pdf(file=paste0(savepath,"calibration_plot_for_",m, "_",d,"set_LATEST.pdf"))
+    plot <- val.prob(data[, paste(m, "predicted_prob", sep="_")], data$y, g=10, pl=TRUE, smooth=TRUE, logistic.cal=FALSE, lim=c(0,0.4), legendloc=FALSE)
     #plot <- val.prob(data[, paste(m, "predicted_prob_intercept_slope_update", sep="_")], data$y, g=10, pl=TRUE, smooth=TRUE, logistic.cal=FALSE, lim=c(0,1))
     print(plot)
     dev.off()
   }}
+
+png(file=paste0(savepath,"calibration_plot_for_",m, "_",d,"set_intercept_slope_legend.png"))
+#pdf(file=paste0(savepath,"calibration_plot_for_",m, "_",d,"set_LATEST.pdf"))
+plot <- val.prob(data[, paste(m, "predicted_prob", sep="_")], data$y, g=10, pl=TRUE, smooth=TRUE, logistic.cal=FALSE, lim=c(0,0.4))
+#plot <- val.prob(data[, paste(m, "predicted_prob_intercept_slope_update", sep="_")], data$y, g=10, pl=TRUE, smooth=TRUE, logistic.cal=FALSE, lim=c(0,1))
+print(plot)
+dev.off()
 
 #---- Model comparison
 # adding variables to the baseline model
@@ -164,13 +200,13 @@ UKBDRS_APOE_LASSO_MAN  <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$UKBDR
 UKBDRS_LASSO  <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$UKBDRS_LASSO_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
 UKBDRS_LASSO_MAN  <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$UKBDRS_LASSO_MAN_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
 
-FRS    <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$FRS_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
-CAIDE  <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$CAIDE_APOE_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
+#FRS    <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$FRS_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
+CAIDE  <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$CAIDE_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
 DRS    <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$DRS_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
 
 #run all comparisons
 all_tests <- combn(list(age_only, UKBDRS_LASSO, UKBDRS_LASSO_MAN, UKBDRS_APOE_LASSO, UKBDRS_APOE_LASSO_MAN,
-                        FRS, CAIDE, DRS),
+                        CAIDE, DRS),
                    FUN = function(x, ...) roc.test(x[[1]], x[[2]]),
                    m = 2,
                    simplify = FALSE, 
@@ -180,52 +216,74 @@ all_tests <- combn(list(age_only, UKBDRS_LASSO, UKBDRS_LASSO_MAN, UKBDRS_APOE_LA
 )
 
 # create list of names
-tests_names <-combn(list("age_only", "UKBDRS_LASSO", "UKBDRS_LASSO_MAN", "UKBDRS_APOE_LASSO", "UKBDRS_APOE_LASSO_MAN",
-                         "FRS", "CAIDE", "DRS"), 
+#tests_names <-combn(list("age_only", "UKBDRS_LASSO", "UKBDRS_LASSO_MAN", "UKBDRS_APOE_LASSO", "UKBDRS_APOE_LASSO_MAN",
+#                         "CAIDE", "DRS"), 
+#                    m = 2, 
+#                    FUN = paste, 
+#                    simplify = TRUE, 
+#                    collapse = "_"
+#)
+
+
+#create list of model names to be compared, using naming convention in paper
+comparison_names <-combn(list("ageonly", "Model2", "Model4", "Model1", "Model3",
+                         "CAIDE", "DRS"), 
                     m = 2, 
                     FUN = paste, 
                     simplify = TRUE, 
                     collapse = "_"
 )
 
+comparison_names<-data.frame(comparison_names)
+#separate the combined comparison names into two new columns, for easy sorting
+comparison_names_reorg <- comparison_names %>% separate(comparison_names, c("Score1","Score2"), sep="_", remove = FALSE)
+
 # clean up results
-all_tests <- setNames(all_tests, tests_names)
+all_tests <- setNames(all_tests, comparison_names)
 tidy_results <- lapply(all_tests, broom::tidy)
 
 # convert lists to df
-comparison_list <- as.data.frame(tests_names)
+comparison_list <- as.data.frame(comparison_names)
 lstData <- Map(as.data.frame, tidy_results)
 AUC_comparisons <- rbindlist(lstData) #fill=TRUE)
 
 # add a column to serve as a key variable
 AUC_comparisons$Number <- 1:nrow(AUC_comparisons) 
-comparison_list$Number <- 1:nrow(comparison_list) 
+comparison_names_reorg$Number <- 1:nrow(comparison_names_reorg) 
 
 # merge based on key variable
-merged_results <- merge(AUC_comparisons, comparison_list, by.c="Number", all.x=TRUE)
-merged_results <- dplyr::filter(merged_results, grepl('UKBDRS_', tests_names))
+merged_results <- merge(AUC_comparisons, comparison_names_reorg, by.c="Number", all.x=TRUE)
+merged_results <- dplyr::filter(merged_results, grepl('Model', comparison_names))
 
 # Now to ANU-ADRI (due to some missing data on this risk score)
 # exclude ppl with missing ANU-ADRI
-test.data <- subset(test.data, complete.cases(ANU_ADRI))
-ANU_ADRI  <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$ANU_ADRI, plot=TRUE, smooth = FALSE, ci=TRUE)
-UKBDRS_APOE_LASSO  <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$UKBDRS_APOE_LASSO_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
-UKBDRS_APOE_LASSO_MAN  <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$UKBDRS_APOE_LASSO_MAN_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
-UKBDRS_LASSO  <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$UKBDRS_LASSO_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
-UKBDRS_LASSO_MAN  <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$UKBDRS_LASSO_MAN_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
+anu.test.data <- subset(test.data, complete.cases(ANU_ADRI))
+ANU_ADRI  <-pROC::roc(anu.test.data$dementia_BIN_TOTAL, anu.test.data$ANU_ADRI, plot=TRUE, smooth = FALSE, ci=TRUE)
+UKBDRS_APOE_LASSO_anu  <-pROC::roc(anu.test.data$dementia_BIN_TOTAL, anu.test.data$UKBDRS_APOE_LASSO_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
+UKBDRS_APOE_LASSO_MAN_anu  <-pROC::roc(anu.test.data$dementia_BIN_TOTAL, anu.test.data$UKBDRS_APOE_LASSO_MAN_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
+UKBDRS_LASSO_anu  <-pROC::roc(anu.test.data$dementia_BIN_TOTAL, anu.test.data$UKBDRS_LASSO_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
+UKBDRS_LASSO_MAN_anu  <-pROC::roc(anu.test.data$dementia_BIN_TOTAL, anu.test.data$UKBDRS_LASSO_MAN_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
 
 # plot ROC curves
 library(extrafont)
-g2 <- ggroc(list(Age_only=age_only, UKBDRS_Model1=UKBDRS_APOE_LASSO, UKBDRS_Model2=UKBDRS_LASSO, UKBDRS_Model3=UKBDRS_APOE_LASSO_MAN, UKBDRS_Model4=UKBDRS_LASSO_MAN, CAIDE_APOE = CAIDE, DRS = DRS, FRS = FRS, ANU_ADRI = ANU_ADRI))
+g2 <- ggroc(list(Age_only=age_only, UKBDRS_Model1=UKBDRS_APOE_LASSO, UKBDRS_Model2=UKBDRS_LASSO, UKBDRS_Model3=UKBDRS_APOE_LASSO_MAN, UKBDRS_Model4=UKBDRS_LASSO_MAN, CAIDE = CAIDE, DRS = DRS, ANU_ADRI = ANU_ADRI))
 plot <- g2 + theme_minimal()  +  theme(legend.title = element_blank(), panel.grid.major = element_blank(), 
                                                                       panel.grid.minor = element_blank(),
                                                                       panel.background = element_rect(colour = "black", size=1), text = element_text(size=14, family="LM Roman 10")) 
+plot <- g2 + theme_minimal()  +  theme(legend.title = element_blank(), panel.grid.major = element_blank(), 
+                                       panel.grid.minor = element_blank(),
+                                       panel.background = element_rect(colour = "black", size=1), text = element_text(size=14)) 
 
 ggsave(paste0(savepath,"roc_plotted_all.pdf"), width = 10, height = 10, units = "cm")
 
 ggsave(paste0(savepath,"roc_plotted_all.pdf"), 
        plot = plot, 
        device = "pdf", 
+       dpi = 320)
+
+ggsave(paste0(savepath,"roc_plotted_all.png"), 
+       plot = plot, 
+       device = "png", 
        dpi = 320)
 
 
@@ -242,30 +300,48 @@ all_tests <- combn(list(UKBDRS_LASSO, UKBDRS_LASSO_MAN, UKBDRS_APOE_LASSO, UKBDR
 
 
 # create list of names
-tests_names <-combn(list("UKBDRS_LASSO", "UKBDRS_LASSO_MAN", "UKBDRS_APOE_LASSO", "UKBDRS_APOE_LASSO_MAN",
-                         "ANU_ADRI"), 
-                    m = 2, 
-                    FUN = paste, 
-                    simplify = TRUE, 
-                    collapse = "_"
+#tests_names <-combn(list("UKBDRS_LASSO", "UKBDRS_LASSO_MAN", "UKBDRS_APOE_LASSO", "UKBDRS_APOE_LASSO_MAN",
+#                         "ANU_ADRI"), 
+#                    m = 2, 
+#                    FUN = paste, 
+#                    simplify = TRUE, 
+#                    collapse = "_"
+#)
+
+#create list of model names to be compared, using naming convention in paper
+comparison_names <-combn(list("Model2", "Model4", "Model1", "Model3",
+                              "ANUADRI"), 
+                         m = 2, 
+                         FUN = paste, 
+                         simplify = TRUE, 
+                         collapse = "_"
 )
+comparison_names<-data.frame(comparison_names)
+#separate the combined comparison names into two new columns, for easy sorting
+comparison_names_reorg <- comparison_names %>% separate(comparison_names, c("Score1","Score2"), sep="_", remove = FALSE)
 
 # clean up results
-all_tests <- setNames(all_tests, tests_names)
+all_tests <- setNames(all_tests, comparison_names$comparison_names)
 tidy_results <- lapply(all_tests, broom::tidy)
 
 # convert lists to df
-comparison_list <- as.data.frame(tests_names)
+comparison_list <- as.data.frame(comparison_names)
 lstData <- Map(as.data.frame, tidy_results)
-AUC_comparisons <- rbindlist(lstData) #fill=TRUE)
+AUC_comparisons <- rbindlist(lstData, fill=TRUE) #fill=TRUE)
 
 # add a column to serve as a key variable
 AUC_comparisons$Number <- 1:nrow(AUC_comparisons) 
-comparison_list$Number <- 1:nrow(comparison_list) 
+comparison_names_reorg$Number <- 1:nrow(comparison_names_reorg) 
 
 # merge based on key variable
-merged_results2 <- merge(AUC_comparisons, comparison_list, by.c="Number", all.x=TRUE)
-merged_results <- rbind(merged_results,merged_results2)
+merged_results2 <- merge(AUC_comparisons, comparison_names_reorg, by.c="Number", all.x=TRUE)
+
+#we are only interested inthe comparisons with anu adri, not the within ukbdrs comparisons in the anu only set
+#filter for comparisons containing anu adri
+anu_comparisons_toadd <- dplyr::filter(merged_results2, grepl('ANUADRI', comparison_names))
+
+merged_results <- rbind(merged_results,anu_comparisons_toadd, fill=TRUE)
+
 
 # sort according to p-value
 attach(merged_results)
@@ -279,6 +355,12 @@ merged_results
 # filter data to include only significant
 AUC_comparisons_corrected <- dplyr::filter(merged_results, FDR_BH <= 0.05)
 
+#si table 6 only needs some of this, select necessary columns for easy transfer
+df_sitable6<-data.frame(cbind(AUC_comparisons_corrected$Score1, AUC_comparisons_corrected$Score2,
+                   round(AUC_comparisons_corrected$estimate1,2), round(AUC_comparisons_corrected$estimate2,2),
+                   round(AUC_comparisons_corrected$statistic,2), AUC_comparisons_corrected$p.value,
+                   AUC_comparisons_corrected$FDR_BH))
+names(df_sitable6)<-c("Risk Score 1","Risk Score 2","AUC 1","AUC 2","Z","p","pcorr")
 
 #----- 3. RISK SCORE CUT-OFF
 # getting threshold at specific sensitivities/specificities" https://stackoverflow.com/questions/33125558/get-optimal-threshold-with-at-least-75-sensitivity-with-proc-in-r
@@ -329,3 +411,48 @@ for (m in models){for (d in c("train")){
   print('----------------------------------------------------------------')
 }}
 
+
+#repeat for model 4
+models <- c("UKBDRS_LASSO_MAN") #,"UKBDRS_APOE_LASSO_MAN")
+for (m in models){for (d in c("train")){
+  print(sprintf('-----------Reporting AUC for %s for %s model---------------', d, m))
+  data <- subset(df_test, dataset==d)
+  print(paste0('computing AUC for ', m, ' in ', d))
+  roc <- pROC::roc(data[, c("dementia_BIN_TOTAL")], data[, paste(m, "predicted_prob", sep="_")], plot=TRUE, smooth = FALSE, ci=TRUE)
+  print(roc$auc)
+  print(roc$ci)
+  print('potential cut-off based on 80% sensitivity')
+  perform<-data.frame(pROC::coords(roc, x = "all", ret=c("threshold", "specificity", "sensitivity","npv", "ppv"), transpose = FALSE))
+  perform <- round(perform[perform$sensitivity >= .8 & perform$sensitivity <= 0.801, ],3)
+  print(perform)
+  print('potential cut-off based on 85% sensitivity')
+  perform<-data.frame(pROC::coords(roc, x = "all", ret=c("threshold", "specificity", "sensitivity","npv", "ppv"), transpose = FALSE))
+  perform <- round(perform[perform$sensitivity >= .85 & perform$sensitivity <= 0.851, ],3)
+  print(perform)
+  print('potential cut-off based on 90% sensitivity')
+  perform<-data.frame(pROC::coords(roc, x = "all", ret=c("threshold", "specificity", "sensitivity","npv", "ppv"), transpose = FALSE))
+  perform <- round(perform[perform$sensitivity >= .9 & perform$sensitivity <= 0.901, ],3)
+  print(perform)
+  print('potential cut-off based on 95% sensitivity')
+  perform<-data.frame(pROC::coords(roc, x = "all", ret=c("threshold", "specificity", "sensitivity","npv", "ppv"), transpose = FALSE))
+  perform <- round(perform[perform$sensitivity >= .949 & perform$sensitivity <= 0.952, ],3)
+  print(perform)
+  print('----------------------------------------------------------------')
+  print('potential cut-off based on 80% specificity')
+  perform<-data.frame(pROC::coords(roc, x = "all", ret=c("threshold", "specificity", "sensitivity","npv", "ppv"), transpose = FALSE))
+  perform <- round(perform[perform$specificity >= .79 & perform$specificity <= 0.801, ],3)
+  print(perform)
+  print('potential cut-off based on 85% specificity')
+  perform<-data.frame(pROC::coords(roc, x = "all", ret=c("threshold", "specificity", "sensitivity","npv", "ppv"), transpose = FALSE))
+  perform <- round(perform[perform$specificity >= .84 & perform$specificity <= 0.851, ],3)
+  print(perform)
+  print('potential cut-off based on 90% specificity')
+  perform<-data.frame(pROC::coords(roc, x = "all", ret=c("threshold", "specificity", "sensitivity","npv", "ppv"), transpose = FALSE))
+  perform <- round(perform[perform$specificity >= .9 & perform$specificity <= 0.911, ],3)
+  print(perform)
+  print('potential cut-off based on 95% specificity')
+  perform<-data.frame(pROC::coords(roc, x = "all", ret=c("threshold", "specificity", "sensitivity","npv", "ppv"), transpose = FALSE))
+  perform <- round(perform[perform$specificity >= .949 & perform$specificity <= 0.952, ],3)
+  print(perform)
+  print('----------------------------------------------------------------')
+}}

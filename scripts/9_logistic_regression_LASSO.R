@@ -33,14 +33,15 @@ library(lm.beta)
 library(extrafont)
 library(pROC)
 library(caret)
+library(psych)
 
 # specify data, model and results pathway
-data_pathway = "~/Documents/Oxford_DPhil/Biobank_Analyses/Dementia_risk_project/ukb_data/For_Rai/raw_data/"
-model_pathway = "~/Documents/Oxford_DPhil/Biobank_Analyses/Dementia_risk_project/ukb_data/For_Rai/models/"
-save_pathway = "~/Documents/Oxford_DPhil/Biobank_Analyses/Dementia_risk_project/ukb_data/For_Rai/results/"
+data_pathway = "../../raw_data/"
+model_pathway = "../models/"
+save_pathway = "../results/"
 
 # load .rda file
-load(file = paste0(data_pathway,"ukb_data_orig_merged_ANU-ADRI_CAIDE_FRS_DRS_oct22_clean.rda"))
+load(file = paste0(data_pathway,"ukbdata_diagnoses_baseline_diseasestatus_baselinemedications_ANUADRI_CAIDE_FRS_recoded_DRS.rda"))
 
 # Recode variables
 df$current_history_depression <- ifelse(df$depression_BIN_FINAL_0_0==1|df$Antidepressant_meds_0_0==1, 1,0)
@@ -126,8 +127,19 @@ cont_vars <- c("Age_when_attended_assesment_centre_0_0", "education_years", "LDL
 # apply remove_outliers function to df
 df_filtered <- remove_outliers(df, cont_vars)
 
-# exclude people who only have one assessment date
+#n dementia?
+summary(df_filtered$dementia_BIN_TOTAL)
+#206828   1143 
 
+# exclude people who only have one assessment date
+#redefine myvars to not include total cholesterol
+myvars <- c("Age_when_attended_assesment_centre_0_0","education_years", "Townsend_deprivation_Groups_0_0", "BMI_0_0",
+            "Sex", "Sleeplesness_insomnia_0_0_bin", "family_history_of_dementia", 
+            "Diabetes_BIN_FINAL_0_0", "LDL_0_0","HDL_cholesterol_0_0",
+            "current_history_depression","TBI_BIN_FINAL_0_0", "stroke_TIA_BIN_FINAL", "Smoker_bin", "units_combined",
+            "Systolic_BP_auto_mean", "IPAQ_activity_group_0_0", "Hearing_prob", "Sleep_duration_0_0", "Antihypertensive_meds_0_0",
+            "total_fish_intake_per_week_0_0", "Social_engagement_0_2", "Atrial_Fibrillation_BIN_FINAL_0_0",
+            "Number_in_household_0_0","dementia_BIN_TOTAL", "APOE_genotype_bin", "NSAIDs_0_0", "HRT_0_0", "statins_0_0", "Aspirin_0_0")
 #----- 2. LASSO REGRESSION ------------------------------------------
 # LASSO logistic regression is first run to identify the subset of predictors to be used in our risk score
 # IF you would like to run a cox proportional hazard equivalent, check out:
@@ -177,7 +189,9 @@ new.x <- model.matrix(dementia_BIN_TOTAL~., test.data)[,-1]
 set.seed(2003)
 lasso.fit.cv <-  cv.glmnet(x, y, family = "binomial", alpha = 1, lambda = NULL, nfolds = 10)
 plot(lasso.fit.cv)
-#save(lasso.fit.cv, file = paste0(save_pathway, "lasso_fit_cv.rda"))
+
+#save fit
+save(lasso.fit.cv, file = paste0(save_pathway, "lasso_fit_cv.rda"))
 
 # Or otherwise load model into R
 load(file = paste0(save_pathway, "lasso_fit_cv.rda"))
@@ -191,47 +205,48 @@ coef(lasso.final.1, s = lasso.fit.cv$lambda.1se) #lambda.1se
 #Output 
 # 34 x 1 sparse Matrix of class "dgCMatrix"
 # 1
-# (Intercept)                            -5.6537125
-# Townsend_deprivation_Groups_0_01        .        
-# Townsend_deprivation_Groups_0_02        .        
-# Townsend_deprivation_Groups_0_03        .        
-# Townsend_deprivation_Groups_0_04        .        
-# Sex1                                    .        
-# Sleeplesness_insomnia_0_0_bin1          .        
-# Sleeplesness_insomnia_0_0_bin2          .        
-# family_history_of_dementia1             .        
-# Diabetes_BIN_FINAL_0_01                 0.1138954
-# current_history_depression1             0.2844328
-# TBI_BIN_FINAL_0_01                      .        
-# stroke_TIA_BIN_FINAL1                   0.6099854
-# Smoker_bin1                             .        
-# IPAQ_activity_group_0_01                .        
-# Hearing_prob1                           .        
-# Antihypertensive_meds_0_01              .        
-# Social_engagement_0_21                  .        
-# Atrial_Fibrillation_BIN_FINAL_0_01      .        
-# APOE_genotype_bin1                      0.5757621
-# NSAIDs_0_01                             .        
-# HRT_0_01                                .        
-# statins_0_01                            .        
-# Aspirin_0_01                            .        
-# Age_when_attended_assesment_centre_0_0  0.8049626
-# education_years                         .        
-# LDL_0_0                                 .        
-# HDL_cholesterol_0_0                     .        
-# Systolic_BP_auto_mean                   .        
-# Sleep_duration_0_0                      .        
-# BMI_0_0                                 .        
-# total_fish_intake_per_week_0_0          .        
-# Number_in_household_0_0                 .        
-# units_combined                          .  
-
+#(Intercept)                            -5.8783837
+#Townsend_deprivation_Groups_0_01        .        
+#Townsend_deprivation_Groups_0_02        .        
+#Townsend_deprivation_Groups_0_03        .        
+#Townsend_deprivation_Groups_0_04        .        
+#Sex1                                    .        
+#Sleeplesness_insomnia_0_0_bin1          .        
+#Sleeplesness_insomnia_0_0_bin2          .        
+#family_history_of_dementia1             .        
+#Diabetes_BIN_FINAL_0_01                 0.1908750
+#current_history_depression1             0.1479018
+#TBI_BIN_FINAL_0_01                      .        
+#stroke_TIA_BIN_FINAL1                   0.3340888
+#Smoker_bin1                             .        
+#IPAQ_activity_group_0_01                .        
+#Hearing_prob1                           .        
+#Antihypertensive_meds_0_01              .        
+#Social_engagement_0_21                  .        
+#Atrial_Fibrillation_BIN_FINAL_0_01      .        
+#APOE_genotype_bin1                      0.6781324
+#NSAIDs_0_01                             .        
+#HRT_0_01                                .        
+#statins_0_01                            .        
+#Aspirin_0_01                            .        
+#Age_when_attended_assesment_centre_0_0  0.9475986
+#education_years                         .        
+#LDL_0_0                                 .        
+#HDL_cholesterol_0_0                     .        
+#Systolic_BP_auto_mean                   .        
+#Sleep_duration_0_0                      .        
+#BMI_0_0                                 .        
+#total_fish_intake_per_week_0_0          .        
+#Number_in_household_0_0                 .        
+#units_combined                          .        
 
 # tidy output
 View(tidy(lasso.final.1))
 
 # save the list of selected predictors (to carry forward to logistic regression analyses)
-write.csv(tidy(lasso.final.1), paste0(model_pathway,"logistic_LASSO_results.csv"))
+#write.csv(tidy(lasso.final.1), paste0(model_pathway,"logistic_LASSO_results.csv"))
+#ma was writing out to the model folder, think it should be in results folder
+write.csv(tidy(lasso.final.1), paste0(save_pathway,"logistic_LASSO_results.csv"))
 
 # save the model
 save(lasso.final.1, file = paste0(model_pathway, "lasso_fit_final.rda"))
@@ -253,7 +268,11 @@ test.data$years_diff_baseline_all <- as.numeric(test.data$date_diff_baseline_all
 
 # describe
 describe(as.numeric(train.data$years_diff_all_time))
+#vars      n mean  sd median trimmed mad min   max range skew kurtosis   se
+#X1    1 166378 1.12 2.8      0    0.29   0   0 12.33 12.33 2.36     4.12 0.01
 describe(as.numeric(test.data$years_diff_all_time))
+#vars     n mean   sd median trimmed mad min   max range skew kurtosis   se
+#X1    1 41593 1.09 2.76      0    0.27   0   0 12.23 12.23 2.39     4.27 0.01
 
 # specify age only and various versions of UKB-DRS (see manuscript for details)
 age_only <-      paste("dementia_BIN_TOTAL~Age_when_attended_assesment_centre_0_0")
@@ -272,7 +291,7 @@ UKBDRS_APOE_LASSO_MAN <-   paste("dementia_BIN_TOTAL ~  Age_when_attended_assesm
                                  Diabetes_BIN_FINAL_0_0  +  current_history_depression + stroke_TIA_BIN_FINAL + family_history_of_dementia + APOE_genotype_bin")
 
 
-models <- c(age_only, UKBDRS_APOE_LASSO_models,UKBDRS_LASSO_models, UKBDRS_APOE_LASSO_MAN_models, UKBDRS_APOE_LASSO_MAN_models)
+#models <- c(age_only, UKBDRS_APOE_LASSO_models,UKBDRS_LASSO_models, UKBDRS_APOE_LASSO_MAN_models, UKBDRS_APOE_LASSO_MAN_models)
 
 
 # We've previously computed the linear predictor and predicted probabilties for CAIDE, FRS, ANU-ADRI and DRS
@@ -294,20 +313,40 @@ for (m in models){
   test.data[paste(m, "predicted_prob", sep="_")] <-   1/(1+exp(-test.data[paste(m, "linear_predictor", sep="_")])) # can also be computed with predict(model, newdata= test.data, type='response') 
 }
 
-# Above loop rewritten as function
-# model_discrimination <- function(m){
-#   print(paste0('applying logistic regression model for ', m))
-#   model <- glm(as.formula(m), data=train.data, family="binomial")
-#   
-#   print(paste0('UKB training set : calculating linear predictor and predicted probabilities for ', m))
-#   train.data[paste(m, "linear_predictor", sep="_")] <- predict(model, train.data)
-#   train.data[paste(m, "predicted_prob", sep="_")] <-   1/(1+exp(-train.data[paste(m, "linear_predictor", sep="_")])) # can also be computed with predict(model, type='response')
-#   
-#   print(paste0('UKB test set : calculating linear predictor and predicted probabilities for ', m))
-#   test.data[paste(m, "linear_predictor", sep="_")] <- predict(model, test.data)
-#   test.data[paste(m, "predicted_prob", sep="_")] <-   1/(1+exp(-test.data[paste(m, "linear_predictor", sep="_")])) # can also be computed with predict(model, newdata= test.data, type='response') 
-# return(list(train.data, test.data))
-#        }
+#save train and test data
+save(train.data, file = paste0(data_pathway, "train_data_outliers_removed.rda"))
+save(test.data, file = paste0(data_pathway, "test_data_outliers_removed.rda"))
 
-# apply function to calculate linear predictor and predicted probabilities (still working on this..)
-#final_df <- lapply(models, model_discrimination)
+#load train and test data, if necessary
+load(file = paste0(data_pathway,"train_data_outliers_removed.rda"))
+load(file = paste0(data_pathway,"test_data_outliers_removed.rda"))
+
+table2_models <- c("UKBDRS_APOE_LASSO","UKBDRS_LASSO", "UKBDRS_APOE_LASSO_MAN", "UKBDRS_LASSO_MAN")
+
+df_table2<-data.frame(matrix(ncol=6))
+names(df_table2)<-c("Predictor","beta","lower","upper","OR","p")
+
+for (m in table2_models){
+  print(paste0('applying logistic regression model for ', m))
+  model <- glm(as.formula(m), data=train.data, family="binomial")
+  print(sprintf("storing results from %s",m))
+  df_table2<-rbind(df_table2, format_modelcoefs(model))
+}
+
+df_table2$FDR_BH = p.adjust(df_table2$p, method = "BH")
+
+format_modelcoefs <-function(lr_out){
+  betas<-coef(lr_out)
+  odds<-exp(coef(lr_out))
+  ci<-confint(lr_out)
+  odds_ci<-exp(confint(lr_out))
+  df_model<-data.frame(cbind(names(betas),
+                             as.vector(round(betas,5)),
+                             as.vector(round(ci,3)[,1]),
+                             as.vector(round(ci,3)[,2]),
+                             paste(as.vector(round(odds,2)), " [",as.vector(round(odds_ci,2)[,1]), ", ",as.vector(round(odds_ci,2)[,2]), "]",sep=""),
+                             as.vector(summary(model)$coefficients[,4])))
+  
+  names(df_model)<-c("Predictor","beta","lower","upper","OR","p")
+  return(df_model)
+}

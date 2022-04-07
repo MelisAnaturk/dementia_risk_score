@@ -12,12 +12,12 @@ library(pROC)
 library(ggplot2)
 library(dplyr)
 library(psych)
-
+library(tidyverse)
 # 1.2 data pathway
-data_pathway = "~/Documents/Oxford_DPhil/Biobank_Analyses/Dementia_risk_project/ukb_data/For_Rai/raw_data/"
+data_pathway = "../../raw_data/"
 
 # 1.3 read in csv files
-load(file = paste0(data_pathway, "ukb_data_orig_merged_final_diseases_oct22.rda"))
+load(file = paste0(data_pathway, "ukbdata_diagnoses_baseline_diseasestatus_baselinemedications.rda"))
 
 # 1.4 create df of variable names
 col_names <- data.frame(names(df))
@@ -43,7 +43,11 @@ df$APOE_e4 <-            ifelse(df$APOE_genotype=="E1/E2"|df$APOE_genotype=="E2/
 
 
 summary(as.factor(df$APOE_genotype))
+#E1/E2  E2/E2  E3/E3  E3/E4  E4/E4   NA's 
+#     3   2330 242097  97318   9791 149722 
 summary(as.factor(df$APOE_e4))
+#0      1   NA's 
+#244430 107109 149722 
 
 # 2.2 Age - sex specific scores
 # N.B. Weights are from Antsey et al (2013).
@@ -101,7 +105,11 @@ df$beta_age_anu_adri_recoded <- ifelse(df$Sex==1 & df$Age_when_attended_assesmen
                                 ifelse(df$Sex==0 & df$Age_when_attended_assesment_centre_0_0>90, 5.28,NA))))))))))))))
 
 summary(df$point_age_anu_adri_recoded)
+#Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#0.0000  0.0000  0.0000  0.6251  0.0000 14.0000
 summary(df$beta_age_anu_adri_recoded)
+#Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#0.00000 0.00000 0.00000 0.08047 0.00000 1.87000 
 
 # quick check
 myvars <- c("Sex", "Age_when_attended_assesment_centre_0_0", "point_age_anu_adri_recoded", "beta_age_anu_adri_recoded")
@@ -240,6 +248,7 @@ df_alc$eid <-as.character(df_alc$eid)
 
 # merge with main df
 df <- list(df, df_alc) %>% reduce(left_join, by = "eid")
+#to check - do i need to merge all variables of df_alc?
 summary(df$units_combined)
 
 # define light drinking (women)
@@ -301,6 +310,8 @@ rm(SE_check)
 df$SE_TOTAL <- rowSums(df[,c("Social_engagement_0_1","Social_engagement_0_2", "Social_engagement_0_3", "Social_engagement_0_4")], 
                        na.rm=TRUE) 
 summary(as.factor(df$SE_TOTAL))
+#0      1      2      3      4 
+#6183  48012 158216 214978  73872 
 
 # current coding: 0 = lowest, 1 = low-med, 2 = med-high, >3 = highest
 df$point_SE_anu_adri_recoded <- ifelse(df$SE_TOTAL==0, 6, 
@@ -367,6 +378,8 @@ pesticide_vars <- df[ , 488:527]
 df$Worked_with_pesticides_total_0_0 <- apply(pesticide_vars[, -1], 1, function(x) {max(as.numeric(as.character(x)), na.rm = T)}) 
 
 summary(as.factor(df$Worked_with_pesticides_total_0_0))
+#0      1      2 
+#498000   2847    414 
 
 df$point_pesticide_anu_adri_recoded <- ifelse(df$Worked_with_pesticides_total_0_0==1, 2, 
                                        ifelse(df$Worked_with_pesticides_total_0_0==2, 2,
@@ -391,6 +404,8 @@ df$point_TOTAL_ANU_ADRI_SCORE <- (df$point_age_anu_adri_recoded + df$point_edu_a
 
 # excluded domain: df$point_cog_score_anu_adri_recoded 
 summary(df$point_TOTAL_ANU_ADRI_SCORE)
+#Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+#  -8.00   -3.81   -1.00   -0.76    2.00   24.58   33919 
 hist(df$point_TOTAL_ANU_ADRI_SCORE)
 
 #beta-weighted score
@@ -401,8 +416,13 @@ df$ANU_ADRI <- df$beta_age_anu_adri_recoded + df$beta_edu_anu_adri_recoded + df$
 
 # excluded domain: df$beta_cog_score_anu_adri_recoded 
 summary(df$ANU_ADRI)
+#Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+#  -0.95   -0.20    0.44    0.74    1.10    7.13   33919
 hist(df$ANU_ADRI)
 
 # check missingness
 pMiss <- function(x){sum(is.na(x))/length(x)*100}
 apply(df[,grep("ANU|anu_adri", names(df))],2,pMiss)
+
+#save current df
+save(df, file = paste0(data_pathway, "ukbdata_diagnoses_baseline_diseasestatus_baselinemedications_ANUADRI.rda"))
