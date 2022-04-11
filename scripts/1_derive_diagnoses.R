@@ -56,13 +56,10 @@ for (x in meds){
 
 primary_care_df = Reduce(function(...) merge(..., all=T, by="eid"), datalist)
 
-#------------- 3. Secondary care data ------
+  #------------- 3. Secondary care data ------
 # 3.1 identifying dementia codes based on HES data - hospital inpatient records
-df_diagnoses <- read.table(paste0(data_pathway,"icd9-icd10.tsv"), header=TRUE, sep="\t", stringsAsFactors = FALSE)
+df_diagnoses <- read.csv(paste0(data_pathway,"ukb50321_diagnoses.csv"), header=TRUE, sep=",", stringsAsFactors = FALSE)
 diagnoses_list <- read.csv(paste0(data_pathway,"ICD9_10_codes.csv") , header = TRUE, sep =',', stringsAsFactors = FALSE)
-
-### WHAT IS DATES OF DIAGNOSIS?
-#dates_of_diagnosis <- read.csv(paste0(data_pathway,"ICD9_10_codes.csv"), header = TRUE, sep =',', stringsAsFactors = FALSE)
 
 # 3.2 convert eid as character
 df_diagnoses$eid <- as.character(df_diagnoses$eid)
