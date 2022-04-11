@@ -278,6 +278,13 @@ df_diagnoses_combined <- df_diagnoses_combined[,c(1,310,315:340,512:520)]
 #save the current diagnosis df, so that we can load and pickup from this point in future instead of redefining diagnoses
 save(df_diagnoses_combined, file = paste0(data_pathway,"ukbdata_interim_diagnoses.rda"))
 
+## with updated hes...
+names(df_diagnoses_combined[,c(1,292,297:322,494:502)])
+#it should just be 512:520 and not redefine atrial fib self report later
+df_diagnoses_combined <- df_diagnoses_combined[,c(1,292,297:322,494:502)]
+#save the current diagnosis df, so that we can load and pickup from this point in future instead of redefining diagnoses
+save(df_diagnoses_combined, file = paste0(data_pathway,"ukbdata_interim_diagnoses.rda"))
+
 # 6.2 merge with purr
 #df <- list(df_merge,df_diagnoses_combined) %>% reduce(left_join, by = "eid")
 df <- list(df_ukb_raw,df_diagnoses_combined) %>% reduce(left_join, by = "eid")
