@@ -225,7 +225,12 @@ summary(df_self_report_diagnoses$self_report_atrial_fibrillation_0_0)
 
 #------------- 5. Death reports -------
 # identify dementia cases based on death reports
-df_self_report_diagnoses$death_report_dementia <- apply(df_self_report_diagnoses[, 4:33], 1, function(x) {
+#load updated death report data from data refresh
+df_deathreport_refreshed <- read.csv(paste0(data_pathway,"ukb50321_deathvars.csv"), header=TRUE, sep=",", stringsAsFactors = FALSE)
+df_deathreport_refreshed$eid <- as.character(df_deathreport_refreshed$eid)
+
+#look for dementia codes in death report columns of updated HES data, is all columns except 1 (eid)
+df_deathreport_refreshed$death_report_dementia <- apply(df_deathreport_refreshed[, 2:31], 1, function(x) {
   if(any(x %in% c("F00","F000","F001","F002","F009","G30","G300","G301","G308","G309","F01","F010","F011","F012","F013",
                   "F018","F019","I673","F020","G310","A810","F02","F021","F022","F023","F024","F028","F03","F051","F106","G311","G318"))) {
     return(1)
@@ -233,11 +238,17 @@ df_self_report_diagnoses$death_report_dementia <- apply(df_self_report_diagnoses
     return(0)
   }
 })
+df_deathreport_refreshed$death_report_dementia <- as.factor(df_deathreport_refreshed$death_report_dementia)
+summary(df_deathreport_refreshed$death_report_dementia)
+#0      1 
+#499746   2667 
 
-df_self_report_diagnoses$death_report_dementia <- as.factor(df_self_report_diagnoses$death_report_dementia)
+#merge death report field back with self report df
+df_self_report_diagnoses <- list(df_self_report_diagnoses, df_deathreport_refreshed[,c("eid","death_report_dementia")]) %>% reduce(left_join, by = "eid")
+df_self_report_diagnoses$death_report_dementia[is.na(df_self_report_diagnoses$death_report_dementia)] <- 0
 summary(df_self_report_diagnoses$death_report_dementia)
 #0      1 
-#501799    707
+#499839   2667 
 
 # merge primary care and self-report. merged_diagnoses_df contains primary and secondary care diagnosis
 df_diagnoses_combined <- list(merged_diagnoses_df, df_self_report_diagnoses) %>% reduce(left_join, by = "eid")
@@ -253,7 +264,7 @@ rm(df_diagnoses,df_self_report_diagnoses,primary_care_df)
 #rp is skipping this for now. i think i already have what this was with df_ukb_raw
 #load(file = paste0(data_pathway, "ukb_data_orig_merged.rda"))
 
-# TOTAL N = 502,521
+# TOTAL N = 502,413
 
 
 #following 3 lines adjusted by RP to get the columns needed with the column ordering I have
