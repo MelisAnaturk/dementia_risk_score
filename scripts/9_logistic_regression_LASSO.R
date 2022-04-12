@@ -330,11 +330,23 @@ df_table2$FDR_BH = p.adjust(df_table2$p, method = "BH")
 rm(table2_models, df_table2, UKBDRS_LASSO, UKBDRS_APOE_LASSO)
 
 
+#### 2.2 compute predicted probability/lin predictor of ukb drs models ####
 # We've previously computed the linear predictor and predicted probabilties for CAIDE, FRS, ANU-ADRI and DRS
 # Here we derive the linear predictor and predicted probabilites for age-only, UKB-DRS+APOE, UKB-DRS 
-# using a for loop
 
-models <- c("age_only", "UKBDRS_LASSO", "UKBDRS_LASSO_MAN", "UKBDRS_APOE_LASSO", "UKBDRS_APOE_LASSO_MAN")
+# specify age only and various versions of UKB-DRS (see manuscript for details)
+age_only <-      paste("dementia_BIN_TOTAL~Age_when_attended_assesment_centre_0_0")
+
+UKBDRS_LASSO  <-  paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +  Sex + education_years +
+                            Diabetes_BIN_FINAL_0_0  +  current_history_depression + stroke_TIA_BIN_FINAL + 
+                            family_history_of_dementia + Townsend_deprivation_modelvar + Antihypertensive_meds_0_0")
+
+UKBDRS_APOE_LASSO <-   paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +  Sex + education_years +
+                            Diabetes_BIN_FINAL_0_0  +  current_history_depression + stroke_TIA_BIN_FINAL + 
+                            family_history_of_dementia + Townsend_deprivation_modelvar + Antihypertensive_meds_0_0 +
+                            APOE_genotype_bin")
+
+models <- c("age_only", "UKBDRS_LASSO", "UKBDRS_APOE_LASSO")
 
 for (m in models){
   print(paste0('applying logistic regression model for ', m))
@@ -357,7 +369,7 @@ save(test.data, file = paste0(data_pathway, "test_data_outliers_removed.rda"))
 load(file = paste0(data_pathway,"train_data_outliers_removed.rda"))
 load(file = paste0(data_pathway,"test_data_outliers_removed.rda"))
 
-table2_models <- c("UKBDRS_APOE_LASSO","UKBDRS_LASSO", "UKBDRS_APOE_LASSO_MAN", "UKBDRS_LASSO_MAN")
+table2_models <- c("age_only", "UKBDRS_LASSO", "UKBDRS_APOE_LASSO")
 
 df_table2<-data.frame(matrix(ncol=6))
 names(df_table2)<-c("Predictor","beta","lower","upper","OR","p")
@@ -371,41 +383,20 @@ for (m in table2_models){
 
 df_table2$FDR_BH = p.adjust(df_table2$p, method = "BH")
 
-format_modelcoefs <-function(lr_out){
-  betas<-coef(lr_out)
-  odds<-exp(coef(lr_out))
-  ci<-confint(lr_out)
-  odds_ci<-exp(confint(lr_out))
-  df_model<-data.frame(cbind(names(betas),
-                             as.vector(round(betas,5)),
-                             as.vector(round(ci,3)[,1]),
-                             as.vector(round(ci,3)[,2]),
-                             paste(as.vector(round(odds,2)), " [",as.vector(round(odds_ci,2)[,1]), ", ",as.vector(round(odds_ci,2)[,2]), "]",sep=""),
-                             as.vector(summary(model)$coefficients[,4])))
-  
-  names(df_model)<-c("Predictor","beta","lower","upper","OR","p")
-  return(df_model)
-}
 
+#checking for correlations among med vars
+df$statins_num<-as.numeric(df$statins_0_0)
+df$antihypertensive_num<-as.numeric(df$Antihypertensive_meds_0_0)
+df$aspirin_num<-as.numeric(df$Aspirin_0_0)
+df$nsaid_num<-as.numeric(df$NSAIDs_0_0)
+df$hrt_num<-as.numeric(df$HRT_0_0)
 
+corr_res<-tetrachoric(df[,c("statins_num","antihypertensive_num","aspirin_num","nsaid_num","hrt_num")])
+#statins_num antihypertensive_num  aspirin_num    nsaid_num     hrt_num
+#statins_num           1.00000000           0.72534925  0.709486575 -0.095383210 -0.12891023
+#antihypertensive_num  0.72534925           1.00000000  0.622530919 -0.073335583 -0.02766018
+#aspirin_num           0.70948658           0.62253092  1.000000000 -0.009758151 -0.07794382
+#nsaid_num            -0.09538321          -0.07333558 -0.009758151  1.000000000  0.13481686
+#hrt_num              -0.12891023          -0.02766018 -0.077943819  0.134816862  1.00000000
 
-
-
-
-
-
-
-age_only <-      paste("dementia_BIN_TOTAL~Age_when_attended_assesment_centre_0_0")
-
-UKBDRS_LASSO  <-            paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +
-                                  Diabetes_BIN_FINAL_0_0  +  current_history_depression + stroke_TIA_BIN_FINAL")
-
-UKBDRS_LASSO_MAN  <-  paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +  Sex + education_years +
-                            Diabetes_BIN_FINAL_0_0  +  current_history_depression + stroke_TIA_BIN_FINAL + 
-                            family_history_of_dementia")
-
-UKBDRS_APOE_LASSO <-      paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +
-                                Diabetes_BIN_FINAL_0_0  +  current_history_depression + stroke_TIA_BIN_FINAL + APOE_genotype_bin")
-
-UKBDRS_APOE_LASSO_MAN <-   paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +  Sex + education_years +
-                                 Diabetes_BIN_FINAL_0_0  +  current_history_depression + stroke_TIA_BIN_FINAL + family_history_of_dementia + APOE_genotype_bin")
+#statins, aspirin, and antihypertensive use are correlated
