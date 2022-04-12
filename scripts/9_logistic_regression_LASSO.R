@@ -281,29 +281,53 @@ test.data$Townsend_deprivation_modelvar<-ifelse(test.data$Townsend_deprivation_G
 test.data$Townsend_deprivation_modelvar<-as.factor(test.data$Townsend_deprivation_modelvar)
 
 
-
 #### 2.1 Test beta coefficients ####
 #based on the lasso selected vars, compute model coefficients in train data
 #use 2 models - one with apoe, one without. include sex as a manually selected variable as well
 
 # specify age only and various versions of UKB-DRS (see manuscript for details)
-age_only <-      paste("dementia_BIN_TOTAL~Age_when_attended_assesment_centre_0_0")
-
-UKBDRS_LASSO  <-            paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +
-                                  Diabetes_BIN_FINAL_0_0  +  current_history_depression + stroke_TIA_BIN_FINAL")
-
-UKBDRS_LASSO_MAN  <-  paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +  Sex + education_years +
+UKBDRS_LASSO  <-  paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +  Sex + education_years +
                             Diabetes_BIN_FINAL_0_0  +  current_history_depression + stroke_TIA_BIN_FINAL + 
-                            family_history_of_dementia")
+                            family_history_of_dementia + Townsend_deprivation_modelvar + Antihypertensive_meds_0_0 +
+                            statins_0_0 + Aspirin_0_0")
 
-UKBDRS_APOE_LASSO <-      paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +
-                                Diabetes_BIN_FINAL_0_0  +  current_history_depression + stroke_TIA_BIN_FINAL + APOE_genotype_bin")
+UKBDRS_APOE_LASSO <-   paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +  Sex + education_years +
+                            Diabetes_BIN_FINAL_0_0  +  current_history_depression + stroke_TIA_BIN_FINAL + 
+                            family_history_of_dementia + Townsend_deprivation_modelvar + Antihypertensive_meds_0_0 +
+                            statins_0_0 + Aspirin_0_0 + APOE_genotype_bin")
 
-UKBDRS_APOE_LASSO_MAN <-   paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +  Sex + education_years +
-                                 Diabetes_BIN_FINAL_0_0  +  current_history_depression + stroke_TIA_BIN_FINAL + family_history_of_dementia + APOE_genotype_bin")
+#check model coefficeints when applied to training data
+format_modelcoefs <-function(lr_out){
+  betas<-coef(lr_out)
+  odds<-exp(coef(lr_out))
+  ci<-confint(lr_out)
+  odds_ci<-exp(confint(lr_out))
+  df_model<-data.frame(cbind(names(betas),
+                             as.vector(round(betas,5)),
+                             as.vector(round(ci,3)[,1]),
+                             as.vector(round(ci,3)[,2]),
+                             paste(as.vector(round(odds,2)), " [",as.vector(round(odds_ci,2)[,1]), ", ",as.vector(round(odds_ci,2)[,2]), "]",sep=""),
+                             as.vector(summary(model)$coefficients[,4])))
+  
+  names(df_model)<-c("Predictor","beta","lower","upper","OR","p")
+  return(df_model)
+}
 
+table2_models <- c("UKBDRS_LASSO","UKBDRS_APOE_LASSO")
 
-#models <- c(age_only, UKBDRS_APOE_LASSO_models,UKBDRS_LASSO_models, UKBDRS_APOE_LASSO_MAN_models, UKBDRS_APOE_LASSO_MAN_models)
+df_table2<-data.frame(matrix(ncol=6))
+names(df_table2)<-c("Predictor","beta","lower","upper","OR","p")
+
+for (m in table2_models){
+  print(paste0('applying logistic regression model for ', m))
+  model <- glm(as.formula(m), data=train.data, family="binomial")
+  print(sprintf("storing results from %s",m))
+  df_table2<-rbind(df_table2, format_modelcoefs(model))
+}
+
+df_table2$FDR_BH = p.adjust(df_table2$p, method = "BH")
+# both statins and aspirin have non sig betas, so remove them from model
+rm(table2_models, df_table2, UKBDRS_LASSO, UKBDRS_APOE_LASSO)
 
 
 # We've previously computed the linear predictor and predicted probabilties for CAIDE, FRS, ANU-ADRI and DRS
@@ -369,3 +393,19 @@ format_modelcoefs <-function(lr_out){
 
 
 
+
+
+age_only <-      paste("dementia_BIN_TOTAL~Age_when_attended_assesment_centre_0_0")
+
+UKBDRS_LASSO  <-            paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +
+                                  Diabetes_BIN_FINAL_0_0  +  current_history_depression + stroke_TIA_BIN_FINAL")
+
+UKBDRS_LASSO_MAN  <-  paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +  Sex + education_years +
+                            Diabetes_BIN_FINAL_0_0  +  current_history_depression + stroke_TIA_BIN_FINAL + 
+                            family_history_of_dementia")
+
+UKBDRS_APOE_LASSO <-      paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +
+                                Diabetes_BIN_FINAL_0_0  +  current_history_depression + stroke_TIA_BIN_FINAL + APOE_genotype_bin")
+
+UKBDRS_APOE_LASSO_MAN <-   paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +  Sex + education_years +
+                                 Diabetes_BIN_FINAL_0_0  +  current_history_depression + stroke_TIA_BIN_FINAL + family_history_of_dementia + APOE_genotype_bin")
