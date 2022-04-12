@@ -77,7 +77,7 @@ df[,numeric_vars] <- lapply(df[,numeric_vars], as.factor)
 # how many individuals with dementia remaining?
 summary(df$dementia_BIN_TOTAL)
 #   0      1 
-#211040   1325
+#209177   3010
 
 # look at correlations between predictors
 
@@ -129,7 +129,7 @@ df_filtered <- remove_outliers(df, cont_vars)
 
 #n dementia?
 summary(df_filtered$dementia_BIN_TOTAL)
-#206828   1143 
+#205014   2915 
 
 # exclude people who only have one assessment date
 #redefine myvars to not include total cholesterol
@@ -204,41 +204,40 @@ coef(lasso.final.1, s = lasso.fit.cv$lambda.1se) #lambda.1se
 
 #Output 
 # 34 x 1 sparse Matrix of class "dgCMatrix"
-# 1
-#(Intercept)                            -5.8783837
-#Townsend_deprivation_Groups_0_01        .        
-#Townsend_deprivation_Groups_0_02        .        
-#Townsend_deprivation_Groups_0_03        .        
-#Townsend_deprivation_Groups_0_04        .        
-#Sex1                                    .        
-#Sleeplesness_insomnia_0_0_bin1          .        
-#Sleeplesness_insomnia_0_0_bin2          .        
-#family_history_of_dementia1             .        
-#Diabetes_BIN_FINAL_0_01                 0.1908750
-#current_history_depression1             0.1479018
-#TBI_BIN_FINAL_0_01                      .        
-#stroke_TIA_BIN_FINAL1                   0.3340888
-#Smoker_bin1                             .        
-#IPAQ_activity_group_0_01                .        
-#Hearing_prob1                           .        
-#Antihypertensive_meds_0_01              .        
-#Social_engagement_0_21                  .        
-#Atrial_Fibrillation_BIN_FINAL_0_01      .        
-#APOE_genotype_bin1                      0.6781324
-#NSAIDs_0_01                             .        
-#HRT_0_01                                .        
-#statins_0_01                            .        
-#Aspirin_0_01                            .        
-#Age_when_attended_assesment_centre_0_0  0.9475986
-#education_years                         .        
-#LDL_0_0                                 .        
-#HDL_cholesterol_0_0                     .        
-#Systolic_BP_auto_mean                   .        
-#Sleep_duration_0_0                      .        
-#BMI_0_0                                 .        
-#total_fish_intake_per_week_0_0          .        
-#Number_in_household_0_0                 .        
-#units_combined                          .        
+#(Intercept)                            -5.32584647
+#Townsend_deprivation_Groups_0_01        .         
+#Townsend_deprivation_Groups_0_02        .         
+#Townsend_deprivation_Groups_0_03        .         
+#Townsend_deprivation_Groups_0_04        0.06114748
+#Sex1                                    .         
+#Sleeplesness_insomnia_0_0_bin1          .         
+#Sleeplesness_insomnia_0_0_bin2          .         
+#family_history_of_dementia1             0.05820290
+#Diabetes_BIN_FINAL_0_01                 0.45747886
+#current_history_depression1             0.20016853
+#TBI_BIN_FINAL_0_01                      .         
+#stroke_TIA_BIN_FINAL1                   0.39709995
+#Smoker_bin1                             .         
+#IPAQ_activity_group_0_01                .         
+#Hearing_prob1                           .         
+#Antihypertensive_meds_0_01              0.06789574
+#Social_engagement_0_21                  .         
+#Atrial_Fibrillation_BIN_FINAL_0_01      .         
+#APOE_genotype_bin1                      0.89106446
+#NSAIDs_0_01                             .         
+#HRT_0_01                                .         
+#statins_0_01                            0.02806330
+#Aspirin_0_01                            0.06208946
+#Age_when_attended_assesment_centre_0_0  1.19387977
+#education_years                        -0.02909107
+#LDL_0_0                                 .         
+#HDL_cholesterol_0_0                     .         
+#Systolic_BP_auto_mean                   .         
+#Sleep_duration_0_0                      .         
+#BMI_0_0                                 .         
+#total_fish_intake_per_week_0_0          .         
+#Number_in_household_0_0                 .         
+#units_combined                          .      
 
 # tidy output
 View(tidy(lasso.final.1))
@@ -269,10 +268,10 @@ test.data$years_diff_baseline_all <- as.numeric(test.data$date_diff_baseline_all
 # describe
 describe(as.numeric(train.data$years_diff_all_time))
 #vars      n mean  sd median trimmed mad min   max range skew kurtosis   se
-#X1    1 166378 1.12 2.8      0    0.29   0   0 12.33 12.33 2.36     4.12 0.01
+#X1    1 166344 1.11 2.79      0    0.29   0   0 12.33 12.33 2.36     4.14 0.01
 describe(as.numeric(test.data$years_diff_all_time))
 #vars     n mean   sd median trimmed mad min   max range skew kurtosis   se
-#X1    1 41593 1.09 2.76      0    0.27   0   0 12.23 12.23 2.39     4.27 0.01
+#X1   1 41585 1.11 2.79      0    0.29   0   0 12.23 12.23 2.37     4.17 0.01
 
 # specify age only and various versions of UKB-DRS (see manuscript for details)
 age_only <-      paste("dementia_BIN_TOTAL~Age_when_attended_assesment_centre_0_0")
