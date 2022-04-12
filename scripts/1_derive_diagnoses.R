@@ -675,8 +675,8 @@ meds_statins <- as.vector(as.character(na.omit(list_meds[,2])))
 print(meds_statins)
 
 #**MA has columns 893:940 as baseline treatment (Treatment_medication_code_0_*)
-#Rp instead has this as 753:800 because rp did not remerge cols 33:173 of df_self_report_diagnoses in 9.9
-df$statins_0_0 <- apply(df[, 753:800], 1, function(x) {  # 1230:1277
+#Rp instead has this as 755:802 because rp did not remerge cols 33:173 of df_self_report_diagnoses in 9.9
+df$statins_0_0 <- apply(df[, 755:802], 1, function(x) {  # 1230:1277
   if(any(x %in% meds_statins)) {
     return(1)
   } else {
@@ -687,13 +687,13 @@ df$statins_0_0 <- apply(df[, 753:800], 1, function(x) {  # 1230:1277
 df$statins_0_0 <- as.factor(df$statins_0_0)
 summary(df$statins_0_0)
 #0      1 
-#418733  82187
+#418651  82176 
 
 # 10.2 HRT (baseline only)
 meds_HRT <- as.vector(as.character(na.omit(list_meds[,4])))
 print(meds_HRT)
 
-df$HRT_meds_0_0 <- apply(df[, 753:800], 1, function(x) {
+df$HRT_meds_0_0 <- apply(df[, 755:802], 1, function(x) {
   if(any(x %in% meds_HRT)) {
     return(1)
   } else {
@@ -704,13 +704,13 @@ df$HRT_meds_0_0 <- apply(df[, 753:800], 1, function(x) {
 df$HRT_meds_0_0 <- as.factor(df$HRT_meds_0_0)
 summary(df$HRT_meds_0_0)
 #0      1 
-#482606  18314 
+#482516  18311 
 
 # 10.3 NSAIDs (Excluding Aspirin)
 meds_NSAIDs <- as.vector(as.character(na.omit(list_meds[,6])))
 print(meds_NSAIDs)
 
-df$NSAIDs_0_0 <- apply(df[,  753:800], 1, function(x) {
+df$NSAIDs_0_0 <- apply(df[,  755:802], 1, function(x) {
   if(any(x %in% meds_NSAIDs)) {
     return(1)
   } else {
@@ -721,13 +721,13 @@ df$NSAIDs_0_0 <- apply(df[,  753:800], 1, function(x) {
 df$NSAIDs_0_0  <- as.factor(df$NSAIDs_0_0)
 summary(df$NSAIDs_0_0)
 #0      1 
-#404164  96756 
+#404079  96748 
 
 # 10.4 ASPIRIN
 meds_Aspirin <- as.vector(as.character(na.omit(list_meds[,14])))
 print(meds_Aspirin)
 
-df$Aspirin_0_0 <- apply(df[, 753:800], 1, function(x) {
+df$Aspirin_0_0 <- apply(df[, 755:802], 1, function(x) {
   if(any(x %in% meds_Aspirin)) {
     return(1)
   } else {
@@ -738,13 +738,13 @@ df$Aspirin_0_0 <- apply(df[, 753:800], 1, function(x) {
 df$Aspirin_0_0  <- as.factor(df$Aspirin_0_0)
 summary(df$Aspirin_0_0)
 #0      1 
-#431456  69464
+#431377  69450 
 
 # 10.5 Antihypertensive medications
 meds_Antihypertensive <- as.vector(as.character(na.omit(list_meds[,10])))
 print(meds_Antihypertensive)
 
-df$Antihypertensive_meds_0_0 <- apply(df[, 753:800], 1, function(x) {
+df$Antihypertensive_meds_0_0 <- apply(df[, 755:802], 1, function(x) {
   if(any(x %in% meds_Antihypertensive)) {
     return(1)
   } else {
@@ -755,13 +755,13 @@ df$Antihypertensive_meds_0_0 <- apply(df[, 753:800], 1, function(x) {
 df$Antihypertensive_meds_0_0  <- as.factor(df$Antihypertensive_meds_0_0)
 summary(df$Antihypertensive_meds_0_0)
 #0      1 
-#387890 113030
+#387812 113015 
 
 # 10.6 Antidepressants
 meds_Antidepressants <- as.vector(as.character(na.omit(list_meds[,12])))
 print(meds_Antidepressants)
 
-df$Antidepressant_meds_0_0 <- apply(df[, 753:800], 1, function(x) {
+df$Antidepressant_meds_0_0 <- apply(df[, 755:802], 1, function(x) {
   if(any(x %in% meds_Antidepressants)) {
     return(1)
   } else {
@@ -772,12 +772,12 @@ df$Antidepressant_meds_0_0 <- apply(df[, 753:800], 1, function(x) {
 df$Antidepressant_meds_0_0  <- as.factor(df$Antidepressant_meds_0_0)
 summary(df$Antidepressant_meds_0_0)
 #0      1 
-#463523  37397 
+#463435  37392 
 
 rm(col_names_meds,df_meds,list_meds)
 
 length(unique(df$eid))
-
+#500827
 # Save file
 #save(df, file = paste0(data_pathway, "ukb_data_orig_merged_final_diseases_oct22.rda"))
 #load(file = paste0(data_pathway, "ukb_data_orig_merged_final_diseases_oct22.rda"))
