@@ -56,7 +56,7 @@ for (x in meds){
 
 primary_care_df = Reduce(function(...) merge(..., all=T, by="eid"), datalist)
 
-  #------------- 3. Secondary care data ------
+#------------- 3. Secondary care data ------
 # 3.1 identifying dementia codes based on HES data - hospital inpatient records
 df_diagnoses <- read.csv(paste0(data_pathway,"ukb50321_diagnoses.csv"), header=TRUE, sep=",", stringsAsFactors = FALSE)
 diagnoses_list <- read.csv(paste0(data_pathway,"ICD9_10_codes.csv") , header = TRUE, sep =',', stringsAsFactors = FALSE)
@@ -172,7 +172,7 @@ summary(df_self_report_diagnoses$self_report_dementia)
 #501426   1080
 
 # 4.7 Diabetes
-load(paste0(data_pathway,"df_ukb_raw.rda"))
+load(paste0(data_pathway,"df_ukb_raw_022022_refresh.rda"))
 #df_self_report_diagnoses <- list(df_self_report_diagnoses, df_merge[,c("eid","Diabetes_diagnosed_bydoctor_0_0")]) %>% reduce(left_join, by = "eid")
 #rp replaced above with below
 df_self_report_diagnoses <- list(df_self_report_diagnoses, df_ukb_raw[,c("eid","Diabetes_diagnosed_bydoctor_0_0")]) %>% reduce(left_join, by = "eid")
