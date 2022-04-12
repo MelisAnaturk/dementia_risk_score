@@ -536,9 +536,10 @@ summary(as.factor(df$date_diff_depression_diagnosis))
 df$primary_care_diagnosis_for_Depression[is.na(df$primary_care_diagnosis_for_Depression)] <- 0
 df$depression_BIN_FINAL_0_0 <- ifelse(df$date_diff_depression_diagnosis<=0&df$primary_care_diagnosis_for_Depression==1|df$self_report_depression_0_0==1,1,0) 
 df$depression_BIN_FINAL_0_0 <- as.factor(df$depression_BIN_FINAL_0_0)
+df$depression_BIN_FINAL_0_0[is.na(df$depression_BIN_FINAL_0_0)] <- 0
 summary(df$depression_BIN_FINAL_0_0)
-#0      1   NA's 
-#443686  57133      8 
+#0      1   
+#443694  57133
 
 # 9.4 TBI
 df$TBI_BIN_TOTAL <- ifelse(is.na(df[,c("primary_care_diagnosis_for_TBI")]),0,1)
