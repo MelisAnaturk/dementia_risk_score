@@ -305,13 +305,22 @@ df$dementia_BIN_TOTAL <- apply(df[, myvars], 1, function(x) {
 df$dementia_BIN_TOTAL <- as.factor(df$dementia_BIN_TOTAL)
 summary(df$dementia_BIN_TOTAL)
 #0      1 
-#497757   4764 
+# 493039   9374 
 #View(df[,c("dementia_BIN_TOTAL", "primary_care_diagnosis_for_dementia", "primary_care_prescription_for_Dementia", "secondary_care_diagnosis_of_Dementia", "self_report_dementia", "death_report_dementia")])
 
 #------ 7. Time to diagnosis and disease status for dementia -----
+#load refreshed date of all cause dementia date variable
+df_dementia_algorithm<-read.csv(paste0(data_pathway, 'ukb50321_dementia_algorithm.csv'), sep=",", header = TRUE, stringsAsFactors = FALSE)
+df_dementia_algorithm$eid <- as.character(df_dementia_algorithm$eid)
+names(df_dementia_algorithm)
+#42018 is date, 42019 is source, rename
+names(df_dementia_algorithm)<-c("eid","Date_of_all_cause_dementia_report_refreshHES","Source_of_all_cause_dementia_report_refreshHES")
+df <- list(df, df_dementia_algorithm) %>% reduce(left_join, by = "eid")
+
 # 7.1 Use base R for conversion to variables with "Date" format 
 df$baseline_date                        <-  as.Date(df$Date_of_assessment_0_0_new, format="%Y-%m-%d")
-df$date_all_cause_dementia_0_0          <-  as.Date(df$Date_of_all_cause_dementia_report_0_0, format="%Y-%m-%d")
+#df$date_all_cause_dementia_0_0          <-  as.Date(df$Date_of_all_cause_dementia_report_0_0, format="%Y-%m-%d")
+df$date_all_cause_dementia_0_0          <-  as.Date(df$Date_of_all_cause_dementia_report_refreshHES, format="%Y-%m-%d")
 df$primary_care_prescription_date_for_Dementia <-  as.Date(df$primary_care_prescription_date_for_Dementia, format="%d/%m/%Y")
 #07/03/2022 addition:
 df$primary_care_diagnosis_date_for_dementia <- as.Date(df$primary_care_diagnosis_date_for_dementia, format="%d/%m/%Y")
