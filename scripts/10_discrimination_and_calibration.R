@@ -41,7 +41,7 @@ load(file="../../raw_data/train_data_outliers_removed.rda")
 load(file="../../raw_data/test_data_outliers_removed.rda")
 
 #NB. Anu-adri has to be excluded from calibration calculations
-models <- c("age_only", "UKBDRS_LASSO", "UKBDRS_LASSO_MAN", "UKBDRS_APOE_LASSO", "UKBDRS_APOE_LASSO_MAN", "CAIDE", "DRS")
+models <- c("age_only", "UKBDRS_LASSO", "UKBDRS_APOE_LASSO", "CAIDE", "DRS")
 
 test.data$dataset <- "test"
 train.data$dataset <- "train"
@@ -196,17 +196,16 @@ dev.off()
 # ROC curve
 age_only    <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$age_only_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
 UKBDRS_APOE_LASSO  <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$UKBDRS_APOE_LASSO_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
-UKBDRS_APOE_LASSO_MAN  <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$UKBDRS_APOE_LASSO_MAN_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
+#UKBDRS_APOE_LASSO_MAN  <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$UKBDRS_APOE_LASSO_MAN_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
 UKBDRS_LASSO  <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$UKBDRS_LASSO_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
-UKBDRS_LASSO_MAN  <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$UKBDRS_LASSO_MAN_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
+#UKBDRS_LASSO_MAN  <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$UKBDRS_LASSO_MAN_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
 
 #FRS    <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$FRS_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
 CAIDE  <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$CAIDE_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
 DRS    <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$DRS_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
 
 #run all comparisons
-all_tests <- combn(list(age_only, UKBDRS_LASSO, UKBDRS_LASSO_MAN, UKBDRS_APOE_LASSO, UKBDRS_APOE_LASSO_MAN,
-                        CAIDE, DRS),
+all_tests <- combn(list(age_only, UKBDRS_APOE_LASSO, UKBDRS_LASSO, CAIDE, DRS),
                    FUN = function(x, ...) roc.test(x[[1]], x[[2]]),
                    m = 2,
                    simplify = FALSE, 
@@ -226,7 +225,7 @@ all_tests <- combn(list(age_only, UKBDRS_LASSO, UKBDRS_LASSO_MAN, UKBDRS_APOE_LA
 
 
 #create list of model names to be compared, using naming convention in paper
-comparison_names <-combn(list("ageonly", "Model2", "Model4", "Model1", "Model3",
+comparison_names <-combn(list("ageonly", "Model1", "Model2",
                          "CAIDE", "DRS"), 
                     m = 2, 
                     FUN = paste, 
@@ -260,13 +259,13 @@ merged_results <- dplyr::filter(merged_results, grepl('Model', comparison_names)
 anu.test.data <- subset(test.data, complete.cases(ANU_ADRI))
 ANU_ADRI  <-pROC::roc(anu.test.data$dementia_BIN_TOTAL, anu.test.data$ANU_ADRI, plot=TRUE, smooth = FALSE, ci=TRUE)
 UKBDRS_APOE_LASSO_anu  <-pROC::roc(anu.test.data$dementia_BIN_TOTAL, anu.test.data$UKBDRS_APOE_LASSO_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
-UKBDRS_APOE_LASSO_MAN_anu  <-pROC::roc(anu.test.data$dementia_BIN_TOTAL, anu.test.data$UKBDRS_APOE_LASSO_MAN_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
+#UKBDRS_APOE_LASSO_MAN_anu  <-pROC::roc(anu.test.data$dementia_BIN_TOTAL, anu.test.data$UKBDRS_APOE_LASSO_MAN_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
 UKBDRS_LASSO_anu  <-pROC::roc(anu.test.data$dementia_BIN_TOTAL, anu.test.data$UKBDRS_LASSO_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
-UKBDRS_LASSO_MAN_anu  <-pROC::roc(anu.test.data$dementia_BIN_TOTAL, anu.test.data$UKBDRS_LASSO_MAN_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
+#UKBDRS_LASSO_MAN_anu  <-pROC::roc(anu.test.data$dementia_BIN_TOTAL, anu.test.data$UKBDRS_LASSO_MAN_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
 
 # plot ROC curves
 library(extrafont)
-g2 <- ggroc(list(Age_only=age_only, UKBDRS_Model1=UKBDRS_APOE_LASSO, UKBDRS_Model2=UKBDRS_LASSO, UKBDRS_Model3=UKBDRS_APOE_LASSO_MAN, UKBDRS_Model4=UKBDRS_LASSO_MAN, CAIDE = CAIDE, DRS = DRS, ANU_ADRI = ANU_ADRI))
+g2 <- ggroc(list(Age_only=age_only, UKBDRS_Model1=UKBDRS_APOE_LASSO, UKBDRS_Model2=UKBDRS_LASSO, CAIDE = CAIDE, DRS = DRS, ANU_ADRI = ANU_ADRI))
 plot <- g2 + theme_minimal()  +  theme(legend.title = element_blank(), panel.grid.major = element_blank(), 
                                                                       panel.grid.minor = element_blank(),
                                                                       panel.background = element_rect(colour = "black", size=1), text = element_text(size=14, family="LM Roman 10")) 
@@ -288,7 +287,7 @@ ggsave(paste0(savepath,"roc_plotted_all.png"),
 
 
 #run all comparisons
-all_tests <- combn(list(UKBDRS_LASSO, UKBDRS_LASSO_MAN, UKBDRS_APOE_LASSO, UKBDRS_APOE_LASSO_MAN,
+all_tests <- combn(list(UKBDRS_APOE_LASSO, UKBDRS_LASSO,
                         ANU_ADRI),
                    FUN = function(x, ...) roc.test(x[[1]], x[[2]]),
                    m = 2,
@@ -309,7 +308,7 @@ all_tests <- combn(list(UKBDRS_LASSO, UKBDRS_LASSO_MAN, UKBDRS_APOE_LASSO, UKBDR
 #)
 
 #create list of model names to be compared, using naming convention in paper
-comparison_names <-combn(list("Model2", "Model4", "Model1", "Model3",
+comparison_names <-combn(list("Model1", "Model2",
                               "ANUADRI"), 
                          m = 2, 
                          FUN = paste, 
@@ -366,8 +365,8 @@ names(df_sitable6)<-c("Risk Score 1","Risk Score 2","AUC 1","AUC 2","Z","p","pco
 # getting threshold at specific sensitivities/specificities" https://stackoverflow.com/questions/33125558/get-optimal-threshold-with-at-least-75-sensitivity-with-proc-in-r
 
 
-models <- c("UKBDRS_LASSO", "UKBDRS_LASSO_MAN", "UKBDRS_APOE_LASSO", "UKBDRS_APOE_LASSO_MAN") 
-models <- c("UKBDRS_APOE_LASSO_MAN") #,"UKBDRS_APOE_LASSO_MAN")
+#models <- c("UKBDRS_LASSO", "UKBDRS_LASSO_MAN", "UKBDRS_APOE_LASSO", "UKBDRS_APOE_LASSO_MAN") 
+models <- c("UKBDRS_APOE_LASSO") #,"UKBDRS_APOE_LASSO_MAN") #model 1
 for (m in models){for (d in c("train")){
   print(sprintf('-----------Reporting AUC for %s for %s model---------------', d, m))
   data <- subset(df_test, dataset==d)
@@ -413,7 +412,7 @@ for (m in models){for (d in c("train")){
 
 
 #repeat for model 4
-models <- c("UKBDRS_LASSO_MAN") #,"UKBDRS_APOE_LASSO_MAN")
+models <- c("UKBDRS_LASSO") #,"UKBDRS_APOE_LASSO_MAN") #model 2
 for (m in models){for (d in c("train")){
   print(sprintf('-----------Reporting AUC for %s for %s model---------------', d, m))
   data <- subset(df_test, dataset==d)
