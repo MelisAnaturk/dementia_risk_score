@@ -244,8 +244,7 @@ summary(df_deathreport_refreshed$death_report_dementia)
 #499746   2667 
 
 #merge death report field back with self report df
-df_self_report_diagnoses <- list(df_self_report_diagnoses, df_deathreport_refreshed[,c("eid","death_report_dementia")]) %>% reduce(left_join, by = "eid")
-df_self_report_diagnoses$death_report_dementia[is.na(df_self_report_diagnoses$death_report_dementia)] <- 0
+df_self_report_diagnoses <- list(df_self_report_diagnoses, df_deathreport_refreshed[,c("eid","death_report_dementia")]) %>% reduce(inner_join, by = "eid")
 summary(df_self_report_diagnoses$death_report_dementia)
 #0      1 
 #499839   2667 
@@ -258,7 +257,7 @@ df_diagnoses_combined <- list(merged_diagnoses_df, df_self_report_diagnoses) %>%
 
 # remove dfs
 rm(df_diagnoses,df_self_report_diagnoses,primary_care_df)
-
+rm(df_deathreport_refreshed)
 #------------- 6. Create final variables -----
 # 6.1 This is the original dataset downloaded from UKB, merged with additional lifestyle/genetic variables
 #rp is skipping this for now. i think i already have what this was with df_ukb_raw
@@ -272,21 +271,14 @@ rm(df_diagnoses,df_self_report_diagnoses,primary_care_df)
 #df_diagnoses_combined <- df_diagnoses_combined[,c(1, 310:336, 508:514, 516)]
 #save(df_diagnoses_combined, file = paste0(data_pathway,"merged_diagnoses.rda"))
 
-names(df_diagnoses_combined[,c(1,310,315:340,512:520)])
-#it should just be 512:520 and not redefine atrial fib self report later
-df_diagnoses_combined <- df_diagnoses_combined[,c(1,310,315:340,512:520)]
-#save the current diagnosis df, so that we can load and pickup from this point in future instead of redefining diagnoses
-save(df_diagnoses_combined, file = paste0(data_pathway,"ukbdata_interim_diagnoses.rda"))
-
-## with updated hes...
+## with updated hes, the diagnosis cols of interest are...
+#this is HES dementia diagnosis, pcare and sreport of all diagnoses, death report of dementia
 names(df_diagnoses_combined[,c(1,292,297:322,494:502)])
-#it should just be 512:520 and not redefine atrial fib self report later
 df_diagnoses_combined <- df_diagnoses_combined[,c(1,292,297:322,494:502)]
 #save the current diagnosis df, so that we can load and pickup from this point in future instead of redefining diagnoses
 save(df_diagnoses_combined, file = paste0(data_pathway,"ukbdata_interim_diagnoses.rda"))
 
 # 6.2 merge with purr
-#df <- list(df_merge,df_diagnoses_combined) %>% reduce(left_join, by = "eid")
 df <- list(df_ukb_raw,df_diagnoses_combined) %>% reduce(left_join, by = "eid")
 #rp good till now
 # 6.3 if a participant has a dementia code either in self-report data, secondary care data, primary care data or cause of death then code as a 1
