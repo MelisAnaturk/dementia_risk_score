@@ -28,13 +28,14 @@ myvars <- c("Age_when_attended_assesment_centre_0_0","education_years", "Townsen
 
 pMiss <- function(x){sum(is.na(x))/length(x)*100}
 apply(df[myvars],2,pMiss)
-
+#n = 500827
 # 1.4 subset to complete cases
 df <- df[complete.cases(df[myvars]),]
+#n=212192 after subsetting for complete cases across all variables
 
 summary(df$dementia_BIN_TOTAL)
 #0      1 
-#211004   1366
+#209143   3049
 
 # 1.5 restrict sample to middle aged = 40+
 df <- subset(df, Age_when_attended_assesment_centre_0_0>=40)
@@ -44,7 +45,7 @@ summary(df$Age_when_attended_assesment_centre_0_0)
 
 summary(df$dementia_BIN_TOTAL)
 #0      1 
-#210999   1366 
+#209138   3049  
 
 # 1.6 recode dementia variable such that only HES and primary care variables contribute to dementia ascertain
 myvars <- c("secondary_care_diagnosis_of_Dementia", "death_report_dementia", "primary_care_diagnosis_for_dementia", "primary_care_prescription_for_Dementia")
@@ -61,7 +62,7 @@ sapply(df[myvars], class)
 df$dementia_BIN_TOTAL <- as.factor(df$dementia_BIN_TOTAL) 
 summary(df$dementia_BIN_TOTAL)
  #0      1 
- #211040   1325
+ #209177   3010 
  
 #------ 2. Compute DRS ------
 # as our sample is between 40-73 years old, we will use the weights developed within a sample of 60-79 year olds
@@ -145,10 +146,10 @@ df$DRS_total <-  0.20921*(df$Age_when_attended_assesment_centre_0_0 - 65.608) + 
 df$DRS_predicted_prob <- 1-0.9969^exp(df$DRS_total)
 summary(df$DRS_total)
 #Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-#-7.8012 -3.5006 -1.2628 -1.7710  0.1146  3.4190 
+#-7.8012 -3.5008 -1.2630 -1.7712  0.1145  3.4190 
 summary(df$DRS_predicted_prob)
 #Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-#1.270e-06 9.370e-05 8.778e-04 2.648e-03 3.476e-03 9.046e-02 
+#1.270e-06 9.368e-05 8.777e-04 2.647e-03 3.476e-03 9.046e-02 
 # examine missingness
 vars <- c("DRS_total", "DRS_predicted_prob", "DRS_sex_score", "DRS_hypertensive_med_score", "DRS_calendar_year_score", "DRS_Townsend_deprivation_0_0_group2", "DRS_Townsend_deprivation_0_0_group3", "DRS_Townsend_deprivation_0_0_group4", "DRS_Townsend_deprivation_0_0_group5", "DRS_ex_smoker_score", "DRS_current_smoker_score", "DRS_alcohol_score", "DRS_depression_score", "DRS_aspirin_score", "DRS_stroke_score", "DRS_atrial_fib_score", "DRS_diabetes_score")
 apply(df[vars],2,pMiss)

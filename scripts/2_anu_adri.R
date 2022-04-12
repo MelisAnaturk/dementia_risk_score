@@ -44,10 +44,10 @@ df$APOE_e4 <-            ifelse(df$APOE_genotype=="E1/E2"|df$APOE_genotype=="E2/
 
 summary(as.factor(df$APOE_genotype))
 #E1/E2  E2/E2  E3/E3  E3/E4  E4/E4   NA's 
-#     3   2330 242097  97318   9791 149722 
+#     3   2328 241889  97237   9781 149589 
 summary(as.factor(df$APOE_e4))
 #0      1   NA's 
-#244430 107109 149722 
+#244220 107018 149589
 
 # 2.2 Age - sex specific scores
 # N.B. Weights are from Antsey et al (2013).
@@ -106,10 +106,10 @@ df$beta_age_anu_adri_recoded <- ifelse(df$Sex==1 & df$Age_when_attended_assesmen
 
 summary(df$point_age_anu_adri_recoded)
 #Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-#0.0000  0.0000  0.0000  0.6251  0.0000 14.0000
+# 0.0000  0.0000  0.0000  0.6253  0.0000 14.0000 
 summary(df$beta_age_anu_adri_recoded)
 #Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-#0.00000 0.00000 0.00000 0.08047 0.00000 1.87000 
+#0.00000 0.00000 0.00000 0.08048 0.00000 1.87000 
 
 # quick check
 myvars <- c("Sex", "Age_when_attended_assesment_centre_0_0", "point_age_anu_adri_recoded", "beta_age_anu_adri_recoded")
@@ -311,7 +311,7 @@ df$SE_TOTAL <- rowSums(df[,c("Social_engagement_0_1","Social_engagement_0_2", "S
                        na.rm=TRUE) 
 summary(as.factor(df$SE_TOTAL))
 #0      1      2      3      4 
-#6183  48012 158216 214978  73872 
+#6171  47947 158076 214823  73810 
 
 # current coding: 0 = lowest, 1 = low-med, 2 = med-high, >3 = highest
 df$point_SE_anu_adri_recoded <- ifelse(df$SE_TOTAL==0, 6, 
@@ -327,6 +327,7 @@ df$beta_SE_anu_adri_recoded <- ifelse(df$SE_TOTAL==0, 0.84,
 summary(as.factor(df$point_SE_anu_adri_recoded))
 summary(as.factor(df$beta_SE_anu_adri_recoded))
 
+pMiss <- function(x){sum(is.na(x))/length(x)*100}
 apply(df[,grep("Social_engagement", names(df))],2,pMiss)
 
 # 2.13 PHYSICAL ACTIVITY
@@ -379,7 +380,7 @@ df$Worked_with_pesticides_total_0_0 <- apply(pesticide_vars[, -1], 1, function(x
 
 summary(as.factor(df$Worked_with_pesticides_total_0_0))
 #0      1      2 
-#498000   2847    414 
+#497570   2843    414  
 
 df$point_pesticide_anu_adri_recoded <- ifelse(df$Worked_with_pesticides_total_0_0==1, 2, 
                                        ifelse(df$Worked_with_pesticides_total_0_0==2, 2,
@@ -405,7 +406,7 @@ df$point_TOTAL_ANU_ADRI_SCORE <- (df$point_age_anu_adri_recoded + df$point_edu_a
 # excluded domain: df$point_cog_score_anu_adri_recoded 
 summary(df$point_TOTAL_ANU_ADRI_SCORE)
 #Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-#  -8.00   -3.81   -1.00   -0.76    2.00   24.58   33919 
+#  -8.00   -3.81   -1.00   -0.76    2.00   24.58   33869 
 hist(df$point_TOTAL_ANU_ADRI_SCORE)
 
 #beta-weighted score
@@ -417,11 +418,11 @@ df$ANU_ADRI <- df$beta_age_anu_adri_recoded + df$beta_edu_anu_adri_recoded + df$
 # excluded domain: df$beta_cog_score_anu_adri_recoded 
 summary(df$ANU_ADRI)
 #Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-#  -0.95   -0.20    0.44    0.74    1.10    7.13   33919
+#  -0.95   -0.20    0.44    0.73    1.10    7.13   33869 
 hist(df$ANU_ADRI)
 
 # check missingness
-pMiss <- function(x){sum(is.na(x))/length(x)*100}
+
 apply(df[,grep("ANU|anu_adri", names(df))],2,pMiss)
 
 #save current df

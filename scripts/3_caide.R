@@ -111,7 +111,7 @@ df$beta_caide_APOE_score <- df$beta_age_caide_APOE_recoded + df$beta_sex_caide_A
 hist(df$beta_caide_APOE_score)
 summary(df$beta_caide_APOE_score)
 #Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-#   0.00    1.87    2.69    2.52    3.21    6.67  200322 
+#   0.00    1.87    2.69    2.52    3.21    6.67  200152 
    
 # 2.3 check missingness
 pMiss <- function(x){sum(is.na(x))/length(x)*100}
@@ -123,7 +123,7 @@ df$CAIDE_APOE_predicted_prob              <- (exp(-8.083 +    1.020 + (0.390*df$
                                            1+(exp(-8.083 + 1.020 + (0.390*df$beta_caide_APOE_score)))
 summary(df$CAIDE_APOE_predicted_prob*100)
 #Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-   #0.17    0.36    0.49    0.50    0.60    2.31  200322 
+   #0.17    0.36    0.49    0.50    0.60    2.31  200152 
    
 # 2.5 Calculate Probability(dementia) - CAIDE without APOE
 df$CAIDE_predicted_prob <- (exp(-7.406 + 0.796 + (0.401*df$beta_caide_APOE_score)))/
