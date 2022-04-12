@@ -432,25 +432,25 @@ summary(as.numeric(df$years_diff_all_time))
 #------- 8. Begin data subsetting -----
 # 8.1 exclude people without a baseline asssessment
 df <- subset(df, complete.cases(baseline_date))
-#  CURRENT N = 502,506 
+#  CURRENT N = 502,413 
 
 # 8.2 exclude people with pre-existing dementia based on date_diff variable
 summary(df$date_diff_all_cause_dementia)
 df <- subset(df, date_diff_all_cause_dementia_0_0>0| is.na(date_diff_all_cause_dementia_0_0)) 
-# CURRENT N = 501,871
+# CURRENT N = 501,179
 summary(df$dementia_BIN_TOTAL)
 #0      1 
-#497742   4129 
+#493039   8740
 
 # 8.3 identify anyone who reported dementia at baseline
 summary(df$self_report_dementia_0_0)
 #  0      1 
-#501020    851 
+#500927    852  
 
 # 8.4 exclude people self-reporting a diagnosis at baseline
 df <- subset(df, self_report_dementia_0_0==0)
 
-#n = 501 020
+#n = 500 927
 
 # 8.5 convert date diff to years
 df$years_diff_all_cause_dementia_0_0  <- df$date_diff_all_cause_dementia_0_0 /365.242 
@@ -463,18 +463,18 @@ hist(as.numeric(df$years_diff_all_cause_dementia_0_0))
 # 8.6 exclude people who have developed dementia within a year of baseline (minimize reverse causation)
 
 df <- subset(df, years_diff_all_cause_dementia_0_0>=1| is.na(date_diff_all_cause_dementia_0_0)) 
-#n = 500 920
+#n = 500 827
 
 # CURRENT N = 501,261
-#updated n, after incorporating pcare diagnosis date: 500 920
+#updated n, after incorporating pcare diagnosis date, refreshed HES: 500 827
 
 summary(df$dementia_BIN_TOTAL)
 #0      1 
-#497742   3178 
+#493039   7788
 
 describe(as.numeric(df$years_diff_all_cause_dementia_0_0))
 #vars    n mean   sd median trimmed  mad min   max range skew kurtosis   se
-#X1    1 3083 5.77 2.09      6    5.85 2.25   1 10.71   9.7 -0.3    -0.69 0.04
+#X1    1 7701  8.8 3.05    9.3    9.01 3.26   1 15.41 14.41 -0.52    -0.55 0.03
 hist(as.numeric(df$years_diff_all_cause_dementia_0_0))
 
 #------- 9. Dates for other diseases -----
@@ -520,10 +520,10 @@ df$stroke_BIN_FINAL_0_0[is.na(df$stroke_BIN_FINAL_0_0)] <- 0
 df$stroke_BIN_FINAL_0_0 <- as.factor(df$stroke_BIN_FINAL_0_0)
 summary(df$self_report_stroke_0_0)
 #0      1 
-#494298   6622 
+#494205   6622 
 summary(df$stroke_BIN_FINAL_0_0)
 #0      1 
-#493147   7773 
+#493055   7772 
 
 View(df[,c("stroke_BIN_FINAL_0_0", "primary_care_diagnosis_date_for_Stroke", "baseline_date","date_diff_stroke_diagnosis")])
 
@@ -538,7 +538,7 @@ df$depression_BIN_FINAL_0_0 <- ifelse(df$date_diff_depression_diagnosis<=0&df$pr
 df$depression_BIN_FINAL_0_0 <- as.factor(df$depression_BIN_FINAL_0_0)
 summary(df$depression_BIN_FINAL_0_0)
 #0      1   NA's 
-#443766  57146      8 
+#443686  57133      8 
 
 # 9.4 TBI
 df$TBI_BIN_TOTAL <- ifelse(is.na(df[,c("primary_care_diagnosis_for_TBI")]),0,1)
@@ -546,10 +546,10 @@ df$TBI_BIN_TOTAL <- ifelse(is.na(df[,c("primary_care_diagnosis_for_TBI")]),0,1)
 df$TBI_BIN_TOTAL <- as.factor(df$TBI_BIN_TOTAL)
 summary(df$TBI_BIN_TOTAL)
 #0      1 
-#484962  16228
+#484604  16223 
 summary(as.factor(df$primary_care_diagnosis_for_TBI))
 #1   NA's 
-# 16228 484692
+# 16223 484604 
 
 df$primary_care_diagnosis_date_for_TBI <-  as.Date(df$primary_care_diagnosis_date_for_TBI, format="%d/%m/%Y")
 df$date_diff_TBI_diagnosis <- df$primary_care_diagnosis_date_for_TBI - df$baseline_date
@@ -560,7 +560,7 @@ df$TBI_BIN_FINAL_0_0[is.na(df$TBI_BIN_FINAL_0_0)] <- 0
 df$TBI_BIN_FINAL_0_0 <- as.factor(df$TBI_BIN_FINAL_0_0)
 summary(df$TBI_BIN_FINAL_0_0)
 #0      1 
-#490620  10300
+#490529  10298 
 
 # 9.5 Diabetes - BASELINE
 # incident + historic diabetes
@@ -574,10 +574,10 @@ df$Diabetes_BIN_FINAL_0_0[is.na(df$Diabetes_BIN_FINAL_0_0)] <- 0
 df$Diabetes_BIN_FINAL_0_0 <- as.factor(df$Diabetes_BIN_FINAL_0_0)
 summary(as.factor(df$Diabetes_diagnosed_bydoctor_0_0.x))
 #0      1   NA's 
-#472037  26281   2602
+#471950  26276   2601 
 summary(df$Diabetes_BIN_FINAL_0_0)
 #0      1 
-#474304  26616 
+#474216  26611 
 
 # 9.6 Type 2 Diabetes
 df$primary_care_diagnosis_date_for_Diabetes_II <-  as.Date(df$primary_care_diagnosis_date_for_Diabetes_II, format="%d/%m/%Y")
@@ -590,7 +590,7 @@ df$Diabetes_II_BIN_FINAL_0_0 <- as.factor(df$Diabetes_II_BIN_FINAL_0_0)
 summary(as.factor(df$Diabetes_diagnosed_bydoctor_0_0.x))
 summary(df$Diabetes_II_BIN_FINAL_0_0)
 #0      1 
-#490939   9981
+#490847   9980 
 
 View(df[,c("Diabetes_II_BIN_FINAL_0_0", "primary_care_diagnosis_for_Diabetes_II", "primary_care_diagnosis_date_for_Diabetes_II", "baseline_date")])
 
@@ -608,7 +608,7 @@ df$TIA_BIN_FINAL_0_0[is.na(df$TIA_BIN_FINAL_0_0)] <- 0
 df$TIA_BIN_FINAL_0_0 <- as.factor(df$TIA_BIN_FINAL_0_0)
 summary(df$TIA_BIN_FINAL_0_0)
 #0      1 
-#499156   1764  
+#499064   1763   
 
 # 9.8 atrial fibrillation - baseline #rp: atrial fib self report was already computed, no need to redo so 9.8, 9.9 commented out
 #df_self_report_diagnoses <- read.csv('../../raw_data/add_vars_stroke_death.csv', header=TRUE, sep=",", stringsAsFactors = FALSE)
@@ -641,7 +641,7 @@ df$Atrial_Fibrillation_BIN_FINAL_0_0[is.na(df$Atrial_Fibrillation_BIN_FINAL_0_0)
 df$Atrial_Fibrillation_BIN_FINAL_0_0 <- as.factor(df$Atrial_Fibrillation_BIN_FINAL_0_0)
 summary(df$Atrial_Fibrillation_BIN_FINAL_0_0)
 #0      1 
-#495548   5372 
+#495456   5371
 
 # 9.10 Save file
 #save(df, file = paste0(data_pathway, "ukb_data_orig_merged_final_diseases_oct22.rda"))
