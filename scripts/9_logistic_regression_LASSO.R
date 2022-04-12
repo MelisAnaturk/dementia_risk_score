@@ -273,6 +273,19 @@ describe(as.numeric(test.data$years_diff_all_time))
 #vars     n mean   sd median trimmed mad min   max range skew kurtosis   se
 #X1   1 41585 1.11 2.79      0    0.29   0   0 12.23 12.23 2.37     4.17 0.01
 
+#membership in highest deprived group (4, on scale of 0-4) was selected, not others
+#create binary version of deprivation to use in model
+train.data$Townsend_deprivation_modelvar<-ifelse(train.data$Townsend_deprivation_Groups_0_0==4,1,0)
+train.data$Townsend_deprivation_modelvar<-as.factor(train.data$Townsend_deprivation_modelvar)
+test.data$Townsend_deprivation_modelvar<-ifelse(test.data$Townsend_deprivation_Groups_0_0==4,1,0)
+test.data$Townsend_deprivation_modelvar<-as.factor(test.data$Townsend_deprivation_modelvar)
+
+
+
+#### 2.1 Test beta coefficients ####
+#based on the lasso selected vars, compute model coefficients in train data
+#use 2 models - one with apoe, one without. include sex as a manually selected variable as well
+
 # specify age only and various versions of UKB-DRS (see manuscript for details)
 age_only <-      paste("dementia_BIN_TOTAL~Age_when_attended_assesment_centre_0_0")
 
@@ -349,3 +362,10 @@ format_modelcoefs <-function(lr_out){
   names(df_model)<-c("Predictor","beta","lower","upper","OR","p")
   return(df_model)
 }
+
+
+
+
+
+
+
