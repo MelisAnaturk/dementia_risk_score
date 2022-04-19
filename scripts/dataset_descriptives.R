@@ -77,7 +77,7 @@ View(df[leisure_vars])
 
 
 lifestyle_vars <- c("Sleep_duration_0_0", "IPAQ_activity_group_0_0", "units_combined", "Smoker_bin", "total_fish_intake_per_week_0_0",
-                    "Number_in_household_0_0", "weekly_leisure_activities","Sleeplesness_insomnia_0_0_bin",)
+                    "Number_in_household_0_0", "weekly_leisure_activities","Sleeplesness_insomnia_0_0_bin")
 summary_lifestyle <-
   list("Sleep duration" = 
          list("Sleep duration" = ~ qwraps2::mean_sd(Sleep_duration_0_0, denote_sd = "paren")),
