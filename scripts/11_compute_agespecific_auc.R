@@ -11,21 +11,21 @@ load(file="../../raw_data/test_data_outliers_removed.rda")
 #using 9_logistic_regression_LASSO.R as sample, from line 258 and on
 
 #define models
-age_only <-      paste("dementia_BIN_TOTAL~Age_when_attended_assesment_centre_0_0")
+#age_only <-      paste("dementia_BIN_TOTAL~Age_when_attended_assesment_centre_0_0")
 
-UKBDRS_LASSO  <-            paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +
-                                  Diabetes_BIN_FINAL_0_0  +  current_history_depression + stroke_TIA_BIN_FINAL")
+#UKBDRS_LASSO  <-            paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +
+#                                  Diabetes_BIN_FINAL_0_0  +  current_history_depression + stroke_TIA_BIN_FINAL")
 
-UKBDRS_LASSO_MAN  <-  paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +  Sex + education_years +
-                            Diabetes_BIN_FINAL_0_0  +  current_history_depression + stroke_TIA_BIN_FINAL + 
-                            family_history_of_dementia")
+#UKBDRS_LASSO_MAN  <-  paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +  Sex + education_years +
+#                            Diabetes_BIN_FINAL_0_0  +  current_history_depression + stroke_TIA_BIN_FINAL + 
+#                            family_history_of_dementia")
 
-UKBDRS_APOE_LASSO <-      paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +
-                                Diabetes_BIN_FINAL_0_0  +  current_history_depression + stroke_TIA_BIN_FINAL + APOE_genotype_bin")
+#UKBDRS_APOE_LASSO <-      paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +
+#                                Diabetes_BIN_FINAL_0_0  +  current_history_depression + stroke_TIA_BIN_FINAL + APOE_genotype_bin")
 
-UKBDRS_APOE_LASSO_MAN <-   paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +  Sex + education_years +
-                                 Diabetes_BIN_FINAL_0_0  +  current_history_depression + stroke_TIA_BIN_FINAL + family_history_of_dementia + APOE_genotype_bin")
-models <- c("age_only", "UKBDRS_LASSO", "UKBDRS_LASSO_MAN", "UKBDRS_APOE_LASSO", "UKBDRS_APOE_LASSO_MAN")
+#UKBDRS_APOE_LASSO_MAN <-   paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +  Sex + education_years +
+#                                 Diabetes_BIN_FINAL_0_0  +  current_history_depression + stroke_TIA_BIN_FINAL + family_history_of_dementia + APOE_genotype_bin")
+#models <- c("age_only", "UKBDRS_LASSO", "UKBDRS_LASSO_MAN", "UKBDRS_APOE_LASSO", "UKBDRS_APOE_LASSO_MAN")
 
 test.data$dataset <- "test"
 train.data$dataset <- "train"
@@ -61,11 +61,10 @@ rm(train.data, test.data)
 #compute the auc of CAIDE and UKB-DRS in age specific subset of train and test data
 #age range for CAIDE is 39-64
 
-models <- c("age_only", "UKBDRS_APOE_LASSO", "UKBDRS_LASSO", 
-            "UKBDRS_APOE_LASSO_MAN", "UKBDRS_LASSO_MAN","CAIDE")
+models <- c("age_only", "UKBDRS_APOE_LASSO", "UKBDRS_LASSO", "CAIDE")
 
 #define dataframe to store results
-caide_auc=data.frame(matrix(ncol = 2, nrow = 6))
+caide_auc=data.frame(matrix(ncol = 2, nrow = 4))
 rownames(caide_auc)<-models
 colnames(caide_auc)<-datasets
 
@@ -89,12 +88,10 @@ for (d in datasets){
 rm(caide_data)
 caide_auc
 #train               test
-#age_only              0.73 [0.71, 0.75] 0.72 [0.67, 0.76]
-#UKBDRS_APOE_LASSO     0.76 [0.74, 0.79]   0.75 [0.7, 0.8]
-#UKBDRS_LASSO          0.75 [0.72, 0.77]  0.75 [0.7, 0.79]
-#UKBDRS_APOE_LASSO_MAN 0.77 [0.75, 0.79] 0.76 [0.72, 0.81]
-#UKBDRS_LASSO_MAN      0.76 [0.73, 0.78]  0.76 [0.71, 0.8]
-#CAIDE                  0.7 [0.67, 0.72] 0.66 [0.61, 0.71]
+#age_only          0.75 [0.74, 0.77] 0.78 [0.76, 0.81]
+#UKBDRS_APOE_LASSO  0.8 [0.78, 0.81]  0.83 [0.8, 0.85]
+#UKBDRS_LASSO      0.78 [0.77, 0.79] 0.81 [0.78, 0.83]
+#CAIDE              0.72 [0.7, 0.73] 0.74 [0.72, 0.77]
 
 
 #### DRS ####
@@ -102,11 +99,10 @@ caide_auc
 #compute the auc of DRS and UKB-DRS in age specific subset of train and test data
 #age range for DRS is 60-79
 
-models <- c("age_only", "UKBDRS_APOE_LASSO", "UKBDRS_LASSO", 
-            "UKBDRS_APOE_LASSO_MAN", "UKBDRS_LASSO_MAN", "DRS")
+models <- c("age_only", "UKBDRS_APOE_LASSO", "UKBDRS_LASSO", "DRS")
 
 #define dataframe to store results
-drs_auc=data.frame(matrix(ncol = 2, nrow = 6))
+drs_auc=data.frame(matrix(ncol = 2, nrow = 4))
 rownames(drs_auc)<-models
 colnames(drs_auc)<-datasets
 
@@ -131,12 +127,10 @@ rm(drs_data)
 gc()
 drs_auc
 #train               test
-#age_only               0.68 [0.66, 0.7] 0.65 [0.62, 0.69]
-#UKBDRS_APOE_LASSO     0.75 [0.73, 0.77]  0.74 [0.7, 0.77]
-#UKBDRS_LASSO          0.69 [0.68, 0.71] 0.68 [0.65, 0.72]
-#UKBDRS_APOE_LASSO_MAN 0.76 [0.74, 0.77] 0.74 [0.71, 0.78]
-#UKBDRS_LASSO_MAN      0.71 [0.69, 0.73] 0.69 [0.66, 0.73]
-#DRS                   0.67 [0.65, 0.69] 0.67 [0.63, 0.71]
+#age_only          0.67 [0.65, 0.68] 0.66 [0.64, 0.68]
+#UKBDRS_APOE_LASSO 0.75 [0.74, 0.76] 0.75 [0.73, 0.77]
+#UKBDRS_LASSO      0.69 [0.68, 0.71]  0.7 [0.68, 0.72]
+#DRS               0.66 [0.65, 0.67] 0.65 [0.63, 0.68]
 
 
 #### ANU ADRI (MAP) ####
@@ -144,11 +138,10 @@ drs_auc
 #compute the auc of DRS and UKB-DRS in age specific subset of train and test data
 #age range for DRS is 60-79
 
-models <- c("age_only", "UKBDRS_APOE_LASSO", "UKBDRS_LASSO", 
-            "UKBDRS_APOE_LASSO_MAN", "UKBDRS_LASSO_MAN","ANU_ADRI")
+models <- c("age_only", "UKBDRS_APOE_LASSO", "UKBDRS_LASSO","ANU_ADRI")
 
 #define dataframe to store results
-anu_map_auc=data.frame(matrix(ncol = 2, nrow = 6))
+anu_map_auc=data.frame(matrix(ncol = 2, nrow = 4))
 rownames(anu_map_auc)<-models
 colnames(anu_map_auc)<-datasets
 
@@ -158,7 +151,7 @@ anu_data <- subset(df_test, Age_at_recruitment_0_0>=54)
 #compute auc for each model in both train and test data
 #store auc and conf interval in anu_map_auc table
 for (d in datasets){
-  for (m in models[1:5]){
+  for (m in models[1:3]){
     data <- subset(anu_data, dataset==d)
     print(paste0('computing AUC for ', m, ' in ', d))
     # AUC part
@@ -172,7 +165,7 @@ for (d in datasets){
 
 # for anu_adri only
 for (d in datasets){
-  for (m in models[6]){
+  for (m in models[4]){
     data <- subset(anu_data, dataset==d)
     print(paste0('AUC for anu-adri in ', d))  
     roc <- pROC::roc(data[, c("dementia_BIN_TOTAL")], data[, c("ANU_ADRI")], plot=TRUE, smooth = FALSE, ci=TRUE)
@@ -185,22 +178,19 @@ for (d in datasets){
 rm(anu_data)
 anu_map_auc
 #train               test
-#age_only              0.72 [0.71, 0.74] 0.69 [0.66, 0.73]
-#UKBDRS_APOE_LASSO     0.77 [0.75, 0.79] 0.75 [0.71, 0.78]
-#UKBDRS_LASSO          0.74 [0.72, 0.75] 0.72 [0.69, 0.75]
-#UKBDRS_APOE_LASSO_MAN 0.77 [0.76, 0.79] 0.75 [0.72, 0.79]
-#UKBDRS_LASSO_MAN      0.75 [0.73, 0.76]  0.73 [0.7, 0.76]
-#ANU_ADRI              0.56 [0.55, 0.58] 0.58 [0.54, 0.62]
+#age_only          0.73 [0.72, 0.74]  0.72 [0.7, 0.74]
+#UKBDRS_APOE_LASSO 0.78 [0.77, 0.79]  0.78 [0.76, 0.8]
+#UKBDRS_LASSO      0.75 [0.74, 0.76] 0.75 [0.73, 0.77]
+#ANU_ADRI          0.57 [0.56, 0.58] 0.57 [0.54, 0.59]
 
 
 
 #### ANU ADRI (CVHS) ####
 
-models <- c("age_only", "UKBDRS_APOE_LASSO", "UKBDRS_LASSO", 
-            "UKBDRS_APOE_LASSO_MAN", "UKBDRS_LASSO_MAN","ANU_ADRI")
+models <- c("age_only", "UKBDRS_APOE_LASSO", "UKBDRS_LASSO","ANU_ADRI")
 
 #define dataframe to store results
-anu_cvhs_auc=data.frame(matrix(ncol = 2, nrow = 6))
+anu_cvhs_auc=data.frame(matrix(ncol = 2, nrow = 4))
 rownames(anu_cvhs_auc)<-models
 colnames(anu_cvhs_auc)<-datasets
 
@@ -210,7 +200,7 @@ anu_data <- subset(df_test, Age_at_recruitment_0_0>=62)
 #compute auc for each model in both train and test data
 #store auc and conf interval in anu_cvhs_auc table
 for (d in datasets){
-  for (m in models[1:5]){
+  for (m in models[1:3]){
     data <- subset(anu_data, dataset==d)
     print(paste0('computing AUC for ', m, ' in ', d))
     # AUC part
@@ -224,7 +214,7 @@ for (d in datasets){
 
 # for anu_adri only
 for (d in datasets){
-  for (m in models[6]){
+  for (m in models[4]){
     data <- subset(anu_data, dataset==d)
     print(paste0('AUC for anu-adri in ', d))  
     roc <- pROC::roc(data[, c("dementia_BIN_TOTAL")], data[, c("ANU_ADRI")], plot=TRUE, smooth = FALSE, ci=TRUE)
@@ -237,9 +227,7 @@ for (d in datasets){
 rm(anu_data)
 anu_cvhs_auc
 #train               test
-#age_only              0.65 [0.63, 0.67] 0.62 [0.58, 0.66]
-#UKBDRS_APOE_LASSO     0.74 [0.72, 0.75] 0.72 [0.68, 0.76]
-#UKBDRS_LASSO          0.67 [0.65, 0.69] 0.65 [0.61, 0.69]
-#UKBDRS_APOE_LASSO_MAN 0.74 [0.72, 0.76] 0.72 [0.69, 0.76]
-#UKBDRS_LASSO_MAN       0.68 [0.66, 0.7]  0.67 [0.63, 0.7]
-#ANU_ADRI               0.57 [0.55, 0.6]  0.6 [0.56, 0.64]
+#age_only          0.63 [0.62, 0.65] 0.61 [0.59, 0.64]
+#UKBDRS_APOE_LASSO 0.73 [0.72, 0.74] 0.73 [0.71, 0.75]
+#UKBDRS_LASSO      0.67 [0.66, 0.68] 0.66 [0.64, 0.69]
+#ANU_ADRI          0.58 [0.57, 0.59]  0.57 [0.55, 0.6]
