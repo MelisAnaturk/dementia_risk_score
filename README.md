@@ -37,7 +37,6 @@ To identify individuals taking hormone replacement therapies (HRTs), anti-hypert
 ## 3. Main analysis
 The main analysis is performed using a series of R scripts. A brief description of each script is provided below:
 1. ```1_derive_diagnoses.R```: Generates variables corresponding to an individual's status for several diseases of interest (e.g,., "1" for dementia, "0" for no dementia). It also derives corresponding ```dates_of_diagnosis``` and ```time_to_diagnosis``` variables. Next, we exclude people based on prespecified criteria, such as anyone reporting a diagnosis of dementia at baseline or anyone who developed dementia within a year of enrolling into the UKB study. Finally, we also generate variables to reflect medication use (e.g., antidepressants). 
-***Please note:*** *I've used a few ```for loops``` in the above script which isn't best practice when writing code in R (It was just a quick solution!) and if you do plan to make these scripts publicly available, please do rewrite them as functions that can be applied e.g. using ```lapply```.*
 
 2. ```2_anu_adri.R```: Recodes all demographic and genetic variables of interest to compute the ANU-ADRI.
 
@@ -54,42 +53,4 @@ The main analysis is performed using a series of R scripts. A brief description 
 9. ```9_logistic_regression_LASSO.R```: This is where the main analysis is performed. First LASSO regression is performed for feature selection, followed by logistic regression to calculate the beta-weights to be used in the UKB-DRS.
 10. ```10_discrimination_and_calibration.R``` : This r script computes the discriminative ability and calibration of each model.
 
-# Whitehall Analyses
-## 1. Accessing data
-As we've applied for WHII data through the DPUK portal, you will first need to set up a few things up on your laptop/phone.
-
-Mark Newbury will send you a username and a QR code once you've been added to the project. Use this username (please use lower case) to reset a password at https://portal.dementiasplatform.uk/Account/ResetPasswordRequest.
-
-Should you experience problems logging in when following the instructions below, please try resetting your password at the following link instead of the link above: https://portal.dpuk.ukserp.ac.uk/RequestNewPassword.  
-
-Instructions to connect are as follows:
-1. Navigate to https://portal.dpuk.ukserp.ac.uk
-2. For the Data Portal VDI connection, please download the latest version of **VMware Horizon Client**, which is towards the top right of the screen
-3. Please also download the **FreeOTP** app on your mobile phone/tablet – available on iOS or Android.
-4. Using your mobile device, open the FreeOTP and use the scan QR code function to scan the attached QR code on your PC screen. The app should recognise your user account and add this as a line below – this is now setup for use, and you do not need the QR code again.
-5. Returning to https://portal.dpuk.ukserp.ac.uk , you can proceed to login with your username and password. 
-
-To do this:
-1. Select ```Launch Platform```
-2. Now installed as above, allow VMware to launch, and accept the disclaimer that appears.
-3. Your username should be present, if not, simply type this in the username field.
-4. For the passcode box, use your mobile authentication app and tap the ```UKSeRP Mobile Authenticator line```, which will provide you with a code.
-5. Type this code in the passcode box, and select login.
-6. If successful, a second password prompt will appear – simply type your password and select login.
-7. Double click on **DPUK Floating Desktop**.
-8. The desktop will launch as a new window on your own PC.
-
-You should then be able to access the **0346** study folder on the S Drive. The S Drive 0346 folder is to be used for shared work on the 0346 project. You will also find an individual user folder for your username on the P Drive. **I've added all scripts into the shared work folder**
-
- Any problems with logging in, contact Mark Newbury (m.s.newbury@swansea.ac.uk)
- 
- ***Quick note about DPUK portal:*** 
-*You can copy text into the desktop accessed through the portal but it's more difficult to export things out of the portal. For textual and numerical information such as model results, I've just had to hand write these into the manuscript. For plots, you need to go through a formal process whereby your request to export this information needs to be approved through a formal committee. Worth asking Mark Newbury about this if required.*
-
-## 2. Main analysis
-The scripts used on the Whitehall data are adapted from the UKB analyses described above. Data/scripts/ect can be found in the S Drive 0346, along with the workspace that can loaded into Rstudio. If you have any questions it's best just to drop me an email at melis.anaturk.14@ucl.ac.uk. The **important thing** to highlight here is that the "age" variable provided by DPUK is a **categorical variable**, i.e. age is coded in age bins. I've therefore used the median across all age bins as Mika has previous done in his papers.
-
-## Suggested changes to manuscript (to be updated)
-- **Rai:** Double check TBI codes
-- Minor change to study flow chart
  
