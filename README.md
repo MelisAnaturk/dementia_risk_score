@@ -1,4 +1,6 @@
 # UK Biobank Analyses
+## Overview
+This repository contains code used in producing the UKB-DRS risk score by Anatürk, Patel, and colleagues. This project uses data from the UK Biobank to develop a novel risk score for dementia prediction.  The score is mainly developed through a series of R scripts which derive diagnoses for dementia and other relevant conditions before deriving risk score formulae for the UKB-DRS and other previously developed risk scores.
 ## 1. Initial data cleaning
 Fsl's funpack (https://git.fmrib.ox.ac.uk/fsl/funpack) was used to initially clean the UKB data (e.g., demographics), e.g.:
 
@@ -31,7 +33,7 @@ The script ```extract_diagnoses_from_primary_care.py``` searches through the gp 
 Similarly, ```extract_prescriptions_from_primary_care.py``` mines the database containing prescription records (i.e. ```gp_scripts.csv```). The list of read codes for each disease/medication class of interest was created using [all_lkps_maps_v2](https://biobank.ndph.ox.ac.uk/showcase/refer.cgi?id=592), with the final list contained in ```read_codes.csv```.
 
 ### 2.2 Self-report prescription data
-To identify individuals taking hormone replacement therapies (HRTs), anti-hypertensive medications and other treatments of interest, we have grouped all of the drugs recorded in [data-field 20003](https://biobank.ndph.ox.ac.uk/showcase/field.cgi?id=20003) according to their ATC codes [Wu et al. 2019, Supplementary Figure 1]. The file ```Wu_et_al._ATC_med_codes.xlsx``` contains our classifications for HRT and other medications.
+To identify individuals taking hormone replacement therapies (HRTs), anti-hypertensive medications and other treatments of interest, we have grouped all of the drugs recorded in [data-field 20003](https://biobank.ndph.ox.ac.uk/showcase/field.cgi?id=20003) according to their ATC codes [Wu et al. 2019, Supplementary Figure 1]. 
 
 ## 3. Main analysis
 The main analysis is performed using a series of R scripts. A brief description of each script is provided below:
