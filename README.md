@@ -2,12 +2,21 @@
 ## Overview
 This repository contains code used in producing the UKB-DRS risk score by Anatürk, Patel, and colleagues. This project uses data from the UK Biobank to develop a novel risk score for dementia prediction.  The score is mainly developed through a series of R scripts which derive diagnoses for dementia and other relevant conditions before deriving risk score formulae for the UKB-DRS and other previously developed risk scores.
 
+## Contents
+- ```scripts/``` contains R scripts used for data manipulation, deriving risk scores, and assessing performance
+- ```results/``` contains output plots, lasso fit outputs, as well as the UKB-DRS calculator in excel format
+- ```models/``` contains final lasso fitting in .rda format
+All files in ```results/``` and ```models/``` are created via scripts in ```scripts/```
+
+## Requirements
+For optimal performance, we recommend a system with >=16GB of RAM and >=4 CPU cores. Development was carried out on a Ubuntu 18.04.6 LTS (Bionic Beaver) system. R version 3.6.3 was used. See scripts/session_info_R for specific package versions.
+
 ## 1. Dementia ascertain
 ### 1.1 Mining GP prescription and clinical events data 
 Dementia cases were identified through primary care and secondary care records, death reports and self-report (at baseline only, to exclude pre-existing cases). Participants were classified as a dementia case if they had a record of a primary or secondary diagnosis of dementia in their health/death records or had been prescribed a common 'dementia drugs' (e.g., memantine).
 
 The script ```extract_diagnoses_from_primary_care.py``` searches through the gp clinical events records (i.e., ```gp_clinical.csv```) and identifies participants with read codes (e.g., bnf, dmd, read_v2) corresponding to several diseases of interest (e.g., dementia, stroke). The output is a csv file of all participants who have atleast one of the listed read codes of interest ("participants_with_dementia.csv"). These participants are then assigned a value of "1" and merged back to the original dataframe in the series of r scripts described below.
-Similarly, ```extract_prescriptions_from_primary_care.py``` mines the database containing prescription records (i.e. ```gp_scripts.csv```). The list of read codes for each disease/medication class of interest was created using [all_lkps_maps_v2](https://biobank.ndph.ox.ac.uk/showcase/refer.cgi?id=592), with the final list contained in ```read_codes.csv```.
+Similarly, ```extract_prescriptions_from_primary_care.py``` mines the database containing prescription records (i.e. ```gp_scripts.csv```). The list of read codes for each disease/medication class of interest was created using [all_lkps_maps_v2](https://biobank.ndph.ox.ac.uk/showcase/refer.cgi?id=592).
 
 ### 1.2 Self-report prescription data
 To identify individuals taking hormone replacement therapies (HRTs), anti-hypertensive medications and other treatments of interest, we have grouped all of the drugs recorded in [data-field 20003](https://biobank.ndph.ox.ac.uk/showcase/field.cgi?id=20003) according to their ATC codes [Wu et al. 2019, Supplementary Figure 1]. 
@@ -18,7 +27,7 @@ The main analysis is performed using a series of R scripts. A brief description 
 
 2. ```2_anu_adri.R```: Recodes all demographic and genetic variables of interest to compute the ANU-ADRI.
 
-3. ```3_caide.R```: Recodes all relevant variables to compute the CAIDE, with the predicted probability of developing dementia (according to the CAIDE) also calculated. The version of CAIDE that includes APOE is used in our main analyses as it generally better at distinguishing between patients/controls than the version of this risk score without APOE information.
+3. ```3_caide.R```: Recodes all relevant variables to compute the CAIDE, with the predicted probability of developing dementia (according to the CAIDE) also calculated. 
 
 4. ```4_bdsi_retired.R```: Originally used to calculate the BDSI but this script has now been retired as one of the core components cannot (e.g. money problems) be calculated in the biobank due to a lack of information.
  
@@ -26,9 +35,9 @@ The main analysis is performed using a series of R scripts. A brief description 
 
 6. ```6_recode_variables.R```: Here, we're recoding demographic and other variables of interest prior to our main analyses.
 
-7. ```7_DRS.R```: Computing the DRS.
+7. ```7_DRS.R```: Computing the DRS risk score.
  
 9. ```9_logistic_regression_LASSO.R```: This is where the main analysis is performed. First LASSO regression is performed for feature selection, followed by logistic regression to calculate the beta-weights to be used in the UKB-DRS.
-10. ```10_discrimination_and_calibration.R``` : This r script computes the discriminative ability and calibration of each model.
+10. ```10_discrimination_and_calibration.R``` : This r script computes performance, via discriminative ability and calibration, of each model.
 
  
