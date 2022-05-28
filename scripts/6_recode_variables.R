@@ -1,4 +1,5 @@
 # Written by Melis Anaturk (July 2020)
+#Edited by RP
 
 # STEPS IN SCRIPT
 # 1. Data set-up

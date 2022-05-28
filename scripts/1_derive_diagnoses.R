@@ -26,7 +26,6 @@ disease <- c("dementia", "Depression", "Stroke", "TBI", "Diabetes","Diabetes_II"
 
 # 2.3 load in csv with individuals with primary care diagnoses
 # code everyone with a diagnosis of interest as "1" and extract date of diagnosis
-# lapply is much more efficient than a for loop in r - need to change this
 
 for (x in disease){
   df <- read.csv(sprintf('../../raw_data/participants_with_%s.csv', x), header = TRUE, sep =',', stringsAsFactors = FALSE)
@@ -173,8 +172,6 @@ summary(df_self_report_diagnoses$self_report_dementia)
 
 # 4.7 Diabetes
 load(paste0(data_pathway,"df_ukb_raw_022022_refresh.rda"))
-#df_self_report_diagnoses <- list(df_self_report_diagnoses, df_merge[,c("eid","Diabetes_diagnosed_bydoctor_0_0")]) %>% reduce(left_join, by = "eid")
-#rp replaced above with below
 df_self_report_diagnoses <- list(df_self_report_diagnoses, df_ukb_raw[,c("eid","Diabetes_diagnosed_bydoctor_0_0")]) %>% reduce(left_join, by = "eid")
 
 # 4.8 Diabetes II - baseline
@@ -252,24 +249,13 @@ summary(df_self_report_diagnoses$death_report_dementia)
 # merge primary care and self-report. merged_diagnoses_df contains primary and secondary care diagnosis
 df_diagnoses_combined <- list(merged_diagnoses_df, df_self_report_diagnoses) %>% reduce(left_join, by = "eid")
 
-# merge above with secondary care data. dont need this as merged_diganoses_df contins secondary care
-#df_diagnoses_combined <- merge(df_diagnoses_combined, df_diagnoses, by.c="eid", all.x=TRUE)
-
 # remove dfs
 rm(df_diagnoses,df_self_report_diagnoses,primary_care_df)
 rm(df_deathreport_refreshed)
 #------------- 6. Create final variables -----
 # 6.1 This is the original dataset downloaded from UKB, merged with additional lifestyle/genetic variables
-#rp is skipping this for now. i think i already have what this was with df_ukb_raw
-#load(file = paste0(data_pathway, "ukb_data_orig_merged.rda"))
-
+#rp is skipping this for now. already loaded above
 # TOTAL N = 502,413
-
-
-#following 3 lines adjusted by RP to get the columns needed with the column ordering I have
-#names(df_diagnoses_combined[,c(1, 310:336, 508:514, 516)])
-#df_diagnoses_combined <- df_diagnoses_combined[,c(1, 310:336, 508:514, 516)]
-#save(df_diagnoses_combined, file = paste0(data_pathway,"merged_diagnoses.rda"))
 
 ## with updated hes, the diagnosis cols of interest are...
 #this is HES dementia diagnosis, pcare and sreport of all diagnoses, death report of dementia
@@ -280,7 +266,6 @@ save(df_diagnoses_combined, file = paste0(data_pathway,"ukbdata_interim_diagnose
 
 # 6.2 merge with purr
 df <- list(df_ukb_raw,df_diagnoses_combined) %>% reduce(left_join, by = "eid")
-#rp good till now
 # 6.3 if a participant has a dementia code either in self-report data, secondary care data, primary care data or cause of death then code as a 1
 # BUG fixed: need to code primary care variables as numeric before coding dementia cases
 df$primary_care_diagnosis_for_dementia <- as.numeric(df$primary_care_diagnosis_for_dementia)
@@ -329,24 +314,6 @@ df$date_of_death_all <- ifelse(is.na(df$death_date_1), df$death_date_2, df$death
 df$date_of_death_all <-  as.Date(df$date_of_death_all, format="%Y-%m-%d")
 
 # 7.2 remove impossible dates
-#following chunk of code up until View command was what was here initially. i dont think it works. do a simple for loop
-#date_variables <- c("baseline_date", "date_all_cause_dementia_0_0", "primary_care_prescription_date_for_Dementia")
-
-#remove_impossible_dates <- function(x){
-#  print(class(df[,x]))
-#  df[,x] <- as.Date(df[,x], format="%d/%m/%Y")
-#  df[,x][df[,x]=="1901-01-01"] <- NA
-#  df[,x][df[,x]=="1900-01-01"] <- NA
-#  df[,x][df[,x]=="1902-02-02"] <- NA
-#  df[,x][df[,x]=="1903-03-03"] <- NA
-#  df[,x][df[,x]=="2037-07-07"] <- NA
-#}
-
-#lapply(df, remove_impossible_dates)
-#summary(df[date_variables])
-#View(df[date_variables])
-
-#date_variables <- c("baseline_date", "date_all_cause_dementia_0_0", "primary_care_prescription_date_for_Dementia")
 date_variables <- c("baseline_date", "date_all_cause_dementia_0_0", "primary_care_diagnosis_date_for_dementia","primary_care_prescription_date_for_Dementia")
 summary(df[date_variables]) #some impossible dates (1900-01-01)
 View(df[date_variables])
@@ -382,7 +349,6 @@ summary(as.factor(df$Date_of_all_cause_dementia_report_0_0))
 View(df[myvars])
 
 # save file
-#save(df, file = paste0(data_pathway,"ukb_data_orig_merged.rda"))
 save(df, file = paste0(data_pathway,"ukbdata_diagnoses.rda"))
 
 # 7.5 clear working space
@@ -480,11 +446,6 @@ hist(as.numeric(df$years_diff_all_cause_dementia_0_0))
 #------- 9. Dates for other diseases -----
 # 9.1 create vector of primary care diagnosis dates
 date_variables <- c("primary_care_diagnosis_date_for_Stroke", "primary_care_diagnosis_date_for_Depression", "primary_care_diagnosis_date_for_TIA", "primary_care_diagnosis_date_for_TBI", "primary_care_diagnosis_date_for_Diabetes", "primary_care_diagnosis_date_for_Diabetes_II")
-#View(df[,date_variables]) #date_variables])
-
-#lapply(date_variables, remove_impossible_dates)
-#summary(df[date_variables])
-#View(df[date_variables])
 sapply(df[date_variables], class) #they are characters, make them dates
 for (x in date_variables){
   df[,x] <- as.Date(df[,x], format="%d/%m/%Y")
@@ -611,28 +572,6 @@ summary(df$TIA_BIN_FINAL_0_0)
 #0      1 
 #499064   1763   
 
-# 9.8 atrial fibrillation - baseline #rp: atrial fib self report was already computed, no need to redo so 9.8, 9.9 commented out
-#df_self_report_diagnoses <- read.csv('../../raw_data/add_vars_stroke_death.csv', header=TRUE, sep=",", stringsAsFactors = FALSE)
-#cols_diagoses <- read.csv('../../names_stroke_ICD.csv', header=TRUE, sep=",", stringsAsFactors = FALSE)
-#df_self_report_diagnoses[df_self_report_diagnoses == "NA"] <- NA
-#names(df_self_report_diagnoses) <- cols_diagoses[,2]
-#df_self_report_diagnoses$eid <- as.character(df_self_report_diagnoses$eid)
-
-#df_self_report_diagnoses$self_report_atrial_fibrillation_0_0 <- apply(df_self_report_diagnoses[, 37:70], 1, function(x) {
-#  if(any(x %in% c("1471", "1483"))) {
-#    return(1)
-#  } else {
-#    return(0)
-#  }
-#})
-#df_self_report_diagnoses$self_report_atrial_fibrillation_0_0 <- as.factor(df_self_report_diagnoses$self_report_atrial_fibrillation_0_0)
-#summary(df_self_report_diagnoses$self_report_atrial_fibrillation_0_0)  
-
-# 9.9 merge with main df
-#df_self_report_diagnoses <- df_self_report_diagnoses[, c(1, 33:173)]
-#df <- list(df, df_self_report_diagnoses) %>% reduce(left_join, by = "eid")
-#summary(df$self_report_atrial_fibrillation_0_0)
-
 df$primary_care_diagnosis_date_for_Atrial_fibrillation <-  as.Date(df$primary_care_diagnosis_date_for_Atrial_fibrillation, format="%d/%m/%Y")
 df$date_diff_Atrial_fibrillation_diagnosis <- df$primary_care_diagnosis_date_for_Atrial_fibrillation - df$baseline_date
 summary(as.factor(df$date_diff_Atrial_fibrillation_diagnosis))
@@ -645,8 +584,6 @@ summary(df$Atrial_Fibrillation_BIN_FINAL_0_0)
 #495456   5371
 
 # 9.10 Save file
-#save(df, file = paste0(data_pathway, "ukb_data_orig_merged_final_diseases_oct22.rda"))
-#load(file = paste0(data_pathway,"ukb_data_orig_merged_final_diseases_oct22.rda"))
 save(df, file = paste0(data_pathway, "ukbdata_diagnoses_baseline_diseasestatus.rda"))
 
 #--------- 10. Medications 
@@ -779,6 +716,4 @@ rm(col_names_meds,df_meds,list_meds)
 length(unique(df$eid))
 #500827
 # Save file
-#save(df, file = paste0(data_pathway, "ukb_data_orig_merged_final_diseases_oct22.rda"))
-#load(file = paste0(data_pathway, "ukb_data_orig_merged_final_diseases_oct22.rda"))
 save(df, file = paste0(data_pathway, "ukbdata_diagnoses_baseline_diseasestatus_baselinemedications.rda"))
