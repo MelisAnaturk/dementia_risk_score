@@ -34,6 +34,10 @@ library(sjmisc)
 library(sjlabelled)
 library(viridis)
 
+#if running test with source data only, uncomment lines 38-40 and run, then skip to line 59 (savepath="../results") 
+#load("sourcedata.rda")
+#df_test<-source_data
+#rm(source_data)
 
 #----- 1. ASSESS DISCRIMINATIVE ABILITY
 # report the AUC and 95% confidence intervals for each risk model (using predicted probabilities)
@@ -53,6 +57,7 @@ df_test <- rbind(test.data, train.data)
 datasets <- c("test")
 
 savepath = "../results/"
+#note savepath directory must exist
 
 #dataframe for storing/organizing auc results for each model
 df_table3<-data.frame(matrix(ncol=3))
