@@ -9,7 +9,7 @@ This repository contains code used in producing the UKB-DRS risk score by Anatü
 All files in ```results/``` and ```models/``` are created via scripts in ```scripts/```
 
 ## Requirements
-For optimal performance, we recommend a system with >=16GB of RAM and >=4 CPU cores. Development was carried out on a Ubuntu 18.04.6 LTS (Bionic Beaver) system. R version 3.6.3 was used. See scripts/session_info_R for specific package versions.
+For optimal performance, we recommend a system with >=16GB of RAM and >=4 CPU cores. Development was carried out on a Ubuntu 18.04.6 LTS (Bionic Beaver) system. R version 3.6.3 was used. See scripts/session_info_R for specific package versions. For dementia ascertain python scripts, python version 3.6.5 was used.
 
 ## 1. Dementia ascertain
 ### 1.1 Mining GP prescription and clinical events data 
