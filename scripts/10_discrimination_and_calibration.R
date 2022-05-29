@@ -34,7 +34,7 @@ library(sjmisc)
 library(sjlabelled)
 library(viridis)
 
-#if running test with source data only, uncomment lines 38-40 and run, then skip to line 59 (savepath="../results") 
+#if running test with source data only, uncomment lines 38-40 and run, then skip to line 56 (savepath="../results") 
 #load("sourcedata.rda")
 #df_test<-source_data
 #rm(source_data)
@@ -46,9 +46,6 @@ library(viridis)
 load(file="../../raw_data/train_data_outliers_removed.rda")
 load(file="../../raw_data/test_data_outliers_removed.rda")
 
-#NB. Anu-adri has to be excluded from calibration calculations
-models <- c("age_only", "UKBDRS_LASSO", "UKBDRS_APOE_LASSO", "CAIDE", "DRS")
-
 test.data$dataset <- "test"
 train.data$dataset <- "train"
 
@@ -58,6 +55,9 @@ datasets <- c("test")
 
 savepath = "../results/"
 #note savepath directory must exist
+
+#NB. Anu-adri has to be excluded from calibration calculations
+models <- c("age_only", "UKBDRS_LASSO", "UKBDRS_APOE_LASSO", "CAIDE", "DRS")
 
 #dataframe for storing/organizing auc results for each model
 df_table3<-data.frame(matrix(ncol=3))
