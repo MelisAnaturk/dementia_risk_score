@@ -200,6 +200,10 @@ train.data <- cbind(train.data, scaled.train.data)
 test.data <- cbind(test.data, scaled.test_data)
 names(train.data)
 
+#define sleep squared variable to test inverted u associations
+train.data$Sleep_duration_squared_0_0<-train.data$Sleep_duration_0_0^2
+test.data$Sleep_duration_squared_0_0<-test.data$Sleep_duration_0_0^2
+
 # specify predictors, excluding intercept
 x <- model.matrix(dementia_BIN_TOTAL~., train.data)[,-1]
 
@@ -227,7 +231,8 @@ lasso.final.1 <- glmnet(x, y, alpha = 1, family = "binomial", lambda = lasso.fit
 coef(lasso.final.1, s = lasso.fit.cv$lambda.1se) #lambda.1se
 
 #Output 
-# 34 x 1 sparse Matrix of class "dgCMatrix"
+#35 x 1 sparse Matrix of class "dgCMatrix"
+#1
 #(Intercept)                            -5.32584647
 #Townsend_deprivation_Groups_0_01        .         
 #Townsend_deprivation_Groups_0_02        .         
@@ -261,7 +266,8 @@ coef(lasso.final.1, s = lasso.fit.cv$lambda.1se) #lambda.1se
 #BMI_0_0                                 .         
 #total_fish_intake_per_week_0_0          .         
 #Number_in_household_0_0                 .         
-#units_combined                          .      
+#units_combined                          .         
+#Sleep_duration_squared_0_0              .  
 
 # tidy output
 View(tidy(lasso.final.1))
@@ -303,6 +309,10 @@ train.data$Townsend_deprivation_modelvar<-ifelse(train.data$Townsend_deprivation
 train.data$Townsend_deprivation_modelvar<-as.factor(train.data$Townsend_deprivation_modelvar)
 test.data$Townsend_deprivation_modelvar<-ifelse(test.data$Townsend_deprivation_Groups_0_0==4,1,0)
 test.data$Townsend_deprivation_modelvar<-as.factor(test.data$Townsend_deprivation_modelvar)
+
+#define sleep squared variable to test inverted u associations
+train.data$Sleep_duration_squared_0_0<-train.data$Sleep_duration_0_0^2
+test.data$Sleep_duration_squared_0_0<-test.data$Sleep_duration_0_0^2
 
 
 #### 2.1 Test beta coefficients ####
