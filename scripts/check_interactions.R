@@ -88,26 +88,6 @@ continuous_vars <- c("Age_when_attended_assesment_centre_0_0","education_years",
                      "total_fish_intake_per_week_0_0", 
                      "Number_in_household_0_0")
 
-df_continuous <- df[,continuous_vars]
-corr_continuous<-cor(df_continuous)
-mypalette = colorRampPalette(c("#4477AA", "#77AADD", "#FFFFFF", "#EE9988", "#BB4444"))
-continuous_vars_names <- c("Age","Education","BMI",
-                           "LDL","HDL", "Total Cholesterol",
-                           "Alcohol", "SBP", "Sleep", "Fish", "N. Household")
-rownames(corr_continuous)<-continuous_vars_names
-colnames(corr_continuous)<-continuous_vars_names
-
-corrplot(corr_continuous, method="color", addCoef.col = "black", order = "hclust",
-         col=mypalette(200), type="lower", cl.cex= 1.2, number.cex = 0.75)
-
-jpeg(paste0(save_pathway,"continuousvars_corrplot.jpg"),
-     quality = 100, res=300, width = 6, height = 6, units="in")
-corrplot(corr_continuous, method="color", addCoef.col = "black", order = "hclust",
-         col=mypalette(200), type="lower", cl.cex= 1.2, number.cex = 0.75)
-dev.off()
-rm(df_continuous, corr_continuous,mypalette,continuous_vars_names,continuous_vars)
-# we're now excluding total cholesterol from the set of predictors fed into LASSO due to high correlations
-
 # 2.1 Remove outliers from dataframe before train/test split
 
 #' Detect outliers using IQR method
@@ -155,10 +135,12 @@ df_filtered <- remove_outliers(df, cont_vars)
 summary(df_filtered$dementia_BIN_TOTAL)
 #205014   2915 
 
+save(df_filtered, file = paste0(data_pathway, "df_filtered_prelasso.rda"))
+load(file = paste0(data_pathway,"df_filtered_prelasso.rda"))
 # exclude people who only have one assessment date
 #redefine myvars to not include total cholesterol
-myvars <- c("Age_when_attended_assesment_centre_0_0","education_years", "Townsend_deprivation_Groups_0_0", "BMI_0_0",
-            "Sex", "Sleeplesness_insomnia_0_0_bin", "family_history_of_dementia", 
+myvars <- c("Age_when_attended_assesment_centre_0_0", "Sex","education_years", "Townsend_deprivation_Groups_0_0", "BMI_0_0",
+            "Sleeplesness_insomnia_0_0_bin", "family_history_of_dementia", 
             "Diabetes_BIN_FINAL_0_0", "LDL_0_0","HDL_cholesterol_0_0",
             "current_history_depression","TBI_BIN_FINAL_0_0", "stroke_TIA_BIN_FINAL", "Smoker_bin", "units_combined",
             "Systolic_BP_auto_mean", "IPAQ_activity_group_0_0", "Hearing_prob", "Sleep_duration_0_0", "Antihypertensive_meds_0_0",
@@ -169,6 +151,8 @@ myvars <- c("Age_when_attended_assesment_centre_0_0","education_years", "Townsen
 # IF you would like to run a cox proportional hazard equivalent, check out:
 # https://glmnet.stanford.edu/articles/Coxnet.html 
 # or the r package coxphMIC
+
+
 
 # split df into train and test sets (we're using 80/20 split here)
 set.seed(2003)
@@ -200,8 +184,35 @@ train.data <- cbind(train.data, scaled.train.data)
 test.data <- cbind(test.data, scaled.test_data)
 names(train.data)
 
+#reorder column names
+train.data<-train.data[,myvars]
+names(train.data)
+test.data<-test.data[,myvars]
+names(test.data)
+
+categoricalvars <- c("Townsend_deprivation_Groups_0_0", "Sleeplesness_insomnia_0_0_bin", "family_history_of_dementia", 
+            "Diabetes_BIN_FINAL_0_0", "current_history_depression","TBI_BIN_FINAL_0_0", "stroke_TIA_BIN_FINAL", "Smoker_bin",
+            "IPAQ_activity_group_0_0", "Hearing_prob", "Antihypertensive_meds_0_0",
+            "Social_engagement_0_2", "Atrial_Fibrillation_BIN_FINAL_0_0",
+            "APOE_genotype_bin", "NSAIDs_0_0", "HRT_0_0", "statins_0_0", "Aspirin_0_0")
+
+
 # specify predictors, excluding intercept
-x <- model.matrix(dementia_BIN_TOTAL~., train.data)[,-1]
+#x <- model.matrix(dementia_BIN_TOTAL~., train.data)[,-1]
+
+# create design matrix with interactions btwn all vars
+x <- model.matrix(dementia_BIN_TOTAL~.^2, train.data)
+#i dont want most of these, specify what i do want
+#basic terms, age interaction with factors, sex interactions
+colnames(x)
+#1 is intercept
+#2 - 34 are basic terms
+#35 - 66 is age interactions
+#67 - 97 is sex interactions
+
+x<-x[,2:97]
+colnames(x)
+
 
 # Convert the outcome (class) to a numerical variable
 y <- ifelse(train.data$dementia_BIN_TOTAL==1, 1, 0)
