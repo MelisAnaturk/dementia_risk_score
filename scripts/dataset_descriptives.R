@@ -146,3 +146,28 @@ summary_medical <-
 df_medical <- summary_table(df, summary_medical, by = c("dataset"))
 
 table1 <- rbind(df_demographic, df_biomed, df_lifestyle, df_genetic, df_medical)
+
+
+
+
+#Sex check
+df_dementia<-subset(df, df$dementia_BIN_TOTAL==1)
+summary(df_dementia$Sex)
+#0    1 
+#1335 1580
+
+df_dementia_train<-subset(train.data, train.data$dementia_BIN_TOTAL==1)
+summary(df_dementia_train$Sex)
+#0    1 
+#1070 1262
+
+df_dementia_test<-subset(test.data, test.data$dementia_BIN_TOTAL==1)
+summary(df_dementia_test$Sex)
+#0   1 
+#265 318 
+
+summary_dementia <-
+  list("dementia" = 
+         list("Incident Dementia" = ~ qwraps2::n_perc(dementia_BIN_TOTAL == 1, show_denom = "never"))
+  )
+dementia_by_sex<- summary_table(df_dementia, summary_dementia, by = c("Sex"))

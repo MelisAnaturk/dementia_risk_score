@@ -43,8 +43,8 @@ library(viridis)
 # report the AUC and 95% confidence intervals for each risk model (using predicted probabilities)
 
 #load train and test data
-load(file="../../raw_data/train_data_outliers_removed.rda")
-load(file="../../raw_data/test_data_outliers_removed.rda")
+load(file="train_data_outliers_removed.rda")
+load(file="test_data_outliers_removed.rda")
 
 test.data$dataset <- "test"
 train.data$dataset <- "train"
