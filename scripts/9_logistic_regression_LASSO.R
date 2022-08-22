@@ -42,11 +42,15 @@ model_pathway = "../models/"
 save_pathway = "../results/"
 
 # load .rda file
-load(file = paste0(data_pathway,"ukbdata_diagnoses_baseline_diseasestatus_baselinemedications_ANUADRI_CAIDE_FRS_recoded_DRS.rda"))
+load(file = paste0(data_pathway,"ukbdata_diagnoses_baseline_diseasestatus_baselinemedications_ANUADRI_CAIDE_FRS_recoded_DRS_fiftyplusnoapoe.rda"))
 
 # Recode variables
 df$current_history_depression <- ifelse(df$depression_BIN_FINAL_0_0==1|df$Antidepressant_meds_0_0==1, 1,0)
 summary(as.factor(df$current_history_depression))
+
+df$household_occupancy<-as.factor(ifelse(df$Number_in_household_0_0==2,0,
+                                         ifelse(df$Number_in_household_0_0==1,1,
+                                                ifelse(df$Number_in_household_0_0>2,2,NA))))
 
 #CATEGORICAL & CONTINOUS PREDICTORS 
 myvars <- c("Age_when_attended_assesment_centre_0_0","education_years", "Townsend_deprivation_Groups_0_0", "BMI_0_0",
@@ -55,7 +59,7 @@ myvars <- c("Age_when_attended_assesment_centre_0_0","education_years", "Townsen
             "current_history_depression","TBI_BIN_FINAL_0_0", "stroke_TIA_BIN_FINAL", "Smoker_bin", "units_combined",
             "Systolic_BP_auto_mean", "IPAQ_activity_group_0_0", "Hearing_prob", "Sleep_duration_0_0", "Antihypertensive_meds_0_0",
             "total_fish_intake_per_week_0_0", "Social_engagement_0_2", "Atrial_Fibrillation_BIN_FINAL_0_0",
-            "Number_in_household_0_0","dementia_BIN_TOTAL", "APOE_genotype_bin", "NSAIDs_0_0", "HRT_0_0", "statins_0_0", "Aspirin_0_0")
+            "household_occupancy","dementia_BIN_TOTAL", "APOE_genotype_bin", "NSAIDs_0_0", "HRT_0_0", "statins_0_0", "Aspirin_0_0")
 
 # number of candidate risk factors
 length(myvars)-1 # to exclude dementia variable
@@ -78,7 +82,7 @@ df[,numeric_vars] <- lapply(df[,numeric_vars], as.factor)
 # how many individuals with dementia remaining?
 summary(df$dementia_BIN_TOTAL)
 #   0      1 
-#209177   3010
+#220807   3955
 
 # look at correlations between predictors
 continuous_vars <- c("Age_when_attended_assesment_centre_0_0","education_years","BMI_0_0",
@@ -146,14 +150,14 @@ remove_outliers <- function(df, cols = names(df)) {
 }
 
 # create vector of continuous variables (note total cholesterol has been removed)
-cont_vars <- c("Age_when_attended_assesment_centre_0_0", "education_years", "LDL_0_0",  "HDL_cholesterol_0_0", "Systolic_BP_auto_mean", "Sleep_duration_0_0", "BMI_0_0", "total_fish_intake_per_week_0_0", "Number_in_household_0_0", "units_combined")
+cont_vars <- c("Age_when_attended_assesment_centre_0_0", "education_years", "LDL_0_0",  "HDL_cholesterol_0_0", "Systolic_BP_auto_mean", "Sleep_duration_0_0", "BMI_0_0", "total_fish_intake_per_week_0_0", "units_combined")
 
 # apply remove_outliers function to df
 df_filtered <- remove_outliers(df, cont_vars)
 
 #n dementia?
 summary(df_filtered$dementia_BIN_TOTAL)
-#205014   2915 
+#216949   3813  
 
 # exclude people who only have one assessment date
 #redefine myvars to not include total cholesterol
@@ -163,7 +167,7 @@ myvars <- c("Age_when_attended_assesment_centre_0_0","education_years", "Townsen
             "current_history_depression","TBI_BIN_FINAL_0_0", "stroke_TIA_BIN_FINAL", "Smoker_bin", "units_combined",
             "Systolic_BP_auto_mean", "IPAQ_activity_group_0_0", "Hearing_prob", "Sleep_duration_0_0", "Antihypertensive_meds_0_0",
             "total_fish_intake_per_week_0_0", "Social_engagement_0_2", "Atrial_Fibrillation_BIN_FINAL_0_0",
-            "Number_in_household_0_0","dementia_BIN_TOTAL", "APOE_genotype_bin", "NSAIDs_0_0", "HRT_0_0", "statins_0_0", "Aspirin_0_0")
+            "household_occupancy","dementia_BIN_TOTAL", "NSAIDs_0_0", "HRT_0_0", "statins_0_0", "Aspirin_0_0")
 #----- 2. LASSO REGRESSION ------------------------------------------
 # LASSO logistic regression is first run to identify the subset of predictors to be used in our risk score
 # IF you would like to run a cox proportional hazard equivalent, check out:
@@ -185,7 +189,7 @@ test.data <- df_filtered[-training.samples, ][myvars]
 #test.data <- test.data[myvars]
 
 # Create vector of only continous variables
-cont_vars <- c("Age_when_attended_assesment_centre_0_0",  "education_years", "LDL_0_0",  "HDL_cholesterol_0_0", "Systolic_BP_auto_mean", "Sleep_duration_0_0", "BMI_0_0", "total_fish_intake_per_week_0_0", "Number_in_household_0_0", "units_combined")
+cont_vars <- c("Age_when_attended_assesment_centre_0_0",  "education_years", "LDL_0_0",  "HDL_cholesterol_0_0", "Systolic_BP_auto_mean", "Sleep_duration_0_0", "BMI_0_0", "total_fish_intake_per_week_0_0", "units_combined")
 
 # scale the data
 scaled.train.data <- scale(train.data[, cont_vars], scale = TRUE, center = TRUE)
@@ -228,40 +232,17 @@ coef(lasso.final.1, s = lasso.fit.cv$lambda.1se) #lambda.1se
 
 #Output 
 # 34 x 1 sparse Matrix of class "dgCMatrix"
-#(Intercept)                            -5.32584647
-#Townsend_deprivation_Groups_0_01        .         
-#Townsend_deprivation_Groups_0_02        .         
-#Townsend_deprivation_Groups_0_03        .         
-#Townsend_deprivation_Groups_0_04        0.06114748
-#Sex1                                    .         
-#Sleeplesness_insomnia_0_0_bin1          .         
-#Sleeplesness_insomnia_0_0_bin2          .         
-#family_history_of_dementia1             0.05820290
-#Diabetes_BIN_FINAL_0_01                 0.45747886
-#current_history_depression1             0.20016853
-#TBI_BIN_FINAL_0_01                      .         
-#stroke_TIA_BIN_FINAL1                   0.39709995
-#Smoker_bin1                             .         
-#IPAQ_activity_group_0_01                .         
-#Hearing_prob1                           .         
-#Antihypertensive_meds_0_01              0.06789574
-#Social_engagement_0_21                  .         
-#Atrial_Fibrillation_BIN_FINAL_0_01      .         
-#APOE_genotype_bin1                      0.89106446
-#NSAIDs_0_01                             .         
-#HRT_0_01                                .         
-#statins_0_01                            0.02806330
-#Aspirin_0_01                            0.06208946
-#Age_when_attended_assesment_centre_0_0  1.19387977
-#education_years                        -0.02909107
-#LDL_0_0                                 .         
-#HDL_cholesterol_0_0                     .         
-#Systolic_BP_auto_mean                   .         
-#Sleep_duration_0_0                      .         
-#BMI_0_0                                 .         
-#total_fish_intake_per_week_0_0          .         
-#Number_in_household_0_0                 .         
-#units_combined                          .      
+#(Intercept)                            -4.58422068
+#Townsend_deprivation_Groups_0_04        0.06618836
+#family_history_of_dementia1             0.19324274
+#Diabetes_BIN_FINAL_0_01                 0.44319669
+#current_history_depression1             0.33999776
+#stroke_TIA_BIN_FINAL1                   0.52360243
+#Antihypertensive_meds_0_01              0.05892152
+#statins_0_01                            0.06841070
+#Aspirin_0_01                            0.09320814
+#Age_when_attended_assesment_centre_0_0  0.84523138
+#education_years                        -0.06562031  
 
 # tidy output
 View(tidy(lasso.final.1))
