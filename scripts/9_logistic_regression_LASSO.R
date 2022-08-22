@@ -437,3 +437,67 @@ df_lr_sexstratify<-rbind(df_lr_sexstratify, format_modelcoefs(model))
 df_lr_sexstratify$FDR_BH = p.adjust(df_lr_sexstratify$p, method = "BH")
                          
 write.csv(df_lr_sexstratify, file="../results/lr_betas_sexstratify_initial.csv")
+
+#females: age + famhx + education + townsend + diabetes + depression + stroke + aspirin
+#males: age + famhx + education + townsend + diabetes + depression + stroke + antihyper
+
+#create sexstratified predicted prob
+UKBDRS_LASSO_female  <-  paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +  family_history_of_dementia +
+                            education_years + Townsend_deprivation_modelvar +Diabetes_BIN_FINAL_0_0  +
+                            current_history_depression + stroke_TIA_BIN_FINAL +  
+                            Aspirin_0_0")
+
+UKBDRS_LASSO_male  <-  paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +  family_history_of_dementia +
+                            education_years + Townsend_deprivation_modelvar +Diabetes_BIN_FINAL_0_0  +
+                            current_history_depression + stroke_TIA_BIN_FINAL +  
+                            Antihypertensive_meds_0_0")
+
+for (m in c("UKBDRS_LASSO_female","UKBDRS_LASSO_male")){
+  print(paste0('applying logistic regression model for ', m))
+  model <- glm(as.formula(m), data=train.data, family="binomial")
+  
+  print(paste0('UKB training set : calculating linear predictor and predicted probabilities for ', m))
+  train.data[paste(m, "linear_predictor", sep="_")] <- predict(model, train.data)
+  train.data[paste(m, "predicted_prob", sep="_")] <-   1/(1+exp(-train.data[paste(m, "linear_predictor", sep="_")])) # can also be computed with predict(model, type='response')
+  
+  print(paste0('UKB test set : calculating linear predictor and predicted probabilities for ', m))
+  test.data[paste(m, "linear_predictor", sep="_")] <- predict(model, test.data)
+  test.data[paste(m, "predicted_prob", sep="_")] <-   1/(1+exp(-test.data[paste(m, "linear_predictor", sep="_")])) # can also be computed with predict(model, newdata= test.data, type='response') 
+}
+
+#now create final UKBDRS_LASSO_sexstratify linear predictor
+train.data$UKBDRS_LASSO_sexstratify_linear_predictor<-ifelse(train.data$Sex==0, train.data$UKBDRS_LASSO_female_linear_predictor,
+                                                             ifelse(train.data$Sex==1, train.data$UKBDRS_LASSO_male_linear_predictor,NA))
+test.data$UKBDRS_LASSO_sexstratify_linear_predictor<-ifelse(test.data$Sex==0, test.data$UKBDRS_LASSO_female_linear_predictor,
+                                                             ifelse(test.data$Sex==1, test.data$UKBDRS_LASSO_male_linear_predictor,NA))
+
+#now create final UKBDRS_LASSO_sexstratify predicted prob
+train.data$UKBDRS_LASSO_sexstratify_predicted_prob<-ifelse(train.data$Sex==0, train.data$UKBDRS_LASSO_female_predicted_prob,
+                                                             ifelse(train.data$Sex==1, train.data$UKBDRS_LASSO_male_predicted_prob,NA))
+test.data$UKBDRS_LASSO_sexstratify_predicted_prob<-ifelse(test.data$Sex==0, test.data$UKBDRS_LASSO_female_predicted_prob,
+                                                            ifelse(test.data$Sex==1, test.data$UKBDRS_LASSO_male_predicted_prob,NA))
+summary(test.data$UKBDRS_LASSO_predicted_prob)
+#Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+#0.0006103 0.0043762 0.0107550 0.0172858 0.0235672 0.2792533 
+summary(test.data$UKBDRS_LASSO_sexstratify_predicted_prob)
+#Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+#0.0006096 0.0043077 0.0108167 0.0172328 0.0233764 0.3156873 
+plot(test.data$UKBDRS_LASSO_sexstratify_predicted_prob, test.data$UKBDRS_LASSO_predicted_prob)
+
+#save train and test data now with sex stratified model as well, to compare in next script
+save(train.data, file = paste0(data_pathway, "train_data_outliers_removed_fiftyplusnoapoe.rda"))
+save(test.data, file = paste0(data_pathway, "test_data_outliers_removed_fiftyplusnoapoe.rda"))
+
+#get final betas and write out, to test in wh
+df_lr_sexstratify<-data.frame(matrix(ncol=6))
+names(df_lr_sexstratify)<-c("Predictor","beta","lower","upper","OR","p")
+
+#females
+model <- glm(as.formula(UKBDRS_LASSO_female), data=subset(train.data, train.data$Sex==0), family="binomial")
+df_lr_sexstratify<-rbind(df_lr_sexstratify, format_modelcoefs(model))
+#males
+model <- glm(as.formula(UKBDRS_LASSO_male), data=subset(train.data, train.data$Sex==1), family="binomial")
+df_lr_sexstratify<-rbind(df_lr_sexstratify, format_modelcoefs(model))
+df_lr_sexstratify$FDR_BH = p.adjust(df_lr_sexstratify$p, method = "BH")
+
+write.csv(df_lr_sexstratify, file="../results/lr_betas_sexstratify_final.csv")
