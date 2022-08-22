@@ -325,7 +325,7 @@ write.csv(df_table4, file="../results/auc_ukb_comparisons.csv")
 
 ## plot ROC curves, this is Figure 1
 library(extrafont)
-g2 <- ggroc(list(Age_only=age_only, UKBDRS_Model1=UKBDRS_APOE_LASSO, UKBDRS_Model2=UKBDRS_LASSO, CAIDE = CAIDE, DRS = DRS, ANU_ADRI = ANU_ADRI))
+g2 <- ggroc(list('UKBDRS+APOE'=UKBDRS_APOE_LASSO, UKBDRS=UKBDRS_LASSO, Age_only=age_only, DRS = DRS,CAIDE = CAIDE, ANU_ADRI = ANU_ADRI))
 plot <- g2 + theme_minimal()  +  theme(legend.title = element_blank(), panel.grid.major = element_blank(), 
                                        panel.grid.minor = element_blank(),
                                        panel.background = element_rect(colour = "black", size=1), text = element_text(size=14, family="LM Roman 10")) 
