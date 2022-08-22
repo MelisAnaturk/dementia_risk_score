@@ -24,28 +24,29 @@ myvars <- c("Age_when_attended_assesment_centre_0_0","education_years", "Townsen
             "depression_BIN_FINAL_0_0","TBI_BIN_FINAL_0_0", "stroke_TIA_BIN_FINAL", "Smoker_bin", "units_combined", 
             "Systolic_BP_bin", "IPAQ_activity_group_0_0", "Hearing_prob", "Sleep_BIN", "Antihypertensive_meds_0_0",
             "Fish_intake_BIN", "Social_engagement_0_2", "Atrial_Fibrillation_BIN_FINAL_0_0",
-            "Social_engagement_0_1","dementia_BIN_TOTAL", "APOE_genotype_bin", "NSAIDs_0_0", "HRT_0_0", "statins_0_0")
+            "Social_engagement_0_1","dementia_BIN_TOTAL", "NSAIDs_0_0", "HRT_0_0", "statins_0_0")
 
 pMiss <- function(x){sum(is.na(x))/length(x)*100}
 apply(df[myvars],2,pMiss)
 #n = 500827
 # 1.4 subset to complete cases
 df <- df[complete.cases(df[myvars]),]
-#n=212192 after subsetting for complete cases across all variables
+#n=296949 after subsetting for complete cases across all variables
 
 summary(df$dementia_BIN_TOTAL)
 #0      1 
-#209143   3049
+#292846   4103
 
-# 1.5 restrict sample to middle aged = 40+
-df <- subset(df, Age_when_attended_assesment_centre_0_0>=40)
+# 1.5 restrict sample to 50+
+df <- subset(df, Age_when_attended_assesment_centre_0_0>=50)
+#n=224762
 summary(df$Age_when_attended_assesment_centre_0_0)
 #    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-#   40.00   50.00   57.00   56.23   63.00   73.00 
+#   50.00   56.00   60.00   59.96   64.00   73.00 
 
 summary(df$dementia_BIN_TOTAL)
 #0      1 
-#209138   3049  
+#220755   4007  
 
 # 1.6 recode dementia variable such that only HES and primary care variables contribute to dementia ascertain
 myvars <- c("secondary_care_diagnosis_of_Dementia", "death_report_dementia", "primary_care_diagnosis_for_dementia", "primary_care_prescription_for_Dementia")
@@ -62,7 +63,7 @@ sapply(df[myvars], class)
 df$dementia_BIN_TOTAL <- as.factor(df$dementia_BIN_TOTAL) 
 summary(df$dementia_BIN_TOTAL)
  #0      1 
- #209177   3010 
+ #220807   3955 
  
 #------ 2. Compute DRS ------
 # as our sample is between 40-73 years old, we will use the weights developed within a sample of 60-79 year olds
