@@ -200,7 +200,8 @@ CAIDE  <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$CAIDE_predicted_prob,
 DRS    <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$DRS_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
 
 #run all comparisons
-all_tests <- combn(list(age_only, UKBDRS_APOE_LASSO, UKBDRS_LASSO, CAIDE, DRS),
+#exclude ukbdrs apoe...not a fair comparison
+all_tests <- combn(list(age_only, UKBDRS_LASSO, CAIDE, DRS),
                    FUN = function(x, ...) roc.test(x[[1]], x[[2]]),
                    m = 2,
                    simplify = FALSE, 
@@ -210,7 +211,7 @@ all_tests <- combn(list(age_only, UKBDRS_APOE_LASSO, UKBDRS_LASSO, CAIDE, DRS),
 )
 
 #create list of model names to be compared, using naming convention in paper
-comparison_names <-combn(list("ageonly", "Model1", "Model2",
+comparison_names <-combn(list("ageonly", "UKBDRS",
                          "CAIDE", "DRS"), 
                     m = 2, 
                     FUN = paste, 
@@ -237,7 +238,7 @@ comparison_names_reorg$Number <- 1:nrow(comparison_names_reorg)
 
 # merge based on key variable
 merged_results <- merge(AUC_comparisons, comparison_names_reorg, by.c="Number", all.x=TRUE)
-merged_results <- dplyr::filter(merged_results, grepl('Model', comparison_names))
+merged_results <- dplyr::filter(merged_results, grepl('UKBDRS', comparison_names))
 
 # Now to ANU-ADRI (due to some missing data on this risk score)
 # exclude ppl with missing ANU-ADRI
@@ -247,7 +248,7 @@ UKBDRS_APOE_LASSO_anu  <-pROC::roc(anu.test.data$dementia_BIN_TOTAL, anu.test.da
 UKBDRS_LASSO_anu  <-pROC::roc(anu.test.data$dementia_BIN_TOTAL, anu.test.data$UKBDRS_LASSO_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
 
 #run all comparisons
-all_tests <- combn(list(UKBDRS_APOE_LASSO, UKBDRS_LASSO,
+all_tests <- combn(list(UKBDRS_LASSO_anu,
                         ANU_ADRI),
                    FUN = function(x, ...) roc.test(x[[1]], x[[2]]),
                    m = 2,
@@ -268,7 +269,7 @@ all_tests <- combn(list(UKBDRS_APOE_LASSO, UKBDRS_LASSO,
 #)
 
 #create list of model names to be compared, using naming convention in paper
-comparison_names <-combn(list("Model1", "Model2",
+comparison_names <-combn(list("UKBDRS",
                               "ANUADRI"), 
                          m = 2, 
                          FUN = paste, 
@@ -320,7 +321,7 @@ df_table4<-data.frame(cbind(AUC_comparisons_corrected$Score1, AUC_comparisons_co
                    round(AUC_comparisons_corrected$statistic,2), AUC_comparisons_corrected$p.value,
                    AUC_comparisons_corrected$FDR_BH))
 names(df_table4)<-c("Risk Score 1","Risk Score 2","AUC 1","AUC 2","Z","p","pcorr")
-
+write.csv(df_table4, file="../results/auc_ukb_comparisons.csv")
 
 ## plot ROC curves, this is Figure 1
 library(extrafont)
