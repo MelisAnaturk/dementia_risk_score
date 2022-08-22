@@ -411,3 +411,29 @@ corr_res<-tetrachoric(df[,c("statins_num","antihypertensive_num","aspirin_num","
 #hrt_num              -0.12891023          -0.02766018 -0.077943819  0.134816862  1.00000000
 
 #statins, aspirin, and antihypertensive use are correlated
+
+
+#### Sex stratify ####
+#fit LR in males and females separately to check if betas differ greatly
+#load train and test data, if necessary
+load(file = paste0(data_pathway,"train_data_outliers_removed_fiftyplusnoapoe.rda"))
+load(file = paste0(data_pathway,"test_data_outliers_removed_fiftyplusnoapoe.rda"))
+
+UKBDRS_LASSO_initial  <-  paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +  family_history_of_dementia +
+                            education_years + Townsend_deprivation_modelvar +Diabetes_BIN_FINAL_0_0  +
+                            current_history_depression + stroke_TIA_BIN_FINAL +  
+                            Antihypertensive_meds_0_0 + statins_0_0 + 
+                            Aspirin_0_0")
+
+df_lr_sexstratify<-data.frame(matrix(ncol=6))
+names(df_lr_sexstratify)<-c("Predictor","beta","lower","upper","OR","p")
+
+#females
+model <- glm(as.formula(UKBDRS_LASSO_initial), data=subset(train.data, train.data$Sex==0), family="binomial")
+df_lr_sexstratify<-rbind(df_lr_sexstratify, format_modelcoefs(model))
+#males
+model <- glm(as.formula(UKBDRS_LASSO_initial), data=subset(train.data, train.data$Sex==1), family="binomial")
+df_lr_sexstratify<-rbind(df_lr_sexstratify, format_modelcoefs(model))
+df_lr_sexstratify$FDR_BH = p.adjust(df_lr_sexstratify$p, method = "BH")
+                         
+write.csv(df_lr_sexstratify, file="../results/lr_betas_sexstratify_initial.csv")
