@@ -273,10 +273,10 @@ test.data$years_diff_baseline_all <- as.numeric(test.data$date_diff_baseline_all
 # describe
 describe(as.numeric(train.data$years_diff_all_time))
 #vars      n mean  sd median trimmed mad min   max range skew kurtosis   se
-#X1    1 166344 1.11 2.79      0    0.29   0   0 12.33 12.33 2.36     4.14 0.01
+#X1    1 176611 1.13 2.78      0    0.32   0   0 12.27 12.27 2.33     4.01 0.01
 describe(as.numeric(test.data$years_diff_all_time))
 #vars     n mean   sd median trimmed mad min   max range skew kurtosis   se
-#X1   1 41585 1.11 2.79      0    0.29   0   0 12.23 12.23 2.37     4.17 0.01
+#X1    1 44151 1.15 2.79      0    0.34   0   0 12.29 12.29 2.29     3.82 0.01
 
 #membership in highest deprived group (4, on scale of 0-4) was selected, not others
 #create binary version of deprivation to use in model
@@ -290,15 +290,17 @@ test.data$Townsend_deprivation_modelvar<-as.factor(test.data$Townsend_deprivatio
 #based on the lasso selected vars, compute model coefficients in train data
 #use 2 models - one with apoe, one without. include sex as a manually selected variable as well
 
-# specify age only and various versions of UKB-DRS (see manuscript for details)
-UKBDRS_LASSO  <-  paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +  Sex + education_years +
-                            Diabetes_BIN_FINAL_0_0  +  current_history_depression + stroke_TIA_BIN_FINAL + 
-                            family_history_of_dementia + Townsend_deprivation_modelvar + Antihypertensive_meds_0_0 +
+# specify various versions of UKB-DRS (see manuscript for details)
+UKBDRS_LASSO  <-  paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +  family_history_of_dementia +
+                            education_years + Townsend_deprivation_modelvar +Diabetes_BIN_FINAL_0_0  +
+                            current_history_depression + stroke_TIA_BIN_FINAL +  
+                            Antihypertensive_meds_0_0 +  
                             statins_0_0 + Aspirin_0_0")
 
-UKBDRS_APOE_LASSO <-   paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +  Sex + education_years +
-                            Diabetes_BIN_FINAL_0_0  +  current_history_depression + stroke_TIA_BIN_FINAL + 
-                            family_history_of_dementia + Townsend_deprivation_modelvar + Antihypertensive_meds_0_0 +
+UKBDRS_APOE_LASSO <-    paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +  family_history_of_dementia +
+                            education_years + Townsend_deprivation_modelvar +Diabetes_BIN_FINAL_0_0  +
+                            current_history_depression + stroke_TIA_BIN_FINAL +  
+                            Antihypertensive_meds_0_0 +  
                             statins_0_0 + Aspirin_0_0 + APOE_genotype_bin")
 
 #check model coefficeints when applied to training data
@@ -331,6 +333,7 @@ for (m in table2_models){
 }
 
 df_table2$FDR_BH = p.adjust(df_table2$p, method = "BH")
+write.csv(df_table2, file=paste0(save_pathway, "lr_betas_initial.csv"))
 # both statins and aspirin have non sig betas, so remove them from model
 rm(table2_models, df_table2, UKBDRS_LASSO, UKBDRS_APOE_LASSO)
 
@@ -342,14 +345,17 @@ rm(table2_models, df_table2, UKBDRS_LASSO, UKBDRS_APOE_LASSO)
 # specify age only and various versions of UKB-DRS (see manuscript for details)
 age_only <-      paste("dementia_BIN_TOTAL~Age_when_attended_assesment_centre_0_0")
 
-UKBDRS_LASSO  <-  paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +  Sex + education_years +
-                            Diabetes_BIN_FINAL_0_0  +  current_history_depression + stroke_TIA_BIN_FINAL + 
-                            family_history_of_dementia + Townsend_deprivation_modelvar + Antihypertensive_meds_0_0")
+UKBDRS_LASSO  <-  paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +  family_history_of_dementia +
+                            education_years + Townsend_deprivation_modelvar +Diabetes_BIN_FINAL_0_0  +
+                            current_history_depression + stroke_TIA_BIN_FINAL +  
+                            Antihypertensive_meds_0_0 +  
+                            Aspirin_0_0")
 
-UKBDRS_APOE_LASSO <-   paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +  Sex + education_years +
-                            Diabetes_BIN_FINAL_0_0  +  current_history_depression + stroke_TIA_BIN_FINAL + 
-                            family_history_of_dementia + Townsend_deprivation_modelvar + Antihypertensive_meds_0_0 +
-                            APOE_genotype_bin")
+UKBDRS_APOE_LASSO <-    paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +  family_history_of_dementia +
+                            education_years + Townsend_deprivation_modelvar +Diabetes_BIN_FINAL_0_0  +
+                            current_history_depression + stroke_TIA_BIN_FINAL +  
+                            Antihypertensive_meds_0_0 +  
+                            Aspirin_0_0 + APOE_genotype_bin")
 
 models <- c("age_only", "UKBDRS_LASSO", "UKBDRS_APOE_LASSO")
 
@@ -367,12 +373,12 @@ for (m in models){
 }
 
 #save train and test data
-save(train.data, file = paste0(data_pathway, "train_data_outliers_removed.rda"))
-save(test.data, file = paste0(data_pathway, "test_data_outliers_removed.rda"))
+save(train.data, file = paste0(data_pathway, "train_data_outliers_removed_fiftyplusnoapoe.rda"))
+save(test.data, file = paste0(data_pathway, "test_data_outliers_removed_fiftyplusnoapoe.rda"))
 
 #load train and test data, if necessary
-load(file = paste0(data_pathway,"train_data_outliers_removed.rda"))
-load(file = paste0(data_pathway,"test_data_outliers_removed.rda"))
+load(file = paste0(data_pathway,"train_data_outliers_removed_fiftyplusnoapoe.rda"))
+load(file = paste0(data_pathway,"test_data_outliers_removed_fiftyplusnoapoe.rda"))
 
 table2_models <- c("age_only", "UKBDRS_LASSO", "UKBDRS_APOE_LASSO")
 
@@ -387,7 +393,7 @@ for (m in table2_models){
 }
 
 df_table2$FDR_BH = p.adjust(df_table2$p, method = "BH")
-
+write.csv(df_table2, file=paste0(save_pathway, "lr_betas_final.csv"))
 
 #checking for correlations among med vars
 df$statins_num<-as.numeric(df$statins_0_0)
