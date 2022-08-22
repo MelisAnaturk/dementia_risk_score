@@ -187,6 +187,53 @@ plot <- val.prob(data[, paste(m, "predicted_prob", sep="_")], data$y, g=10, pl=T
 print(plot)
 dev.off()
 
+#run calibration for ukb drs apoe in the apoe subset
+data <- test.data[complete.cases(test.data[,c("APOE_genotype_bin")]),]
+data$y <- ifelse(data[,"dementia_BIN_TOTAL"]==1,1,0)
+vec <-val.prob(data[, paste("UKBDRS_APOE_LASSO", "predicted_prob", sep="_")], data$y, g=10, pl=TRUE, smooth=TRUE, logistic.cal=FALSE, lim=c(0,0.4))
+print(vec)
+#Dxy       C (ROC)            R2             D      D:Chi-sq           D:p             U      U:Chi-sq           U:p             Q         Brier 
+#6.078904e-01  8.039452e-01  1.407901e-01  2.378221e-02  7.459064e+02            NA -6.318375e-05  2.095845e-02  9.895755e-01  2.384539e-02  1.736947e-02 
+#Intercept         Slope          Emax           E90          Eavg           S:z           S:p 
+#1.805744e-02  1.004028e+00  4.363058e-02  1.476018e-03  6.110359e-04  1.397059e-01  8.888924e-01
+dev.off()
+print(round(vec[17],2))
+#S:z 
+#0.14 
+
+# Brier score
+print('Brier score')
+print(round(vec[11],2))
+#Brier 
+#0.02 
+print('Rescaled brier score')
+print(rescale_Brier(vec[17], data$y))
+#S:z 
+#-6.765775 
+print('Spiegelhalter z test')  #intercept_slope
+Spiegelhalter_z(data$y, data[, paste("UKBDRS_APOE_LASSO", "predicted_prob", sep="_")])
+#[1] 0.1397059
+#[1] "fail to reject. calibrated"
+#z score:  0.1397059 
+#p value:  0.4444462 
+#[1] 0.1397059
+
+print(paste0("Intercept: ",round(vec[12],2)))
+#[1] "Intercept: 0.02"
+print(paste0("Slope: ",round(vec[13],4)))
+#[1] "Slope: 1.004"
+#save calibration plots to ../results folder
+png(file=paste0(savepath,"calibration_plot_for_","UKBDRS_APOE_LASSO", "_","test","set_intercept_slope.png"))
+#pdf(file=paste0(savepath,"calibration_plot_for_",m, "_",d,"set_LATEST.pdf"))
+plot <- val.prob(data[, paste("UKBDRS_APOE_LASSO", "predicted_prob", sep="_")], data$y, g=10, pl=TRUE, smooth=TRUE, logistic.cal=FALSE, lim=c(0,0.4), legendloc=FALSE)
+#plot <- val.prob(data[, paste(m, "predicted_prob_intercept_slope_update", sep="_")], data$y, g=10, pl=TRUE, smooth=TRUE, logistic.cal=FALSE, lim=c(0,1))
+print(plot)
+dev.off()
+
+
+
+
+
 #---- Model comparison
 # adding variables to the baseline model
 #---- comparing models to age only and to other risk scores
