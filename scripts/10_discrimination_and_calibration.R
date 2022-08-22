@@ -43,8 +43,8 @@ library(viridis)
 # report the AUC and 95% confidence intervals for each risk model (using predicted probabilities)
 
 #load train and test data
-load(file="../../raw_data/train_data_outliers_removed.rda")
-load(file="../../raw_data/test_data_outliers_removed.rda")
+load(file="../../raw_data/train_data_outliers_removed_fiftyplusnoapoe.rda")
+load(file="../../raw_data/test_data_outliers_removed_fiftyplusnoapoe.rda")
 
 test.data$dataset <- "test"
 train.data$dataset <- "train"
@@ -95,7 +95,7 @@ for (d in c("train","test")){
   df_auc[d]<-paste(round(roc$auc[1],5), " [", round(roc$ci[1],5), ",", round(roc$ci[3],5),"]",sep="")
 }
 df_table3<-rbind(df_table3, df_auc)
-
+write.csv(df_table3, file="../results/auc_ukb.csv")
 
 #----- 2. ASSESS CALIBRATION
 # Calculate calibration metrics
@@ -130,6 +130,13 @@ df_calibration_sitable5 <- data.frame(matrix(nrow = 0,ncol=7))
 
 # change model headings
 names(df_calibration_sitable5) <- c("Model", "Intercept", "Slope", "Chi-squared", "Brier_Score", "Spiegelhalter_z_test", "p.value")
+models <- c("age_only", "UKBDRS_LASSO", "CAIDE", "DRS")
+
+#***** caide is incorrectly computed based on the apoe beta now. temp adjustment here, must go back to 3_caide to fix properly
+# 2.5 Calculate Probability(dementia) - CAIDE without APOE
+df_test$CAIDE_predicted_prob <- (exp(-7.406 + 0.796 + (0.401*df_test$beta_caide_score)))/
+  1+(exp(-7.406 + 0.796 + (0.401*df_test$beta_caide_score)))
+
 
 # for loop to populate df_calibration_sitable5
 for (m in models){
