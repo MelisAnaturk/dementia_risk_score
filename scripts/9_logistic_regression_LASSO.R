@@ -484,8 +484,8 @@ summary(test.data$UKBDRS_LASSO_sexstratify_predicted_prob)
 plot(test.data$UKBDRS_LASSO_sexstratify_predicted_prob, test.data$UKBDRS_LASSO_predicted_prob)
 
 #save train and test data now with sex stratified model as well, to compare in next script
-save(train.data, file = paste0(data_pathway, "train_data_outliers_removed_fiftyplusnoapoe.rda"))
-save(test.data, file = paste0(data_pathway, "test_data_outliers_removed_fiftyplusnoapoe.rda"))
+save(train.data, file = paste0(data_pathway, "train_data_outliers_removed_fiftyplusnoapoe_sexstratify.rda"))
+save(test.data, file = paste0(data_pathway, "test_data_outliers_removed_fiftyplusnoapoe_sexstratify.rda"))
 
 #get final betas and write out, to test in wh
 df_lr_sexstratify<-data.frame(matrix(ncol=6))
