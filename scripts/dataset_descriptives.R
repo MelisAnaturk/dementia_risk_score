@@ -1,8 +1,8 @@
 #this script is used to check demographic descriptives for Table 1
 library(qwraps2)
 
-load("../../raw_data/train_data_outliers_removed.rda")
-load("../../raw_data/test_data_outliers_removed.rda")
+load("../../raw_data/train_data_outliers_removed_fiftyplusnoapoe.rda")
+load("../../raw_data/test_data_outliers_removed_fiftyplusnoapoe.rda")
 
 test.data$dataset <- "UKBtest"
 train.data$dataset <- "UKB_train"
