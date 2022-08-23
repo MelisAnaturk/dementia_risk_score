@@ -89,15 +89,14 @@ continuous_vars <- c("Age_when_attended_assesment_centre_0_0","education_years",
                      "LDL_0_0","HDL_cholesterol_0_0", "Total_cholesterol_0_0",
                      "units_combined",
                      "Systolic_BP_auto_mean", "Sleep_duration_0_0", 
-                     "total_fish_intake_per_week_0_0", 
-                     "Number_in_household_0_0")
+                     "total_fish_intake_per_week_0_0")
 
 df_continuous <- df[,continuous_vars]
 corr_continuous<-cor(df_continuous)
 mypalette = colorRampPalette(c("#4477AA", "#77AADD", "#FFFFFF", "#EE9988", "#BB4444"))
 continuous_vars_names <- c("Age","Education","BMI",
                            "LDL","HDL", "Total Cholesterol",
-                           "Alcohol", "SBP", "Sleep", "Fish", "N. Household")
+                           "Alcohol", "SBP", "Sleep", "Fish")
 rownames(corr_continuous)<-continuous_vars_names
 colnames(corr_continuous)<-continuous_vars_names
 
