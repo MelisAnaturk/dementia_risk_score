@@ -43,8 +43,8 @@ library(viridis)
 # report the AUC and 95% confidence intervals for each risk model (using predicted probabilities)
 
 #load train and test data
-load(file="../../raw_data/train_data_outliers_removed.rda")
-load(file="../../raw_data/test_data_outliers_removed.rda")
+load(file="../../raw_data/train_data_outliers_removed_fiftyplusnoapoe.rda")
+load(file="../../raw_data/test_data_outliers_removed_fiftyplusnoapoe.rda")
 
 test.data$dataset <- "test"
 train.data$dataset <- "train"
@@ -95,7 +95,7 @@ for (d in c("train","test")){
   df_auc[d]<-paste(round(roc$auc[1],5), " [", round(roc$ci[1],5), ",", round(roc$ci[3],5),"]",sep="")
 }
 df_table3<-rbind(df_table3, df_auc)
-
+write.csv(df_table3, file="../results/auc_ukb.csv")
 
 #----- 2. ASSESS CALIBRATION
 # Calculate calibration metrics
@@ -130,6 +130,14 @@ df_calibration_sitable5 <- data.frame(matrix(nrow = 0,ncol=7))
 
 # change model headings
 names(df_calibration_sitable5) <- c("Model", "Intercept", "Slope", "Chi-squared", "Brier_Score", "Spiegelhalter_z_test", "p.value")
+#dont calibrate ukbdrslassoapoe on all data as it is not available for all data
+models <- c("age_only", "UKBDRS_LASSO", "CAIDE", "DRS")
+
+#***** caide is incorrectly computed based on the apoe beta now. temp adjustment here, must go back to 3_caide to fix properly
+# 2.5 Calculate Probability(dementia) - CAIDE without APOE
+df_test$CAIDE_predicted_prob <- (exp(-7.406 + 0.796 + (0.401*df_test$beta_caide_score)))/
+  1+(exp(-7.406 + 0.796 + (0.401*df_test$beta_caide_score)))
+
 
 # for loop to populate df_calibration_sitable5
 for (m in models){
@@ -180,6 +188,53 @@ plot <- val.prob(data[, paste(m, "predicted_prob", sep="_")], data$y, g=10, pl=T
 print(plot)
 dev.off()
 
+#run calibration for ukb drs apoe in the apoe subset
+data <- test.data[complete.cases(test.data[,c("APOE_genotype_bin")]),]
+data$y <- ifelse(data[,"dementia_BIN_TOTAL"]==1,1,0)
+vec <-val.prob(data[, paste("UKBDRS_APOE_LASSO", "predicted_prob", sep="_")], data$y, g=10, pl=TRUE, smooth=TRUE, logistic.cal=FALSE, lim=c(0,0.4))
+print(vec)
+#Dxy       C (ROC)            R2             D      D:Chi-sq           D:p             U      U:Chi-sq           U:p             Q         Brier 
+#6.078904e-01  8.039452e-01  1.407901e-01  2.378221e-02  7.459064e+02            NA -6.318375e-05  2.095845e-02  9.895755e-01  2.384539e-02  1.736947e-02 
+#Intercept         Slope          Emax           E90          Eavg           S:z           S:p 
+#1.805744e-02  1.004028e+00  4.363058e-02  1.476018e-03  6.110359e-04  1.397059e-01  8.888924e-01
+dev.off()
+print(round(vec[17],2))
+#S:z 
+#0.14 
+
+# Brier score
+print('Brier score')
+print(round(vec[11],2))
+#Brier 
+#0.02 
+print('Rescaled brier score')
+print(rescale_Brier(vec[17], data$y))
+#S:z 
+#-6.765775 
+print('Spiegelhalter z test')  #intercept_slope
+Spiegelhalter_z(data$y, data[, paste("UKBDRS_APOE_LASSO", "predicted_prob", sep="_")])
+#[1] 0.1397059
+#[1] "fail to reject. calibrated"
+#z score:  0.1397059 
+#p value:  0.4444462 
+#[1] 0.1397059
+
+print(paste0("Intercept: ",round(vec[12],2)))
+#[1] "Intercept: 0.02"
+print(paste0("Slope: ",round(vec[13],4)))
+#[1] "Slope: 1.004"
+#save calibration plots to ../results folder
+png(file=paste0(savepath,"calibration_plot_for_","UKBDRS_APOE_LASSO", "_","test","set_intercept_slope.png"))
+#pdf(file=paste0(savepath,"calibration_plot_for_",m, "_",d,"set_LATEST.pdf"))
+plot <- val.prob(data[, paste("UKBDRS_APOE_LASSO", "predicted_prob", sep="_")], data$y, g=10, pl=TRUE, smooth=TRUE, logistic.cal=FALSE, lim=c(0,0.4), legendloc=FALSE)
+#plot <- val.prob(data[, paste(m, "predicted_prob_intercept_slope_update", sep="_")], data$y, g=10, pl=TRUE, smooth=TRUE, logistic.cal=FALSE, lim=c(0,1))
+print(plot)
+dev.off()
+
+
+
+
+
 #---- Model comparison
 # adding variables to the baseline model
 #---- comparing models to age only and to other risk scores
@@ -193,7 +248,8 @@ CAIDE  <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$CAIDE_predicted_prob,
 DRS    <-pROC::roc(test.data$dementia_BIN_TOTAL, test.data$DRS_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
 
 #run all comparisons
-all_tests <- combn(list(age_only, UKBDRS_APOE_LASSO, UKBDRS_LASSO, CAIDE, DRS),
+#exclude ukbdrs apoe...not a fair comparison
+all_tests <- combn(list(age_only, UKBDRS_LASSO, CAIDE, DRS),
                    FUN = function(x, ...) roc.test(x[[1]], x[[2]]),
                    m = 2,
                    simplify = FALSE, 
@@ -203,7 +259,7 @@ all_tests <- combn(list(age_only, UKBDRS_APOE_LASSO, UKBDRS_LASSO, CAIDE, DRS),
 )
 
 #create list of model names to be compared, using naming convention in paper
-comparison_names <-combn(list("ageonly", "Model1", "Model2",
+comparison_names <-combn(list("ageonly", "UKBDRS",
                          "CAIDE", "DRS"), 
                     m = 2, 
                     FUN = paste, 
@@ -230,7 +286,7 @@ comparison_names_reorg$Number <- 1:nrow(comparison_names_reorg)
 
 # merge based on key variable
 merged_results <- merge(AUC_comparisons, comparison_names_reorg, by.c="Number", all.x=TRUE)
-merged_results <- dplyr::filter(merged_results, grepl('Model', comparison_names))
+merged_results <- dplyr::filter(merged_results, grepl('UKBDRS', comparison_names))
 
 # Now to ANU-ADRI (due to some missing data on this risk score)
 # exclude ppl with missing ANU-ADRI
@@ -240,7 +296,7 @@ UKBDRS_APOE_LASSO_anu  <-pROC::roc(anu.test.data$dementia_BIN_TOTAL, anu.test.da
 UKBDRS_LASSO_anu  <-pROC::roc(anu.test.data$dementia_BIN_TOTAL, anu.test.data$UKBDRS_LASSO_predicted_prob, plot=TRUE, smooth = FALSE, ci=TRUE)
 
 #run all comparisons
-all_tests <- combn(list(UKBDRS_APOE_LASSO, UKBDRS_LASSO,
+all_tests <- combn(list(UKBDRS_LASSO_anu,
                         ANU_ADRI),
                    FUN = function(x, ...) roc.test(x[[1]], x[[2]]),
                    m = 2,
@@ -261,7 +317,7 @@ all_tests <- combn(list(UKBDRS_APOE_LASSO, UKBDRS_LASSO,
 #)
 
 #create list of model names to be compared, using naming convention in paper
-comparison_names <-combn(list("Model1", "Model2",
+comparison_names <-combn(list("UKBDRS",
                               "ANUADRI"), 
                          m = 2, 
                          FUN = paste, 
@@ -313,11 +369,11 @@ df_table4<-data.frame(cbind(AUC_comparisons_corrected$Score1, AUC_comparisons_co
                    round(AUC_comparisons_corrected$statistic,2), AUC_comparisons_corrected$p.value,
                    AUC_comparisons_corrected$FDR_BH))
 names(df_table4)<-c("Risk Score 1","Risk Score 2","AUC 1","AUC 2","Z","p","pcorr")
-
+write.csv(df_table4, file="../results/auc_ukb_comparisons.csv")
 
 ## plot ROC curves, this is Figure 1
 library(extrafont)
-g2 <- ggroc(list(Age_only=age_only, UKBDRS_Model1=UKBDRS_APOE_LASSO, UKBDRS_Model2=UKBDRS_LASSO, CAIDE = CAIDE, DRS = DRS, ANU_ADRI = ANU_ADRI))
+g2 <- ggroc(list('UKBDRS+APOE'=UKBDRS_APOE_LASSO, UKBDRS=UKBDRS_LASSO, Age_only=age_only, DRS = DRS,CAIDE = CAIDE, ANU_ADRI = ANU_ADRI))
 plot <- g2 + theme_minimal()  +  theme(legend.title = element_blank(), panel.grid.major = element_blank(), 
                                        panel.grid.minor = element_blank(),
                                        panel.background = element_rect(colour = "black", size=1), text = element_text(size=14, family="LM Roman 10")) 
