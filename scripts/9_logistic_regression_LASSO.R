@@ -287,7 +287,7 @@ test.data$Townsend_deprivation_modelvar<-as.factor(test.data$Townsend_deprivatio
 
 #### 2.1 Test beta coefficients ####
 #based on the lasso selected vars, compute model coefficients in train data
-#use 2 models - one with apoe, one without. include sex as a manually selected variable as well
+#use 2 models - one with apoe, one without. 
 
 # specify various versions of UKB-DRS (see manuscript for details)
 UKBDRS_LASSO  <-  paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +  family_history_of_dementia +
