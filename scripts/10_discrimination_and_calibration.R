@@ -130,6 +130,7 @@ df_calibration_sitable5 <- data.frame(matrix(nrow = 0,ncol=7))
 
 # change model headings
 names(df_calibration_sitable5) <- c("Model", "Intercept", "Slope", "Chi-squared", "Brier_Score", "Spiegelhalter_z_test", "p.value")
+#dont calibrate ukbdrslassoapoe on all data as it is not available for all data
 models <- c("age_only", "UKBDRS_LASSO", "CAIDE", "DRS")
 
 #***** caide is incorrectly computed based on the apoe beta now. temp adjustment here, must go back to 3_caide to fix properly
