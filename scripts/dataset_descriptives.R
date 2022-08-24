@@ -8,6 +8,20 @@ test.data$dataset <- "UKBtest"
 train.data$dataset <- "UKB_train"
 
 df <- rbind(test.data, train.data) 
+#### basic stats ####
+summary(df$Age_when_attended_assesment_centre_0_0)
+#Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#50.00   56.00   60.00   59.97   64.00   73.00
+sd(df$Age_when_attended_assesment_centre_0_0)
+#5.434612
+summary(df$dementia_BIN_TOTAL)
+#0      1 
+#216949   3813 1.7%
+summary(df$years_diff_all_cause_dementia_0_0)
+#Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+#   1.02    6.85    9.38    8.87   11.24   14.23  216949
+sd(df$years_diff_all_cause_dementia_0_0, na.rm = TRUE)
+#2.961354
 
 #### by train/test ####
 #variables i need stats on
@@ -230,8 +244,10 @@ summary_lifestyle <-
          list("Current smoker" = ~ qwraps2::n_perc(Smoker_bin == 1, show_denom = "never")),
        "Weekly Fish Intake" = 
          list("Weekly Fish Intake" = ~ qwraps2::mean_sd(total_fish_intake_per_week_0_0, denote_sd = "paren")),
-       "N. in household" = 
-         list("N. in household" = ~ qwraps2::mean_sd(Number_in_household_0_0, denote_sd = "paren")),
+       "household occupancy" = 
+         list("one other" = ~ qwraps2::n_perc(household_occupancy == 0),
+              "alone" = ~ qwraps2::n_perc(household_occupancy == 1),
+              "multiple" = ~ qwraps2::n_perc(household_occupancy == 2)),
        "N. leisure" = 
          list("N. of weekly leisure activities" = ~ qwraps2::mean_sd(weekly_leisure_activities, denote_sd = "paren")),
        "Insomnia" = 
@@ -248,7 +264,7 @@ summary_genetic <-
   list("APOE" = 
          list("APOE4status" = ~ qwraps2::n_perc(APOE_genotype_bin == 1, show_denom = "never"))
   )
-df_genetic <- summary_table(df, summary_genetic, by = c("dementia_BIN_TOTAL"))
+df_genetic <- summary_table(subset(df, df$APOE_genotype_bin!="NA"), summary_genetic, by = c("dementia_BIN_TOTAL"))
 
 
 med_vars <- c("current_history_depression","Diabetes_BIN_FINAL_0_0", "stroke_TIA_BIN_FINAL", "TBI_BIN_FINAL_0_0", "Atrial_Fibrillation_BIN_FINAL_0_0",
@@ -283,4 +299,4 @@ summary_medical <-
 
 df_medical <- summary_table(df, summary_medical, by = c("dementia_BIN_TOTAL"))
 
-table1 <- rbind(df_demographic, df_biomed, df_lifestyle, df_genetic, df_medical)
+table1_bydementia <- rbind(df_demographic, df_biomed, df_lifestyle, df_medical)
