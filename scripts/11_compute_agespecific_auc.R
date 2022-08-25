@@ -70,6 +70,9 @@ colnames(caide_auc)<-datasets
 
 #subset data into caide age range
 caide_data <- subset(df_test, Age_at_recruitment_0_0<65)
+summary(as.factor(caide_data$dataset))
+#test  train 
+#33318 134123 
 
 #compute auc for each model in both train and test data
 #store auc and conf interval in caide_auc table
@@ -108,6 +111,9 @@ colnames(drs_auc)<-datasets
 
 #subset data into drs age range
 drs_data <- subset(df_test, (Age_at_recruitment_0_0>=60 & Age_at_recruitment_0_0<=79))
+summary(as.factor(drs_data$dataset))
+#test  train 
+#24811 98680  
 
 #compute auc for each model in both train and test data
 #store auc and conf interval in drs_auc table
@@ -147,7 +153,9 @@ colnames(anu_map_auc)<-datasets
 
 #subset data into anu map age range
 anu_data <- subset(df_test, Age_at_recruitment_0_0>=54)
-
+summary(as.factor(anu_data$dataset))
+#test  train 
+#37062 148397 
 #compute auc for each model in both train and test data
 #store auc and conf interval in anu_map_auc table
 for (d in datasets){
@@ -196,6 +204,9 @@ colnames(anu_cvhs_auc)<-datasets
 
 #subset data into drs age range
 anu_data <- subset(df_test, Age_at_recruitment_0_0>=62)
+summary(as.factor(anu_data$dataset))
+#test  train 
+#18979 75370
 
 #compute auc for each model in both train and test data
 #store auc and conf interval in anu_cvhs_auc table
