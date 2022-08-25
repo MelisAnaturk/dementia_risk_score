@@ -225,9 +225,7 @@ leisure_vars<-c("Leisure_social_activities_0_0_BIN", "Leisure_social_activities_
 
 #df$weekly_leisure_activities<-sum(df[leisure_vars])
 df$weekly_leisure_activities<-rowSums(df[,leisure_vars])
-View(df[,c("Leisure_social_activities_0_0", "Leisure_social_activities_0_1", 
-           "Leisure_social_activities_0_2", "Leisure_social_activities_0_3", "Leisure_social_activities_0_4","weekly_leisure_activities")])
-View(df[leisure_vars])
+
 
 
 lifestyle_vars <- c("Sleep_duration_0_0", "IPAQ_activity_group_0_0", "units_combined", "Smoker_bin", "total_fish_intake_per_week_0_0",
@@ -248,6 +246,8 @@ summary_lifestyle <-
          list("one other" = ~ qwraps2::n_perc(household_occupancy == 0),
               "alone" = ~ qwraps2::n_perc(household_occupancy == 1),
               "multiple" = ~ qwraps2::n_perc(household_occupancy == 2)),
+       "N. household" = 
+         list("N. household" = ~ qwraps2::mean_sd(Number_in_household_0_0, denote_sd = "paren")),
        "N. leisure" = 
          list("N. of weekly leisure activities" = ~ qwraps2::mean_sd(weekly_leisure_activities, denote_sd = "paren")),
        "Insomnia" = 
@@ -300,3 +300,6 @@ summary_medical <-
 df_medical <- summary_table(df, summary_medical, by = c("dementia_BIN_TOTAL"))
 
 table1_bydementia <- rbind(df_demographic, df_biomed, df_lifestyle, df_medical)
+> summary(subset(df, df$dementia_BIN_TOTAL==0)$APOE_genotype_bin)
+0      1   NA's 
+108271  45965  62713 
