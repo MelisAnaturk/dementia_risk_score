@@ -3,8 +3,8 @@
 #load required packages
 library(pROC)
 
-load(file="../../raw_data/train_data_outliers_removed.rda")
-load(file="../../raw_data/test_data_outliers_removed.rda")
+load(file="../../raw_data/train_data_outliers_removed_fiftyplusnoapoe.rda")
+load(file="../../raw_data/test_data_outliers_removed_fiftyplusnoapoe.rda")
 
 #### compute UKB-DRS ####
 #calculate linear predictor and predicted probabilities for the age-only and UKB-DRS models
@@ -88,10 +88,10 @@ for (d in datasets){
 rm(caide_data)
 caide_auc
 #train               test
-#age_only          0.75 [0.74, 0.77] 0.78 [0.76, 0.81]
-#UKBDRS_APOE_LASSO  0.8 [0.78, 0.81]  0.83 [0.8, 0.85]
-#UKBDRS_LASSO      0.78 [0.77, 0.79] 0.81 [0.78, 0.83]
-#CAIDE              0.72 [0.7, 0.73] 0.74 [0.72, 0.77]
+#age_only           0.69 [0.68, 0.7]  0.7 [0.67, 0.72]
+#UKBDRS_APOE_LASSO 0.75 [0.74, 0.77]  0.77 [0.74, 0.8]
+#UKBDRS_LASSO      0.73 [0.72, 0.74]  0.73 [0.7, 0.76]
+#CAIDE             0.65 [0.64, 0.67] 0.66 [0.63, 0.69]
 
 
 #### DRS ####
@@ -127,10 +127,10 @@ rm(drs_data)
 gc()
 drs_auc
 #train               test
-#age_only          0.67 [0.65, 0.68] 0.66 [0.64, 0.68]
-#UKBDRS_APOE_LASSO 0.75 [0.74, 0.76] 0.75 [0.73, 0.77]
-#UKBDRS_LASSO      0.69 [0.68, 0.71]  0.7 [0.68, 0.72]
-#DRS               0.66 [0.65, 0.67] 0.65 [0.63, 0.68]
+#age_only          0.66 [0.65, 0.67] 0.67 [0.65, 0.69]
+#UKBDRS_APOE_LASSO 0.75 [0.74, 0.76] 0.74 [0.72, 0.76]
+#UKBDRS_LASSO       0.69 [0.68, 0.7] 0.69 [0.67, 0.71]
+#DRS               0.65 [0.64, 0.67] 0.65 [0.63, 0.67]
 
 
 #### ANU ADRI (MAP) ####
@@ -178,10 +178,10 @@ for (d in datasets){
 rm(anu_data)
 anu_map_auc
 #train               test
-#age_only          0.73 [0.72, 0.74]  0.72 [0.7, 0.74]
-#UKBDRS_APOE_LASSO 0.78 [0.77, 0.79]  0.78 [0.76, 0.8]
-#UKBDRS_LASSO      0.75 [0.74, 0.76] 0.75 [0.73, 0.77]
-#ANU_ADRI          0.57 [0.56, 0.58] 0.57 [0.54, 0.59]
+#age_only          0.72 [0.71, 0.73]  0.71 [0.7, 0.73]
+#UKBDRS_APOE_LASSO  0.79 [0.78, 0.8]  0.78 [0.76, 0.8]
+#UKBDRS_LASSO      0.75 [0.74, 0.76] 0.74 [0.72, 0.75]
+#ANU_ADRI          0.58 [0.57, 0.59]  0.58 [0.56, 0.6]
 
 
 
@@ -227,7 +227,7 @@ for (d in datasets){
 rm(anu_data)
 anu_cvhs_auc
 #train               test
-#age_only          0.63 [0.62, 0.65] 0.61 [0.59, 0.64]
-#UKBDRS_APOE_LASSO 0.73 [0.72, 0.74] 0.73 [0.71, 0.75]
+#age_only          0.63 [0.62, 0.64] 0.63 [0.61, 0.65]
+#UKBDRS_APOE_LASSO 0.73 [0.72, 0.74]  0.72 [0.7, 0.74]
 #UKBDRS_LASSO      0.67 [0.66, 0.68] 0.66 [0.64, 0.69]
-#ANU_ADRI          0.58 [0.57, 0.59]  0.57 [0.55, 0.6]
+#ANU_ADRI           0.59 [0.57, 0.6] 0.58 [0.56, 0.61]
