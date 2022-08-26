@@ -409,7 +409,7 @@ for (m in models){for (d in c("train")){
   print(roc$ci)
   print('potential cut-off based on 80% sensitivity')
   perform<-data.frame(pROC::coords(roc, x = "all", ret=c("threshold", "specificity", "sensitivity","npv", "ppv"), transpose = FALSE))
-  perform <- round(perform[perform$sensitivity >= .8 & perform$sensitivity <= 0.801, ],3)
+  perform <- round(perform[perform$sensitivity >= .799 & perform$sensitivity <= 0.801, ],3)
   print(perform)
   print('potential cut-off based on 85% sensitivity')
   perform<-data.frame(pROC::coords(roc, x = "all", ret=c("threshold", "specificity", "sensitivity","npv", "ppv"), transpose = FALSE))
@@ -444,7 +444,7 @@ for (m in models){for (d in c("train")){
 }}
 
 
-#repeat for model 2
+  #repeat for model 2
 models <- c("UKBDRS_LASSO") #,"UKBDRS_APOE_LASSO_MAN") #model 2
 for (m in models){for (d in c("train")){
   print(sprintf('-----------Reporting AUC for %s for %s model---------------', d, m))
@@ -459,7 +459,7 @@ for (m in models){for (d in c("train")){
   print(perform)
   print('potential cut-off based on 85% sensitivity')
   perform<-data.frame(pROC::coords(roc, x = "all", ret=c("threshold", "specificity", "sensitivity","npv", "ppv"), transpose = FALSE))
-  perform <- round(perform[perform$sensitivity >= .85 & perform$sensitivity <= 0.851, ],3)
+  perform <- round(perform[perform$sensitivity >= .8495 & perform$sensitivity <= 0.851, ],3)
   print(perform)
   print('potential cut-off based on 90% sensitivity')
   perform<-data.frame(pROC::coords(roc, x = "all", ret=c("threshold", "specificity", "sensitivity","npv", "ppv"), transpose = FALSE))
