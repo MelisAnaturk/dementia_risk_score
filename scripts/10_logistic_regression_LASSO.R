@@ -42,7 +42,7 @@ model_pathway = "../models/"
 save_pathway = "../results/"
 
 # load .rda file
-load(file = paste0(data_pathway,"ukbdata_diagnoses_baseline_diseasestatus_baselinemedications_ANUADRI_CAIDE_FRS_recoded_DRS_fiftyplusnoapoe.rda"))
+load(file = paste0(data_pathway,"ukbdata_diagnoses_baseline_diseasestatus_baselinemedications_ANUADRI_CAIDE_FRS_recoded_DRS_derivedhythchol_fiftyplusnoapoe.rda"))
 
 # Recode variables
 df$current_history_depression <- ifelse(df$depression_BIN_FINAL_0_0==1|df$Antidepressant_meds_0_0==1, 1,0)
@@ -57,13 +57,15 @@ myvars <- c("Age_when_attended_assesment_centre_0_0","education_years", "Townsen
             "Sex", "Sleeplesness_insomnia_0_0_bin", "family_history_of_dementia", 
             "Diabetes_BIN_FINAL_0_0", "LDL_0_0","HDL_cholesterol_0_0", "Total_cholesterol_0_0",
             "current_history_depression","TBI_BIN_FINAL_0_0", "stroke_TIA_BIN_FINAL", "Smoker_bin", "units_combined",
-            "Systolic_BP_auto_mean", "IPAQ_activity_group_0_0", "Hearing_prob", "Sleep_duration_0_0", "Antihypertensive_meds_0_0",
+            "Systolic_BP_auto_mean", "IPAQ_activity_group_0_0", "Hearing_prob", "Sleep_duration_0_0", 
             "total_fish_intake_per_week_0_0", "Social_engagement_0_2", "Atrial_Fibrillation_BIN_FINAL_0_0",
-            "household_occupancy","dementia_BIN_TOTAL", "APOE_genotype_bin", "NSAIDs_0_0", "HRT_0_0", "statins_0_0", "Aspirin_0_0")
+            "household_occupancy","dementia_BIN_TOTAL", "APOE_genotype_bin", "NSAIDs_0_0", "HRT_0_0",
+            "hypertensive","cholesterol")
+
 
 # number of candidate risk factors
 length(myvars)-1 # to exclude dementia variable
-# 30 variables
+# 29 variables
 
 # examine missing data
 pMiss <- function(x){sum(is.na(x))/length(x)*100}
@@ -164,9 +166,10 @@ myvars <- c("Age_when_attended_assesment_centre_0_0","education_years", "Townsen
             "Sex", "Sleeplesness_insomnia_0_0_bin", "family_history_of_dementia", 
             "Diabetes_BIN_FINAL_0_0", "LDL_0_0","HDL_cholesterol_0_0",
             "current_history_depression","TBI_BIN_FINAL_0_0", "stroke_TIA_BIN_FINAL", "Smoker_bin", "units_combined",
-            "Systolic_BP_auto_mean", "IPAQ_activity_group_0_0", "Hearing_prob", "Sleep_duration_0_0", "Antihypertensive_meds_0_0",
+            "Systolic_BP_auto_mean", "IPAQ_activity_group_0_0", "Hearing_prob", "Sleep_duration_0_0",
             "total_fish_intake_per_week_0_0", "Social_engagement_0_2", "Atrial_Fibrillation_BIN_FINAL_0_0",
-            "household_occupancy","dementia_BIN_TOTAL", "NSAIDs_0_0", "HRT_0_0", "statins_0_0", "Aspirin_0_0")
+            "household_occupancy","dementia_BIN_TOTAL", "NSAIDs_0_0", "HRT_0_0",
+            "hypertensive","cholesterol")
 #----- 2. LASSO REGRESSION ------------------------------------------
 # LASSO logistic regression is first run to identify the subset of predictors to be used in our risk score
 # IF you would like to run a cox proportional hazard equivalent, check out:
@@ -230,18 +233,18 @@ lasso.final.1 <- glmnet(x, y, alpha = 1, family = "binomial", lambda = lasso.fit
 coef(lasso.final.1, s = lasso.fit.cv$lambda.1se) #lambda.1se
 
 #Output 
-# 34 x 1 sparse Matrix of class "dgCMatrix"
-#(Intercept)                            -4.58422068
-#Townsend_deprivation_Groups_0_04        0.06618836
-#family_history_of_dementia1             0.19324274
-#Diabetes_BIN_FINAL_0_01                 0.44319669
-#current_history_depression1             0.33999776
-#stroke_TIA_BIN_FINAL1                   0.52360243
-#Antihypertensive_meds_0_01              0.05892152
-#statins_0_01                            0.06841070
-#Aspirin_0_01                            0.09320814
-#Age_when_attended_assesment_centre_0_0  0.84523138
-#education_years                        -0.06562031  
+# 33 x 1 sparse Matrix of class "dgCMatrix"
+#(Intercept)                            -4.59166742
+      
+#Townsend_deprivation_Groups_0_04        0.06505642
+#family_history_of_dementia1             0.19243398
+#Diabetes_BIN_FINAL_0_01                 0.45423371
+#current_history_depression1             0.33689819
+#stroke_TIA_BIN_FINAL1                   0.54779739
+#hypertensive1                           0.09190174
+#cholesterol1                            0.08886551
+#Age_when_attended_assesment_centre_0_0  0.84722457
+#education_years                        -0.06501424
 
 # tidy output
 View(tidy(lasso.final.1))
@@ -293,14 +296,13 @@ test.data$Townsend_deprivation_modelvar<-as.factor(test.data$Townsend_deprivatio
 UKBDRS_LASSO  <-  paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +  family_history_of_dementia +
                             education_years + Townsend_deprivation_modelvar +Diabetes_BIN_FINAL_0_0  +
                             current_history_depression + stroke_TIA_BIN_FINAL +  
-                            Antihypertensive_meds_0_0 +  
-                            statins_0_0 + Aspirin_0_0")
+                            hypertensive + cholesterol")
 
 UKBDRS_APOE_LASSO <-    paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +  family_history_of_dementia +
                             education_years + Townsend_deprivation_modelvar +Diabetes_BIN_FINAL_0_0  +
                             current_history_depression + stroke_TIA_BIN_FINAL +  
-                            Antihypertensive_meds_0_0 +  
-                            statins_0_0 + Aspirin_0_0 + APOE_genotype_bin")
+                            hypertensive + cholesterol + APOE_genotype_bin")
+
 
 #check model coefficeints when applied to training data
 format_modelcoefs <-function(lr_out){
@@ -347,14 +349,13 @@ age_only <-      paste("dementia_BIN_TOTAL~Age_when_attended_assesment_centre_0_
 UKBDRS_LASSO  <-  paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +  family_history_of_dementia +
                             education_years + Townsend_deprivation_modelvar +Diabetes_BIN_FINAL_0_0  +
                             current_history_depression + stroke_TIA_BIN_FINAL +  
-                            Antihypertensive_meds_0_0 +  
-                            Aspirin_0_0")
+                            hypertensive + cholesterol")
 
 UKBDRS_APOE_LASSO <-    paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +  family_history_of_dementia +
                             education_years + Townsend_deprivation_modelvar +Diabetes_BIN_FINAL_0_0  +
                             current_history_depression + stroke_TIA_BIN_FINAL +  
-                            Antihypertensive_meds_0_0 +  
-                            Aspirin_0_0 + APOE_genotype_bin")
+                            hypertensive + APOE_genotype_bin")
+
 
 models <- c("age_only", "UKBDRS_LASSO", "UKBDRS_APOE_LASSO")
 
@@ -394,109 +395,3 @@ for (m in table2_models){
 df_table2$FDR_BH = p.adjust(df_table2$p, method = "BH")
 write.csv(df_table2, file=paste0(save_pathway, "lr_betas_final.csv"))
 
-#checking for correlations among med vars
-df$statins_num<-as.numeric(df$statins_0_0)
-df$antihypertensive_num<-as.numeric(df$Antihypertensive_meds_0_0)
-df$aspirin_num<-as.numeric(df$Aspirin_0_0)
-df$nsaid_num<-as.numeric(df$NSAIDs_0_0)
-df$hrt_num<-as.numeric(df$HRT_0_0)
-
-corr_res<-tetrachoric(df[,c("statins_num","antihypertensive_num","aspirin_num","nsaid_num","hrt_num")])
-#statins_num antihypertensive_num  aspirin_num    nsaid_num     hrt_num
-#statins_num           1.00000000           0.72534925  0.709486575 -0.095383210 -0.12891023
-#antihypertensive_num  0.72534925           1.00000000  0.622530919 -0.073335583 -0.02766018
-#aspirin_num           0.70948658           0.62253092  1.000000000 -0.009758151 -0.07794382
-#nsaid_num            -0.09538321          -0.07333558 -0.009758151  1.000000000  0.13481686
-#hrt_num              -0.12891023          -0.02766018 -0.077943819  0.134816862  1.00000000
-
-#statins, aspirin, and antihypertensive use are correlated
-
-
-#### Sex stratify ####
-#fit LR in males and females separately to check if betas differ greatly
-#load train and test data, if necessary
-load(file = paste0(data_pathway,"train_data_outliers_removed_fiftyplusnoapoe.rda"))
-load(file = paste0(data_pathway,"test_data_outliers_removed_fiftyplusnoapoe.rda"))
-
-UKBDRS_LASSO_initial  <-  paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +  family_history_of_dementia +
-                            education_years + Townsend_deprivation_modelvar +Diabetes_BIN_FINAL_0_0  +
-                            current_history_depression + stroke_TIA_BIN_FINAL +  
-                            Antihypertensive_meds_0_0 + statins_0_0 + 
-                            Aspirin_0_0")
-
-df_lr_sexstratify<-data.frame(matrix(ncol=6))
-names(df_lr_sexstratify)<-c("Predictor","beta","lower","upper","OR","p")
-
-#females
-model <- glm(as.formula(UKBDRS_LASSO_initial), data=subset(train.data, train.data$Sex==0), family="binomial")
-df_lr_sexstratify<-rbind(df_lr_sexstratify, format_modelcoefs(model))
-#males
-model <- glm(as.formula(UKBDRS_LASSO_initial), data=subset(train.data, train.data$Sex==1), family="binomial")
-df_lr_sexstratify<-rbind(df_lr_sexstratify, format_modelcoefs(model))
-df_lr_sexstratify$FDR_BH = p.adjust(df_lr_sexstratify$p, method = "BH")
-                         
-write.csv(df_lr_sexstratify, file="../results/lr_betas_sexstratify_initial.csv")
-
-#females: age + famhx + education + townsend + diabetes + depression + stroke + aspirin
-#males: age + famhx + education + townsend + diabetes + depression + stroke + antihyper
-
-#create sexstratified predicted prob
-UKBDRS_LASSO_female  <-  paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +  family_history_of_dementia +
-                            education_years + Townsend_deprivation_modelvar +Diabetes_BIN_FINAL_0_0  +
-                            current_history_depression + stroke_TIA_BIN_FINAL +  
-                            Aspirin_0_0")
-
-UKBDRS_LASSO_male  <-  paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +  family_history_of_dementia +
-                            education_years + Townsend_deprivation_modelvar +Diabetes_BIN_FINAL_0_0  +
-                            current_history_depression + stroke_TIA_BIN_FINAL +  
-                            Antihypertensive_meds_0_0")
-
-for (m in c("UKBDRS_LASSO_female","UKBDRS_LASSO_male")){
-  print(paste0('applying logistic regression model for ', m))
-  model <- glm(as.formula(m), data=train.data, family="binomial")
-  
-  print(paste0('UKB training set : calculating linear predictor and predicted probabilities for ', m))
-  train.data[paste(m, "linear_predictor", sep="_")] <- predict(model, train.data)
-  train.data[paste(m, "predicted_prob", sep="_")] <-   1/(1+exp(-train.data[paste(m, "linear_predictor", sep="_")])) # can also be computed with predict(model, type='response')
-  
-  print(paste0('UKB test set : calculating linear predictor and predicted probabilities for ', m))
-  test.data[paste(m, "linear_predictor", sep="_")] <- predict(model, test.data)
-  test.data[paste(m, "predicted_prob", sep="_")] <-   1/(1+exp(-test.data[paste(m, "linear_predictor", sep="_")])) # can also be computed with predict(model, newdata= test.data, type='response') 
-}
-
-#now create final UKBDRS_LASSO_sexstratify linear predictor
-train.data$UKBDRS_LASSO_sexstratify_linear_predictor<-ifelse(train.data$Sex==0, train.data$UKBDRS_LASSO_female_linear_predictor,
-                                                             ifelse(train.data$Sex==1, train.data$UKBDRS_LASSO_male_linear_predictor,NA))
-test.data$UKBDRS_LASSO_sexstratify_linear_predictor<-ifelse(test.data$Sex==0, test.data$UKBDRS_LASSO_female_linear_predictor,
-                                                             ifelse(test.data$Sex==1, test.data$UKBDRS_LASSO_male_linear_predictor,NA))
-
-#now create final UKBDRS_LASSO_sexstratify predicted prob
-train.data$UKBDRS_LASSO_sexstratify_predicted_prob<-ifelse(train.data$Sex==0, train.data$UKBDRS_LASSO_female_predicted_prob,
-                                                             ifelse(train.data$Sex==1, train.data$UKBDRS_LASSO_male_predicted_prob,NA))
-test.data$UKBDRS_LASSO_sexstratify_predicted_prob<-ifelse(test.data$Sex==0, test.data$UKBDRS_LASSO_female_predicted_prob,
-                                                            ifelse(test.data$Sex==1, test.data$UKBDRS_LASSO_male_predicted_prob,NA))
-summary(test.data$UKBDRS_LASSO_predicted_prob)
-#Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-#0.0006103 0.0043762 0.0107550 0.0172858 0.0235672 0.2792533 
-summary(test.data$UKBDRS_LASSO_sexstratify_predicted_prob)
-#Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-#0.0006096 0.0043077 0.0108167 0.0172328 0.0233764 0.3156873 
-plot(test.data$UKBDRS_LASSO_sexstratify_predicted_prob, test.data$UKBDRS_LASSO_predicted_prob)
-
-#save train and test data now with sex stratified model as well, to compare in next script
-save(train.data, file = paste0(data_pathway, "train_data_outliers_removed_fiftyplusnoapoe_sexstratify.rda"))
-save(test.data, file = paste0(data_pathway, "test_data_outliers_removed_fiftyplusnoapoe_sexstratify.rda"))
-
-#get final betas and write out, to test in wh
-df_lr_sexstratify<-data.frame(matrix(ncol=6))
-names(df_lr_sexstratify)<-c("Predictor","beta","lower","upper","OR","p")
-
-#females
-model <- glm(as.formula(UKBDRS_LASSO_female), data=subset(train.data, train.data$Sex==0), family="binomial")
-df_lr_sexstratify<-rbind(df_lr_sexstratify, format_modelcoefs(model))
-#males
-model <- glm(as.formula(UKBDRS_LASSO_male), data=subset(train.data, train.data$Sex==1), family="binomial")
-df_lr_sexstratify<-rbind(df_lr_sexstratify, format_modelcoefs(model))
-df_lr_sexstratify$FDR_BH = p.adjust(df_lr_sexstratify$p, method = "BH")
-
-write.csv(df_lr_sexstratify, file="../results/lr_betas_sexstratify_final.csv")
