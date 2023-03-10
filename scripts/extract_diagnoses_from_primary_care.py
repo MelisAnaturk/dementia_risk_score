@@ -16,7 +16,7 @@ col_names = pd.DataFrame(list(meds_list))
 
 # ------- 2. Create a loop to subset over all individuals
 # create a loop
-variable_list = ['Depression', 'Stroke', 'TBI','Diabetes', 'Diabetes_II', 'TIA', 'Atrial_fibrillation']
+variable_list = ['Depression', 'Stroke', 'TBI','Diabetes', 'Diabetes_II', 'TIA', 'Atrial_fibrillation','hypertension','hyperchol','hyperlipidemia']
 
 #list_to_extract = meds_list["%s_med_codes" % m].tolist()
 for m in variable_list:
