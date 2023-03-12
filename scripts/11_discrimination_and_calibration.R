@@ -43,8 +43,8 @@ library(viridis)
 # report the AUC and 95% confidence intervals for each risk model (using predicted probabilities)
 
 #load train and test data
-load(file="../../raw_data/train_data_outliers_removed_fiftyplusnoapoe.rda")
-load(file="../../raw_data/test_data_outliers_removed_fiftyplusnoapoe.rda")
+load(file="../../raw_data/train_data_outliers_removed_fiftyplusnoapoe_sexstratify.rda")
+load(file="../../raw_data/test_data_outliers_removed_fiftyplusnoapoe_sexstratify.rda")
 
 test.data$dataset <- "test"
 train.data$dataset <- "train"
@@ -57,7 +57,7 @@ savepath = "../results/"
 #note savepath directory must exist
 
 #NB. Anu-adri has to be excluded from calibration calculations
-models <- c("age_only", "UKBDRS_LASSO", "UKBDRS_APOE_LASSO", "CAIDE", "DRS")
+models <- c("age_only", "UKBDRS_LASSO", "UKBDRS_APOE_LASSO", "UKBDRS_LASSO_sexstratify","CAIDE", "DRS")
 
 #dataframe for storing/organizing auc results for each model
 df_table3<-data.frame(matrix(ncol=3))
