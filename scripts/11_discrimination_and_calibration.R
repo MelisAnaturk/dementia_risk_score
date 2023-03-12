@@ -193,14 +193,14 @@ data <- test.data[complete.cases(test.data[,c("APOE_genotype_bin")]),]
 data$y <- ifelse(data[,"dementia_BIN_TOTAL"]==1,1,0)
 vec <-val.prob(data[, paste("UKBDRS_APOE_LASSO", "predicted_prob", sep="_")], data$y, g=10, pl=TRUE, smooth=TRUE, logistic.cal=FALSE, lim=c(0,0.4))
 print(vec)
-#Dxy       C (ROC)            R2             D      D:Chi-sq           D:p             U      U:Chi-sq           U:p             Q         Brier 
-#6.078904e-01  8.039452e-01  1.407901e-01  2.378221e-02  7.459064e+02            NA -6.318375e-05  2.095845e-02  9.895755e-01  2.384539e-02  1.736947e-02 
-#Intercept         Slope          Emax           E90          Eavg           S:z           S:p 
-#1.805744e-02  1.004028e+00  4.363058e-02  1.476018e-03  6.110359e-04  1.397059e-01  8.888924e-01
+#Dxy       C (ROC)            R2             D      D:Chi-sq           D:p             U      U:Chi-sq           U:p             Q         Brier     Intercept         Slope 
+#6.059468e-01  8.029734e-01  1.400264e-01  2.365149e-02  7.418120e+02            NA -6.356731e-05  8.944786e-03  9.955376e-01  2.371506e-02  1.737173e-02 -4.799680e-04  9.987222e-01 
+#Emax           E90          Eavg           S:z           S:p 
+#4.799212e-02  1.216444e-03  5.507116e-04  1.348895e-01  8.926993e-01 
 dev.off()
 print(round(vec[17],2))
 #S:z 
-#0.14 
+#0.13
 
 # Brier score
 print('Brier score')
@@ -210,19 +210,19 @@ print(round(vec[11],2))
 print('Rescaled brier score')
 print(rescale_Brier(vec[17], data$y))
 #S:z 
-#-6.765775 
+#-6.498049 
 print('Spiegelhalter z test')  #intercept_slope
 Spiegelhalter_z(data$y, data[, paste("UKBDRS_APOE_LASSO", "predicted_prob", sep="_")])
-#[1] 0.1397059
+#[1] 0.1348895
 #[1] "fail to reject. calibrated"
-#z score:  0.1397059 
-#p value:  0.4444462 
-#[1] 0.1397059
+#z score:  0.1348895 
+#p value:  0.4463496 
+#[1] 0.1348895
 
 print(paste0("Intercept: ",round(vec[12],2)))
-#[1] "Intercept: 0.02"
+#[1] "Intercept: 0"
 print(paste0("Slope: ",round(vec[13],4)))
-#[1] "Slope: 1.004"
+#[1] "Slope: 0.9987"
 #save calibration plots to ../results folder
 png(file=paste0(savepath,"calibration_plot_for_","UKBDRS_APOE_LASSO", "_","test","set_intercept_slope.png"))
 #pdf(file=paste0(savepath,"calibration_plot_for_",m, "_",d,"set_LATEST.pdf"))
