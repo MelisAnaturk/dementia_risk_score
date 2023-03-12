@@ -3,29 +3,8 @@
 #load required packages
 library(pROC)
 
-load(file="../../raw_data/train_data_outliers_removed_fiftyplusnoapoe.rda")
-load(file="../../raw_data/test_data_outliers_removed_fiftyplusnoapoe.rda")
-
-#### compute UKB-DRS ####
-#calculate linear predictor and predicted probabilities for the age-only and UKB-DRS models
-#using 9_logistic_regression_LASSO.R as sample, from line 258 and on
-
-#define models
-#age_only <-      paste("dementia_BIN_TOTAL~Age_when_attended_assesment_centre_0_0")
-
-#UKBDRS_LASSO  <-            paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +
-#                                  Diabetes_BIN_FINAL_0_0  +  current_history_depression + stroke_TIA_BIN_FINAL")
-
-#UKBDRS_LASSO_MAN  <-  paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +  Sex + education_years +
-#                            Diabetes_BIN_FINAL_0_0  +  current_history_depression + stroke_TIA_BIN_FINAL + 
-#                            family_history_of_dementia")
-
-#UKBDRS_APOE_LASSO <-      paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +
-#                                Diabetes_BIN_FINAL_0_0  +  current_history_depression + stroke_TIA_BIN_FINAL + APOE_genotype_bin")
-
-#UKBDRS_APOE_LASSO_MAN <-   paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +  Sex + education_years +
-#                                 Diabetes_BIN_FINAL_0_0  +  current_history_depression + stroke_TIA_BIN_FINAL + family_history_of_dementia + APOE_genotype_bin")
-#models <- c("age_only", "UKBDRS_LASSO", "UKBDRS_LASSO_MAN", "UKBDRS_APOE_LASSO", "UKBDRS_APOE_LASSO_MAN")
+load(file="../../raw_data/train_data_outliers_removed_fiftyplusnoapoe_sexstratify.rda")
+load(file="../../raw_data/test_data_outliers_removed_fiftyplusnoapoe_sexstratify.rda")
 
 test.data$dataset <- "test"
 train.data$dataset <- "train"
@@ -33,28 +12,6 @@ train.data$dataset <- "train"
 df_test <- rbind(test.data, train.data) 
 datasets<-c("train","test")
 rm(train.data, test.data)
-
-
-#apply logistic regression for each model
-#for (m in models){
-#  print(paste0('applying logistic regression model for ', m))
-#  model <- glm(as.formula(m), data=train.data, family="binomial")
-  
-#  print(paste0('UKB training set : calculating linear predictor and predicted probabilities for ', m))
-#  train.data[paste(m, "linear_predictor", sep="_")] <- predict(model, train.data)
-#  train.data[paste(m, "predicted_prob", sep="_")] <-   1/(1+exp(-train.data[paste(m, "linear_predictor", sep="_")])) # can also be computed with predict(model, type='response')
-  
-#  print(paste0('UKB test set : calculating linear predictor and predicted probabilities for ', m))
-#  test.data[paste(m, "linear_predictor", sep="_")] <- predict(model, test.data)
-#  test.data[paste(m, "predicted_prob", sep="_")] <-   1/(1+exp(-test.data[paste(m, "linear_predictor", sep="_")])) # can also be computed with predict(model, newdata= test.data, type='response') 
-#}
-
-#test.data$dataset <- "test"
-#train.data$dataset <- "train"
-
-#df_test <- rbind(test.data, train.data) 
-#datasets<-c("train","test")
-#rm(train.data, test.data)
 
 #### CAIDE ####
 
@@ -134,7 +91,7 @@ gc()
 drs_auc
 #train               test
 #age_only          0.66 [0.65, 0.67] 0.67 [0.65, 0.69]
-#UKBDRS_APOE_LASSO 0.75 [0.74, 0.76] 0.74 [0.72, 0.76]
+#UKBDRS_APOE_LASSO 0.75 [0.74, 0.76] 0.74 [0.71, 0.76]
 #UKBDRS_LASSO       0.69 [0.68, 0.7] 0.69 [0.67, 0.71]
 #DRS               0.65 [0.64, 0.67] 0.65 [0.63, 0.67]
 
@@ -239,6 +196,6 @@ rm(anu_data)
 anu_cvhs_auc
 #train               test
 #age_only          0.63 [0.62, 0.64] 0.63 [0.61, 0.65]
-#UKBDRS_APOE_LASSO 0.73 [0.72, 0.74]  0.72 [0.7, 0.74]
-#UKBDRS_LASSO      0.67 [0.66, 0.68] 0.66 [0.64, 0.69]
+#UKBDRS_APOE_LASSO 0.73 [0.72, 0.74] 0.72 [0.69, 0.74]
+#UKBDRS_LASSO      0.67 [0.66, 0.68] 0.66 [0.64, 0.68]
 #ANU_ADRI           0.59 [0.57, 0.6] 0.58 [0.56, 0.61]

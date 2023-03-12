@@ -1,8 +1,8 @@
 #this script is used to check demographic descriptives for Table 1
 library(qwraps2)
 
-load("../../raw_data/train_data_outliers_removed_fiftyplusnoapoe.rda")
-load("../../raw_data/test_data_outliers_removed_fiftyplusnoapoe.rda")
+load("../../raw_data/train_data_outliers_removed_fiftyplusnoapoe_sexstratify.rda")
+load("../../raw_data/test_data_outliers_removed_fiftyplusnoapoe_sexstratify.rda")
 
 test.data$dataset <- "UKBtest"
 train.data$dataset <- "UKB_train"
@@ -117,17 +117,17 @@ summary_lifestyle <-
 
 df_lifestyle <- summary_table(df, summary_lifestyle, by = c("dataset"))
 
-genetic_vars <- c("APOE_genotype_bin")
+#genetic_vars <- c("APOE_genotype_bin")
 
-summary_genetic <-
-  list("APOE" = 
-         list("APOE4status" = ~ qwraps2::n_perc(APOE_genotype_bin == 1, show_denom = "never"))
-  )
-df_genetic <- summary_table(df, summary_genetic, by = c("dataset"))
+#summary_genetic <-
+#  list("APOE" = 
+#         list("APOE4status" = ~ qwraps2::n_perc(APOE_genotype_bin == 1, show_denom = "never"))
+#  )
+#df_genetic <- summary_table(df, summary_genetic, by = c("dataset"))
 
 
 med_vars <- c("current_history_depression","Diabetes_BIN_FINAL_0_0", "stroke_TIA_BIN_FINAL", "TBI_BIN_FINAL_0_0", "Atrial_Fibrillation_BIN_FINAL_0_0",
-               "statins_0_0", "NSAIDs_0_0", "Aspirin_0_0","HRT_0_0","Antihypertensive_meds_0_0","family_history_of_dementia","dementia_BIN_TOTAL","years_diff_all_cause_dementia_0_0")
+               "cholesterol", "NSAIDs_0_0", "HRT_0_0","hypertensive","family_history_of_dementia","dementia_BIN_TOTAL","years_diff_all_cause_dementia_0_0")
 
 summary_medical <-
   list("Depression" = 
@@ -140,16 +140,14 @@ summary_medical <-
          list("TBI" = ~ qwraps2::n_perc(TBI_BIN_FINAL_0_0 == 1, show_denom = "never")),
        "AtrialFib" = 
          list("AtrialFib" = ~ qwraps2::n_perc(Atrial_Fibrillation_BIN_FINAL_0_0 == 1, show_denom = "never")),
-       "Statins" = 
-         list("Statins" = ~ qwraps2::n_perc(statins_0_0 == 1, show_denom = "never")),
+       "cholesterol" = 
+         list("Statins" = ~ qwraps2::n_perc(cholesterol == 1, show_denom = "never")),
        "NSAIDs" = 
          list("NSAIDs" = ~ qwraps2::n_perc(NSAIDs_0_0 == 1, show_denom = "never")),
-       "Aspirin" = 
-         list("Aspirin" = ~ qwraps2::n_perc(Aspirin_0_0 == 1, show_denom = "never")),
+       "hypertensive" = 
+         list("hypertensive" = ~ qwraps2::n_perc(hypertensive == 1, show_denom = "never")),
        "HRT" = 
          list("HRT" = ~ qwraps2::n_perc(HRT_0_0 == 1, show_denom = "never")),
-       "Antihypertensive" = 
-         list("Antihypertensive" = ~ qwraps2::n_perc(Antihypertensive_meds_0_0 == 1, show_denom = "never")),
        "FamHX" = 
          list("FamHX" = ~ qwraps2::n_perc(family_history_of_dementia == 1, show_denom = "never")),
        "Incident dementia" = 
@@ -160,7 +158,7 @@ summary_medical <-
 
 df_medical <- summary_table(df, summary_medical, by = c("dataset"))
 
-table1 <- rbind(df_demographic, df_biomed, df_lifestyle, df_genetic, df_medical)
+table1 <- rbind(df_demographic, df_biomed, df_lifestyle, df_medical)
 ###
 
 #### by dementia status ####
@@ -281,18 +279,18 @@ summary_medical <-
          list("TBI" = ~ qwraps2::n_perc(TBI_BIN_FINAL_0_0 == 1, show_denom = "never")),
        "AtrialFib" = 
          list("AtrialFib" = ~ qwraps2::n_perc(Atrial_Fibrillation_BIN_FINAL_0_0 == 1, show_denom = "never")),
-       "Statins" = 
-         list("Statins" = ~ qwraps2::n_perc(statins_0_0 == 1, show_denom = "never")),
+       "cholesterol" = 
+         list("cholesterol" = ~ qwraps2::n_perc(cholesterol == 1, show_denom = "never")),
        "NSAIDs" = 
          list("NSAIDs" = ~ qwraps2::n_perc(NSAIDs_0_0 == 1, show_denom = "never")),
-       "Aspirin" = 
-         list("Aspirin" = ~ qwraps2::n_perc(Aspirin_0_0 == 1, show_denom = "never")),
+       "hypertensive" = 
+         list("hypertensive" = ~ qwraps2::n_perc(hypertensive == 1, show_denom = "never")),
        "HRT" = 
          list("HRT" = ~ qwraps2::n_perc(HRT_0_0 == 1, show_denom = "never")),
-       "Antihypertensive" = 
-         list("Antihypertensive" = ~ qwraps2::n_perc(Antihypertensive_meds_0_0 == 1, show_denom = "never")),
        "FamHX" = 
          list("FamHX" = ~ qwraps2::n_perc(family_history_of_dementia == 1, show_denom = "never")),
+       "Incident dementia" = 
+         list("Incident dementia" = ~ qwraps2::n_perc(dementia_BIN_TOTAL == 1, show_denom = "never")),
        "Years to diagnosis" = 
          list("Years to diagnosis" = ~ qwraps2::mean_sd(years_diff_all_cause_dementia_0_0, denote_sd = "paren", na_rm = TRUE))
   )
@@ -300,6 +298,10 @@ summary_medical <-
 df_medical <- summary_table(df, summary_medical, by = c("dementia_BIN_TOTAL"))
 
 table1_bydementia <- rbind(df_demographic, df_biomed, df_lifestyle, df_medical)
-> summary(subset(df, df$dementia_BIN_TOTAL==0)$APOE_genotype_bin)
-0      1   NA's 
-108271  45965  62713 
+summary(subset(df, df$dementia_BIN_TOTAL==0)$APOE_genotype_bin)
+#0      1   NA's 
+#108271  45965  62713 
+
+summary(subset(df, df$dementia_BIN_TOTAL==1)$APOE_genotype_bin)
+#0    1 NA's 
+#1231 1623  959 
