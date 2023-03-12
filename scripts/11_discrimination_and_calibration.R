@@ -59,6 +59,18 @@ savepath = "../results/"
 #NB. Anu-adri has to be excluded from calibration calculations
 models <- c("age_only", "UKBDRS_LASSO", "UKBDRS_APOE_LASSO", "UKBDRS_LASSO_sexstratify","CAIDE", "DRS")
 
+#aside
+#***** caide was incorrectly specified to always use apoe beta in 3_caide.R. fix
+df_test$CAIDE_predicted_prob <- (exp(-7.406 + 0.796 + (0.401*df_test$beta_caide_score)))/
+  1+(exp(-7.406 + 0.796 + (0.401*df_test$beta_caide_score)))
+
+train.data$CAIDE_predicted_prob <- (exp(-7.406 + 0.796 + (0.401*train.data$beta_caide_score)))/
+  1+(exp(-7.406 + 0.796 + (0.401*train.data$beta_caide_score)))
+
+test.data$CAIDE_predicted_prob <- (exp(-7.406 + 0.796 + (0.401*test.data$beta_caide_score)))/
+  1+(exp(-7.406 + 0.796 + (0.401*test.data$beta_caide_score)))
+
+
 #dataframe for storing/organizing auc results for each model
 df_table3<-data.frame(matrix(ncol=3))
 names(df_table3)<-c("Model","train","test")
@@ -132,12 +144,6 @@ df_calibration_sitable5 <- data.frame(matrix(nrow = 0,ncol=7))
 names(df_calibration_sitable5) <- c("Model", "Intercept", "Slope", "Chi-squared", "Brier_Score", "Spiegelhalter_z_test", "p.value")
 #dont calibrate ukbdrslassoapoe on all data as it is not available for all data
 models <- c("age_only", "UKBDRS_LASSO", "CAIDE", "DRS")
-
-#***** caide is incorrectly computed based on the apoe beta now. temp adjustment here, must go back to 3_caide to fix properly
-# 2.5 Calculate Probability(dementia) - CAIDE without APOE
-df_test$CAIDE_predicted_prob <- (exp(-7.406 + 0.796 + (0.401*df_test$beta_caide_score)))/
-  1+(exp(-7.406 + 0.796 + (0.401*df_test$beta_caide_score)))
-
 
 # for loop to populate df_calibration_sitable5
 for (m in models){
