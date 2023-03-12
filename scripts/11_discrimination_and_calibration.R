@@ -387,8 +387,6 @@ plot <- g2 + theme_minimal()  +  theme(legend.title = element_blank(), panel.gri
                                        panel.grid.minor = element_blank(),
                                        panel.background = element_rect(colour = "black", size=1), text = element_text(size=14)) 
 
-ggsave(paste0(savepath,"roc_plotted_all.pdf"), width = 10, height = 10, units = "cm")
-
 ggsave(paste0(savepath,"roc_plotted_all.pdf"), 
        plot = plot, 
        device = "pdf", 
@@ -461,11 +459,11 @@ for (m in models){for (d in c("train")){
   print(roc$ci)
   print('potential cut-off based on 80% sensitivity')
   perform<-data.frame(pROC::coords(roc, x = "all", ret=c("threshold", "specificity", "sensitivity","npv", "ppv"), transpose = FALSE))
-  perform <- round(perform[perform$sensitivity >= .8 & perform$sensitivity <= 0.801, ],3)
+  perform <- round(perform[perform$sensitivity >= .799 & perform$sensitivity <= 0.801, ],3)
   print(perform)
   print('potential cut-off based on 85% sensitivity')
   perform<-data.frame(pROC::coords(roc, x = "all", ret=c("threshold", "specificity", "sensitivity","npv", "ppv"), transpose = FALSE))
-  perform <- round(perform[perform$sensitivity >= .8495 & perform$sensitivity <= 0.851, ],3)
+  perform <- round(perform[perform$sensitivity >= .849 & perform$sensitivity <= 0.852, ],3)
   print(perform)
   print('potential cut-off based on 90% sensitivity')
   perform<-data.frame(pROC::coords(roc, x = "all", ret=c("threshold", "specificity", "sensitivity","npv", "ppv"), transpose = FALSE))
