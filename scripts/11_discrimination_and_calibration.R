@@ -62,13 +62,13 @@ models <- c("age_only", "UKBDRS_LASSO", "UKBDRS_APOE_LASSO", "UKBDRS_LASSO_sexst
 #aside
 #***** caide was incorrectly specified to always use apoe beta in 3_caide.R. fix
 df_test$CAIDE_predicted_prob <- (exp(-7.406 + 0.796 + (0.401*df_test$beta_caide_score)))/
-  1+(exp(-7.406 + 0.796 + (0.401*df_test$beta_caide_score)))
+  (1+(exp(-7.406 + 0.796 + (0.401*df_test$beta_caide_score))))
 
 train.data$CAIDE_predicted_prob <- (exp(-7.406 + 0.796 + (0.401*train.data$beta_caide_score)))/
-  1+(exp(-7.406 + 0.796 + (0.401*train.data$beta_caide_score)))
+  (1+(exp(-7.406 + 0.796 + (0.401*train.data$beta_caide_score))))
 
 test.data$CAIDE_predicted_prob <- (exp(-7.406 + 0.796 + (0.401*test.data$beta_caide_score)))/
-  1+(exp(-7.406 + 0.796 + (0.401*test.data$beta_caide_score)))
+  (1+(exp(-7.406 + 0.796 + (0.401*test.data$beta_caide_score))))
 
 
 #dataframe for storing/organizing auc results for each model
@@ -199,10 +199,10 @@ data <- test.data[complete.cases(test.data[,c("APOE_genotype_bin")]),]
 data$y <- ifelse(data[,"dementia_BIN_TOTAL"]==1,1,0)
 vec <-val.prob(data[, paste("UKBDRS_APOE_LASSO", "predicted_prob", sep="_")], data$y, g=10, pl=TRUE, smooth=TRUE, logistic.cal=FALSE, lim=c(0,0.4))
 print(vec)
-#Dxy       C (ROC)            R2             D      D:Chi-sq           D:p             U      U:Chi-sq           U:p             Q         Brier     Intercept         Slope 
-#6.059468e-01  8.029734e-01  1.400264e-01  2.365149e-02  7.418120e+02            NA -6.356731e-05  8.944786e-03  9.955376e-01  2.371506e-02  1.737173e-02 -4.799680e-04  9.987222e-01 
-#Emax           E90          Eavg           S:z           S:p 
-#4.799212e-02  1.216444e-03  5.507116e-04  1.348895e-01  8.926993e-01 
+#Dxy       C (ROC)            R2             D      D:Chi-sq           D:p             U      U:Chi-sq           U:p 
+#6.064106e-01  8.032053e-01  1.401377e-01  2.367054e-02  7.424088e+02            NA -6.359405e-05  8.107143e-03  9.959546e-01 
+#Q         Brier     Intercept         Slope          Emax           E90          Eavg           S:z           S:p 
+#2.373414e-02  1.737301e-02  3.524970e-04  9.990014e-01  5.118644e-02  1.265005e-03  5.779694e-04  1.338517e-01  8.935198e-01 
 dev.off()
 print(round(vec[17],2))
 #S:z 
@@ -216,19 +216,19 @@ print(round(vec[11],2))
 print('Rescaled brier score')
 print(rescale_Brier(vec[17], data$y))
 #S:z 
-#-6.498049 
+#-6.440363
 print('Spiegelhalter z test')  #intercept_slope
 Spiegelhalter_z(data$y, data[, paste("UKBDRS_APOE_LASSO", "predicted_prob", sep="_")])
-#[1] 0.1348895
+#[1] 0.1338517
 #[1] "fail to reject. calibrated"
-#z score:  0.1348895 
-#p value:  0.4463496 
-#[1] 0.1348895
+#z score:  0.1338517 
+#p value:  0.4467599 
+#[1] 0.1338517
 
 print(paste0("Intercept: ",round(vec[12],2)))
 #[1] "Intercept: 0"
 print(paste0("Slope: ",round(vec[13],4)))
-#[1] "Slope: 0.9987"
+#[1] "Slope: 0.999"
 #save calibration plots to ../results folder
 png(file=paste0(savepath,"calibration_plot_for_","UKBDRS_APOE_LASSO", "_","test","set_intercept_slope.png"))
 #pdf(file=paste0(savepath,"calibration_plot_for_",m, "_",d,"set_LATEST.pdf"))

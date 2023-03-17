@@ -354,7 +354,7 @@ UKBDRS_LASSO  <-  paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centr
 UKBDRS_APOE_LASSO <-    paste("dementia_BIN_TOTAL ~  Age_when_attended_assesment_centre_0_0 +  family_history_of_dementia +
                             education_years + Townsend_deprivation_modelvar +Diabetes_BIN_FINAL_0_0  +
                             current_history_depression + stroke_TIA_BIN_FINAL +  
-                            hypertensive + APOE_genotype_bin")
+                            hypertensive + cholesterol + APOE_genotype_bin")
 
 
 models <- c("age_only", "UKBDRS_LASSO", "UKBDRS_APOE_LASSO")

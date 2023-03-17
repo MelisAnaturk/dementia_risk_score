@@ -49,7 +49,7 @@ rm(caide_data)
 caide_auc
 #train               test
 #age_only           0.69 [0.68, 0.7]  0.7 [0.67, 0.72]
-#UKBDRS_APOE_LASSO 0.75 [0.74, 0.77]  0.77 [0.74, 0.8]
+#UKBDRS_APOE_LASSO 0.76 [0.74, 0.77]  0.77 [0.74, 0.8]
 #UKBDRS_LASSO      0.73 [0.72, 0.74]  0.73 [0.7, 0.76]
 #CAIDE             0.65 [0.64, 0.67] 0.66 [0.63, 0.69]
 
