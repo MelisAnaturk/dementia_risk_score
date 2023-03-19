@@ -120,17 +120,17 @@ apply(df[,grep("CAIDE|caide", names(df))],2,pMiss)
 
 # 2.4 Calculate Probability(dementia) - CAIDE+APOE
 df$CAIDE_APOE_predicted_prob              <- (exp(-8.083 +    1.020 + (0.390*df$beta_caide_APOE_score)))/
-                                           1+(exp(-8.083 + 1.020 + (0.390*df$beta_caide_APOE_score)))
+                                           (1+(exp(-8.083 + 1.020 + (0.390*df$beta_caide_APOE_score))))
 summary(df$CAIDE_APOE_predicted_prob*100)
 #Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-   #0.17    0.36    0.49    0.50    0.60    2.31  200152 
+#   0.09    0.18    0.24    0.25    0.30    1.14  200152 
    
 # 2.5 Calculate Probability(dementia) - CAIDE without APOE
-df$CAIDE_predicted_prob <- (exp(-7.406 + 0.796 + (0.401*df$beta_caide_APOE_score)))/
-                           1+(exp(-7.406 + 0.796 + (0.401*df$beta_caide_APOE_score)))
+df$CAIDE_predicted_prob <- (exp(-7.406 + 0.796 + (0.401*df$beta_caide_score)))/
+                           (1+(exp(-7.406 + 0.796 + (0.401*df$beta_caide_score))))
 
 summary(df$CAIDE_predicted_prob*100)
 #Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-#   0.27    0.57    0.79    0.81    0.98    3.91  200322 
+#   0.13    0.27    0.35    0.38    0.46    1.65   80215 
 
 save(df, file = paste0(data_pathway, "ukbdata_diagnoses_baseline_diseasestatus_baselinemedications_ANUADRI_CAIDE.rda"))

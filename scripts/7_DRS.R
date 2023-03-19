@@ -123,9 +123,6 @@ df$DRS_atrial_fib_score <- ifelse(df$Atrial_Fibrillation_BIN_FINAL_0_0==1,1,0)
 
 # 2.11 Diabetes
 df$DRS_diabetes_score <- ifelse(df$Diabetes_II_BIN_FINAL_0_0==1,1,0)
-#mar 7 rp tries:
-#df$DRS_diabetes_score <- ifelse(df$Diabetes_BIN_FINAL_0_0==1,1,0)
-#keeping definition based on Diabetes_II_BIN for now, to confirm.
 
 # 2.12 Calendar year
 df$DRS_calendar_year_score <- as.integer(format(df$baseline_date, "%Y"))

@@ -59,18 +59,6 @@ savepath = "../results/"
 #NB. Anu-adri has to be excluded from calibration calculations
 models <- c("age_only", "UKBDRS_LASSO", "UKBDRS_APOE_LASSO", "UKBDRS_LASSO_sexstratify","CAIDE", "DRS")
 
-#aside
-#***** caide was incorrectly specified to always use apoe beta in 3_caide.R. fix
-df_test$CAIDE_predicted_prob <- (exp(-7.406 + 0.796 + (0.401*df_test$beta_caide_score)))/
-  (1+(exp(-7.406 + 0.796 + (0.401*df_test$beta_caide_score))))
-
-train.data$CAIDE_predicted_prob <- (exp(-7.406 + 0.796 + (0.401*train.data$beta_caide_score)))/
-  (1+(exp(-7.406 + 0.796 + (0.401*train.data$beta_caide_score))))
-
-test.data$CAIDE_predicted_prob <- (exp(-7.406 + 0.796 + (0.401*test.data$beta_caide_score)))/
-  (1+(exp(-7.406 + 0.796 + (0.401*test.data$beta_caide_score))))
-
-
 #dataframe for storing/organizing auc results for each model
 df_table3<-data.frame(matrix(ncol=3))
 names(df_table3)<-c("Model","train","test")
@@ -199,10 +187,10 @@ data <- test.data[complete.cases(test.data[,c("APOE_genotype_bin")]),]
 data$y <- ifelse(data[,"dementia_BIN_TOTAL"]==1,1,0)
 vec <-val.prob(data[, paste("UKBDRS_APOE_LASSO", "predicted_prob", sep="_")], data$y, g=10, pl=TRUE, smooth=TRUE, logistic.cal=FALSE, lim=c(0,0.4))
 print(vec)
-#Dxy       C (ROC)            R2             D      D:Chi-sq           D:p             U      U:Chi-sq           U:p 
-#6.064106e-01  8.032053e-01  1.401377e-01  2.367054e-02  7.424088e+02            NA -6.359405e-05  8.107143e-03  9.959546e-01 
-#Q         Brier     Intercept         Slope          Emax           E90          Eavg           S:z           S:p 
-#2.373414e-02  1.737301e-02  3.524970e-04  9.990014e-01  5.118644e-02  1.265005e-03  5.779694e-04  1.338517e-01  8.935198e-01 
+#Dxy       C (ROC)            R2             D      D:Chi-sq           D:p             U      U:Chi-sq           U:p             Q 
+#6.064106e-01  8.032053e-01  1.401377e-01  2.367054e-02  7.424088e+02            NA -6.359405e-05  8.107143e-03  9.959546e-01  2.373414e-02 
+#Brier     Intercept         Slope          Emax           E90          Eavg           S:z           S:p 
+#1.737301e-02  3.524970e-04  9.990014e-01  5.118644e-02  1.265005e-03  5.779694e-04  1.338517e-01  8.935198e-01 
 dev.off()
 print(round(vec[17],2))
 #S:z 
