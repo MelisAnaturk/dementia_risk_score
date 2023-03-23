@@ -97,10 +97,7 @@ datalist <-list()
 for (ltc in c("hypertension","hyperlipidemia","hyperchol")){
   
   #load in the subjects with an identified pcare diagnosis. this is in two splits
-  #df_a<-read.csv(paste('../../../../mm/derivatives/participants_with',ltc,'A.csv',sep="_")) #stealing from mm data
-  #df_b<-read.csv(paste('../../../../mm/derivatives/participants_with',ltc,'B.csv',sep="_"))
-  #df_ltc<-rbind(df_a[,c("eid","event_dt_1")],df_b[,c("eid","event_dt_1")]) #merge the splits
-  
+
   df_pcare<-read.csv(paste('../../raw_data/participants_with_',ltc,'.csv',sep=""))
   df_ltc <- df_pcare[,c("eid","event_dt_1")]
   
