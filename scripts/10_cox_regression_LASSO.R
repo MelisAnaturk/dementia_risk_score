@@ -162,10 +162,6 @@ rm(df)
 summary(df_filtered$dementia_BIN_TOTAL)
 #216949   3813  
 
-#----- 2. LASSO REGRESSION ------------------------------------------
-# LASSO cox regression is first run to identify the subset of predictors to be used in our risk score
-# https://glmnet.stanford.edu/articles/Coxnet.html 
-
 #we need time to death/censor/dementia
 df_filtered$Date_of_assessment_0_0_new.x <- as.Date(df_filtered$Date_of_assessment_0_0_new.x, format="%Y-%m-%d")
 df_filtered$has_death_record <- ifelse(is.na(df_filtered$date_of_death_all),0,1)
@@ -203,8 +199,12 @@ rm(df_dementia, df_deaths, df_healthy)
 #save
 save(df_filtered, file="../../raw_data/df_filtered_prelasso.rda")
 
+#----- 2. LASSO REGRESSION ------------------------------------------
+# LASSO cox regression is first run to identify the subset of predictors to be used in our risk score
+# https://glmnet.stanford.edu/articles/Coxnet.html 
+
 #load if needed
-load("../../raw_data/df_filtered_prelasso.rda")
+#load("../../raw_data/df_filtered_prelasso.rda")
 
 #define variables of interest
 myvars <- c("time_at_risk","Age_when_attended_assesment_centre_0_0","education_years", "Townsend_deprivation_Groups_0_0", "BMI_0_0",
@@ -225,15 +225,13 @@ training.samples <- df_filtered$dementia_BIN_TOTAL %>% createDataPartition(p = 0
 train.data  <- df_filtered[training.samples, ][myvars]
 test.data <- df_filtered[-training.samples, ][myvars]
 
-save(train.data, file = paste0(save_pathway, "train_data_outliers_removed_prelasso.rda"))
-save(test.data, file = paste0(save_pathway, "test_data_outliers_removed_prelasso.rda"))
-
-
+save(train.data, file = "../../raw_data/train_data_outliers_removed_prelasso.rda")
+save(test.data, file = "../../raw_data/test_data_outliers_removed_prelasso.rda")
 
 
 # OR ALTERNATIVELY YOU CAN load train/test data
-#load(file = paste0(data_pathway,"train_data_outliers_removed.rda"))
-#load(file = paste0(data_pathway,"test_data_outliers_removed.rda"))
+#load(file = "../../raw_data/train_data_outliers_removed_prelasso.rda")
+#load(file = "../../raw_data/test_data_outliers_removed_prelasso.rda")
 #train.data <- train.data[myvars]
 #test.data <- test.data[myvars]
 
@@ -281,21 +279,7 @@ lasso.final.1 <- glmnet(x, y, alpha = 1, family = "cox", lambda = lasso.fit.cv$l
 coef(lasso.final.1, s = lasso.fit.cv$lambda.1se) #lambda.1se
 
 #Output 
-# 33 x 1 sparse Matrix of class "dgCMatrix"
-#(Intercept)                            -4.59166742
-
-#OLD, LOGISTIC      
-#Townsend_deprivation_Groups_0_04        0.06505642
-#family_history_of_dementia1             0.19243398
-#Diabetes_BIN_FINAL_0_01                 0.45423371
-#current_history_depression1             0.33689819
-#stroke_TIA_BIN_FINAL1                   0.54779739
-#hypertensive1                           0.09190174
-#cholesterol1                            0.08886551
-#Age_when_attended_assesment_centre_0_0  0.84722457
-#education_years                        -0.06501424
-
-#NEW, COX
+# 32 x 1 sparse Matrix of class "dgCMatrix"
 # Townsend_deprivation_Groups_0_04        0.13382243
 # Sex1                                    0.03082154
 # family_history_of_dementia1             0.25174957
@@ -307,7 +291,6 @@ coef(lasso.final.1, s = lasso.fit.cv$lambda.1se) #lambda.1se
 # cholesterol1                            0.09704808
 # Age_when_attended_assesment_centre_0_0  0.88294603
 # education_years                        -0.07321108
-#new vars are sex (male) and household occupancy (1 = living alone)
 
 
 # tidy output
@@ -319,101 +302,17 @@ write.csv(tidy(lasso.final.1), paste0(save_pathway,"cox_LASSO_results.csv"))
 # save the model
 save(lasso.final.1, file = paste0(model_pathway, "lasso_fit_cox_final.rda"))
 
-# Or otherwise load model into R
-#load(file = paste0(model_pathway, "lasso_fit_final.rda""))
 
-#----- 2. COX REGRESSION ------------------------------------------
-# cox regression is now run to calculate the beta-weights for each of the 
-#components in our risk score (note, we also add in age, sex and education)
-
+#put original data back into train/test
 #coxph will want 1,2 as outcome
 df_filtered$dementia_BIN_surv <- as.numeric(df_filtered$dementia_BIN_TOTAL)
 summary(as.factor(df_filtered$dementia_BIN_surv))
 #1      2 
 #216949   3813 
 
-# conduct train/test split (same partion as above conducted but more columns are retained)
 train.data  <- df_filtered[training.samples, ]
 test.data <- df_filtered[-training.samples, ]
 
-#membership in highest deprived group (4, on scale of 0-4) was selected, not others
-#create binary version of deprivation to use in model
-train.data$Townsend_deprivation_modelvar<-ifelse(train.data$Townsend_deprivation_Groups_0_0==4,1,0)
-train.data$Townsend_deprivation_modelvar<-as.factor(train.data$Townsend_deprivation_modelvar)
-test.data$Townsend_deprivation_modelvar<-ifelse(test.data$Townsend_deprivation_Groups_0_0==4,1,0)
-test.data$Townsend_deprivation_modelvar<-as.factor(test.data$Townsend_deprivation_modelvar)
-
-save(train.data, file = paste0(save_pathway, "train_data_outliers_removed_postlasso.rda"))
-save(test.data, file = paste0(save_pathway, "test_data_outliers_removed_postlasso.rda"))
-
-load(file = paste0(save_pathway, "train_data_outliers_removed_postlasso.rda"))
-load(file = paste0(save_pathway, "test_data_outliers_removed_postlasso.rda"))
-
-#### 2.1 Test beta coefficients ####
-#based on the lasso selected vars, compute model coefficients in train data
-#use 2 models - one with apoe, one without. 
-
-#### Test models ####
-
-#### UKBDRS Linear ####
-#TESTED THIS IN WH AND IT WAS OK
-UKBDRS_LASSO  <-  paste("Surv(time_at_risk, dementia_BIN_surv) ~  Age_when_attended_assesment_centre_0_0 +  family_history_of_dementia +
-                            education_years + Diabetes_BIN_FINAL_0_0  + Townsend_deprivation_Groups_0_0 +
-                            current_history_depression + stroke_TIA_BIN_FINAL +  
-                            hypertensive + cholesterol + household_occupancy + Sex")
-
-ukbdrs.cox <- coxph(as.formula(UKBDRS_LASSO), data = train.data)
-summary(ukbdrs.cox)
-# coef exp(coef)  se(coef)      z Pr(>|z|)    
-# Age_when_attended_assesment_centre_0_0  0.180696  1.198050  0.004643 38.914  < 2e-16 ***
-#   family_history_of_dementia1             0.433780  1.543079  0.042985 10.091  < 2e-16 ***
-#   education_years                        -0.043925  0.957026  0.006211 -7.072 1.53e-12 ***
-#   Diabetes_BIN_FINAL_0_01                 0.568808  1.766161  0.057648  9.867  < 2e-16 ***
-#   Townsend_deprivation_Groups_0_01       -0.036469  0.964188  0.059765 -0.610  0.54173    
-# Townsend_deprivation_Groups_0_02        0.024363  1.024663  0.058884  0.414  0.67906    
-# Townsend_deprivation_Groups_0_03        0.054756  1.056283  0.059248  0.924  0.35538    
-# Townsend_deprivation_Groups_0_04        0.271078  1.311378  0.057395  4.723 2.32e-06 ***
-#   current_history_depression1             0.560606  1.751735  0.046207 12.132  < 2e-16 ***
-#   stroke_TIA_BIN_FINAL1                   0.695670  2.005053  0.076570  9.085  < 2e-16 ***
-#   hypertensive1                           0.170602  1.186019  0.040738  4.188 2.82e-05 ***
-#   cholesterol1                            0.105227  1.110962  0.044406  2.370  0.01780 *  
-#   household_occupancy1                    0.144535  1.155502  0.044497  3.248  0.00116 ** 
-#   household_occupancy2                   -0.053093  0.948292  0.056009 -0.948  0.34316    
-# Sex1                                    0.204492  1.226901  0.037846  5.403 6.54e-08 ***
-
-cox.zph(ukbdrs.cox)
-# Age_when_attended_assesment_centre_0_0  9.0199  1 0.00267
-# family_history_of_dementia              0.3350  1 0.56273
-# education_years                         0.0316  1 0.85885
-# Diabetes_BIN_FINAL_0_0                  0.8196  1 0.36529
-# Townsend_deprivation_Groups_0_0         8.0088  4 0.09126
-# current_history_depression             17.3982  1   3e-05
-# stroke_TIA_BIN_FINAL                    1.5327  1 0.21570
-# hypertensive                            1.1205  1 0.28981
-# cholesterol                             0.6421  1 0.42297
-# household_occupancy                     0.3183  2 0.85288
-# Sex                                     0.7551  1 0.38488
-# GLOBAL                                 40.4159 15 0.00039
-
-#age, depr and townsend violate
-ph<-cox.zph(ukbdrs.cox)
-
-
-#baseline survival
-#The baseline survival is the distribution of the predicted survival for the patient whose predictor values are either the average or 0 (or the reference group for categorical predictors) across the complete follow-up time under study.
-#https://www.acpjournals.org/doi/full/10.7326/M22-0844
-survv <- survfit(ukbdrs.cox)
-summary(survfit(ukbdrs.cox))
-
-df_base <- data.frame(Age_when_attended_assesment_centre_0_0 = mean(train.data$Age_when_attended_assesment_centre_0_0),
-                      family_history_of_dementia = as.factor(0), Diabetes_BIN_FINAL_0_0 = as.factor(0),
-                      current_history_depression = as.factor(0), stroke_TIA_BIN_FINAL = as.factor(0),
-                      hypertensive = as.factor(0), cholesterol = as.factor(0), Townsend_deprivation_Groups_0_0 = as.factor(0),
-                      education_years = mean(train.data$education_years), Sex = as.factor(0), household_occupancy = as.factor(0))
-
-survv_baseline <- survfit(ukbdrs.cox, newdata = df_base)
-length(survv_baseline$time) #there are 4614 timepoints
-#survival over entire time window:
-survv_baseline$surv[4614]
-#0.9911458
+save(train.data, file = paste0(data_pathway, "train_data_outliers_removed_postlasso.rda"))
+save(test.data, file = paste0(data_pathway, "test_data_outliers_removed_postlasso.rda"))
 
