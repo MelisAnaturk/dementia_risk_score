@@ -208,10 +208,9 @@ modelvars <- c("Age_when_attended_assesment_centre_0_0","family_history_of_demen
             "Townsend_deprivation_Groups_0_0","current_history_depression","stroke_TIA_BIN_FINAL","hypertensive","cholesterol",
             "household_occupancy","Sex","dementia_BIN_surv")
 
-#covs <- model.matrix(as.formula(UKBDRS_LASSO), train.data[myvars])[,-1]
-
 ukbdrs.cr.train <- crr(ftime = time_at_risk, fstatus = crr_status, failcode=1, cencode = 0,
                        cov1=model.matrix(as.formula(UKBDRS_LASSO), train.data[modelvars])[,-1], variance=FALSE)
+save(ukbdrs.cr.train, file=paste0(save_pathway,"ukbdrs.cr.train.rda"))
 summary(ukbdrs.cr.train)
 # coef exp(coef) se(coef)  z p-value
 # Age_when_attended_assesment_centre_0_0  0.1766     1.193       NA NA      NA
@@ -275,6 +274,7 @@ time_at_risk <- apoe.train.data$time_at_risk
 ukbdrs.apoe.cr.train <- crr(ftime = time_at_risk, fstatus = crr_status,
                             failcode=1, cencode = 0,
                             cov1=model.matrix(as.formula(UKBDRS_APOE_LASSO), apoe.train.data[modelvars])[,-1], variance=FALSE)
+save(ukbdrs.apoe.cr.train, file=paste0(save_pathway,"ukbdrs.apoe.cr.train.rda"))
 summary(ukbdrs.apoe.cr.train)
 # coef exp(coef) se(coef)  z p-value
 # Age_when_attended_assesment_centre_0_0  0.18447     1.203       NA NA      NA
@@ -318,7 +318,7 @@ summary(ukbdrs.apoe.cr.train)
 
 #save the coefficients
 ukbdrs_apoe_coefs <- summary(ukbdrs.apoe.cr.train)$coef
-df_ukbdrs_apoe_coefficients <- as.data.frame(ukbdrs_coefs)
+df_ukbdrs_apoe_coefficients <- as.data.frame(ukbdrs_apoe_coefs)
 
 #formatted coefs
 x<-as.data.frame(cbind(rownames(ukbdrs_apoe_coefs),
@@ -332,3 +332,143 @@ write.csv(df_ukbdrs_coefficients, paste0(save_pathway,"cox_ukbdrs_coefficients.c
 write.csv(df_ukbdrs_apoe_coefficients, paste0(save_pathway,"cox_ukbdrs_apoe_coefficients.csv"))
 
 write.csv(df_table1, paste0(save_pathway,"cox_coefficients_formatted.csv"), row.names = FALSE)
+rm(apoe.train.data)
+#### AGE ONLY ####
+#compute cox and cr coefficients for the baseline age only model
+age_only <-      paste("Surv(time_at_risk, dementia_BIN_surv) ~  Age_when_attended_assesment_centre_0_0")
+
+ageonly.cox <- coxph(as.formula(age_only), data = train.data)
+summary(ageonly.cox)
+# coef exp(coef) se(coef)     z Pr(>|z|)    
+# Age_when_attended_assesment_centre_0_0 0.193307  1.213255 0.004396 43.98   <2e-16 ***
+#   ---
+#   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+# 
+# exp(coef) exp(-coef) lower .95 upper .95
+# Age_when_attended_assesment_centre_0_0     1.213     0.8242     1.203     1.224
+# 
+# Concordance= 0.749  (se = 0.004 )
+# Likelihood ratio test= 2482  on 1 df,   p=<2e-16
+# Wald test            = 1934  on 1 df,   p=<2e-16
+# Score (logrank) test = 2232  on 1 df,   p=<2e-16
+
+modelvars <- c("Age_when_attended_assesment_centre_0_0","dementia_BIN_surv")
+covs<-model.matrix(as.formula(age_only), train.data[modelvars])
+
+crr_status <- train.data$crr_status
+time_at_risk <- train.data$time_at_risk
+
+ageonly.cr.train <- crr(ftime = time_at_risk, fstatus = crr_status,
+                            failcode=1, cencode = 0,
+                            cov1=covs[,-1], variance=FALSE)
+summary(ageonly.cr.train)
+# coef exp(coef) se(coef)  z p-value
+# covs[, -1]1 0.189      1.21       NA NA      NA
+# 
+# exp(coef) exp(-coef) 2.5% 97.5%
+#   covs[, -1]1      1.21      0.828   NA    NA
+# 
+# Num. cases = 176611
+# Pseudo Log-likelihood = -35242 
+# Pseudo likelihood ratio test = 2379  on 1 df,
+# Pseudo likelihood ratio test = 2379  on 1 df,
+
+#### FIT LP ####
+#using the cr adjusted coefficients, build the linear predictor and predicted probablity for each model
+
+#convert categoricals to numerics to multiply by coefficients
+train.data$UKBDRS_familyhistory <- ifelse(train.data$family_history_of_dementia==0,0,1)
+train.data$UKBDRS_diabetes <- ifelse(train.data$Diabetes_BIN_FINAL_0_0==0,0,1)
+train.data$UKBDRS_depression <- ifelse(train.data$current_history_depression==0,0,1)
+train.data$UKBDRS_stroke <- ifelse(train.data$stroke_TIA_BIN_FINAL==0,0,1)
+train.data$UKBDRS_hypertensive <- ifelse(train.data$hypertensive==0,0,1)
+train.data$UKBDRS_cholesterol <- ifelse(train.data$cholesterol==0,0,1)
+train.data$UKBDRS_townsend_group1 <- ifelse(train.data$Townsend_deprivation_Groups_0_0==0,1,0)
+train.data$UKBDRS_townsend_group2 <- ifelse(train.data$Townsend_deprivation_Groups_0_0==1,1,0)
+train.data$UKBDRS_townsend_group3 <- ifelse(train.data$Townsend_deprivation_Groups_0_0==2,1,0)
+train.data$UKBDRS_townsend_group4 <- ifelse(train.data$Townsend_deprivation_Groups_0_0==3,1,0)
+train.data$UKBDRS_townsend_group5 <- ifelse(train.data$Townsend_deprivation_Groups_0_0==4,1,0)
+train.data$UKBDRS_livesalone <- ifelse(train.data$household_occupancy==1,1,0)
+train.data$UKBDRS_liveswithmultiple <- ifelse(train.data$household_occupancy==2,1,0)
+train.data$UKBDRS_APOE <- ifelse(train.data$APOE_genotype_bin==1,1,0)
+train.data$UKBDRS_sex_score <- ifelse(train.data$Sex==0,0,1)
+
+
+test.data$UKBDRS_familyhistory <- ifelse(test.data$family_history_of_dementia==0,0,1)
+test.data$UKBDRS_diabetes <- ifelse(test.data$Diabetes_BIN_FINAL_0_0==0,0,1)
+test.data$UKBDRS_depression <- ifelse(test.data$current_history_depression==0,0,1)
+test.data$UKBDRS_stroke <- ifelse(test.data$stroke_TIA_BIN_FINAL==0,0,1)
+test.data$UKBDRS_hypertensive <- ifelse(test.data$hypertensive==0,0,1)
+test.data$UKBDRS_cholesterol <- ifelse(test.data$cholesterol==0,0,1)
+test.data$UKBDRS_townsend_group1 <- ifelse(test.data$Townsend_deprivation_Groups_0_0==0,1,0)
+test.data$UKBDRS_townsend_group2 <- ifelse(test.data$Townsend_deprivation_Groups_0_0==1,1,0)
+test.data$UKBDRS_townsend_group3 <- ifelse(test.data$Townsend_deprivation_Groups_0_0==2,1,0)
+test.data$UKBDRS_townsend_group4 <- ifelse(test.data$Townsend_deprivation_Groups_0_0==3,1,0)
+test.data$UKBDRS_townsend_group5 <- ifelse(test.data$Townsend_deprivation_Groups_0_0==4,1,0)
+test.data$UKBDRS_livesalone <- ifelse(test.data$household_occupancy==1,1,0)
+test.data$UKBDRS_liveswithmultiple <- ifelse(test.data$household_occupancy==2,1,0)
+test.data$UKBDRS_APOE <- ifelse(test.data$APOE_genotype_bin==1,1,0)
+test.data$UKBDRS_sex_score <- ifelse(test.data$Sex==0,0,1)
+
+#build linear predictor for each score using cr adjusted coeffients
+#for continuous predictors, subtract the mean of the train data vals
+
+#### UKBDRS LASSO ####
+train.data$UKBDRS_LASSO_linear_predictor <- 0.176558783695754*(train.data$Age_when_attended_assesment_centre_0_0 - mean(train.data$Age_when_attended_assesment_centre_0_0)) +
+  0.440078041874937*train.data$UKBDRS_familyhistory + -0.0415668069455815*(train.data$education_years - mean(train.data$education_years)) +
+  0.521194047019868*train.data$UKBDRS_diabetes + 
+  -0.0344993247995856*train.data$UKBDRS_townsend_group2 + 0.0203364067218752*train.data$UKBDRS_townsend_group3 +
+  0.0459398653746704*train.data$UKBDRS_townsend_group4 + 0.244294269161018*train.data$UKBDRS_townsend_group5 +
+  0.552831635847543*train.data$UKBDRS_depression + 0.644650155662663*train.data$UKBDRS_stroke +
+  0.159330726668213*train.data$UKBDRS_hypertensive + 0.105088454815739*train.data$UKBDRS_cholesterol +
+  0.122238500936587*train.data$UKBDRS_livesalone + -0.0544853408753978*train.data$UKBDRS_liveswithmultiple +
+  0.169067193258327*train.data$UKBDRS_sex_score
+summary(train.data$UKBDRS_LASSO_linear_predictor)  
+# Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+# -2.3222 -0.4468  0.4630  0.4115  1.2564  4.2604 
+
+train.data$UKBDRS_LASSO_predicted_prob <- 1 - 0.9911458^exp(train.data$UKBDRS_LASSO_linear_predictor)  
+summary(train.data$UKBDRS_LASSO_predicted_prob)
+# Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+# 0.0008717 0.0056731 0.0140310 0.0228645 0.0307567 0.4673985 
+
+
+test.data$UKBDRS_LASSO_linear_predictor <- 0.176558783695754*(test.data$Age_when_attended_assesment_centre_0_0 - mean(train.data$Age_when_attended_assesment_centre_0_0)) +
+  0.440078041874937*test.data$UKBDRS_familyhistory + -0.0415668069455815*(test.data$education_years - mean(train.data$education_years)) +
+  0.521194047019868*test.data$UKBDRS_diabetes + 
+  -0.0344993247995856*test.data$UKBDRS_townsend_group2 + 0.0203364067218752*test.data$UKBDRS_townsend_group3 +
+  0.0459398653746704*test.data$UKBDRS_townsend_group4 + 0.244294269161018*test.data$UKBDRS_townsend_group5 +
+  0.552831635847543*test.data$UKBDRS_depression + 0.644650155662663*test.data$UKBDRS_stroke +
+  0.159330726668213*test.data$UKBDRS_hypertensive + 0.105088454815739*test.data$UKBDRS_cholesterol +
+  0.122238500936587*test.data$UKBDRS_livesalone + -0.0544853408753978*test.data$UKBDRS_liveswithmultiple +
+  0.169067193258327*test.data$UKBDRS_sex_score
+summary(test.data$UKBDRS_LASSO_linear_predictor) 
+# Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+# -2.3642 -0.4452  0.4611  0.4145  1.2555  4.1381 
+
+test.data$UKBDRS_LASSO_predicted_prob <- 1 - 0.9911458^exp(test.data$UKBDRS_LASSO_linear_predictor)  
+summary(test.data$UKBDRS_LASSO_predicted_prob)
+# Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+# 0.0008359 0.0056817 0.0140043 0.0229624 0.0307316 0.4273579
+
+
+
+#### UKBDRS APOE ####
+train.data$UKBDRS_APOE_LASSO_linear_predictor <- 0.176558783695754*(train.data$Age_when_attended_assesment_centre_0_0 - mean(train.data$Age_when_attended_assesment_centre_0_0)) +
+  0.440078041874937*train.data$UKBDRS_familyhistory + -0.0415668069455815*(train.data$education_years - mean(train.data$education_years)) +
+  0.521194047019868*train.data$UKBDRS_diabetes + 
+  -0.0344993247995856*train.data$UKBDRS_townsend_group2 + 0.0203364067218752*train.data$UKBDRS_townsend_group3 +
+  0.0459398653746704*train.data$UKBDRS_townsend_group4 + 0.244294269161018*train.data$UKBDRS_townsend_group5 +
+  0.552831635847543*train.data$UKBDRS_depression + 0.644650155662663*train.data$UKBDRS_stroke +
+  0.159330726668213*train.data$UKBDRS_hypertensive + 0.105088454815739*train.data$UKBDRS_cholesterol +
+  0.122238500936587*train.data$UKBDRS_livesalone + -0.0544853408753978*train.data$UKBDRS_liveswithmultiple +
+  0.169067193258327*train.data$UKBDRS_sex_score + train.data$UKBDRS_APOE
+summary(train.data$UKBDRS_APOE_LASSO_linear_predictor)  
+# Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+# -2.3222 -0.4468  0.4630  0.4115  1.2564  4.2604 
+
+train.data$UKBDRS_APOE_LASSO_predicted_prob <- 1 - 0.9911458^exp(train.data$UKBDRS_APOE_LASSO_linear_predictor)  
+summary(train.data$UKBDRS_APOE_LASSO_predicted_prob)
+# Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+# 0.0008717 0.0056731 0.0140310 0.0228645 0.0307567 0.4673985 
+
