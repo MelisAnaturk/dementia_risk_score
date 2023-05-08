@@ -209,56 +209,52 @@ modelvars <- c("Age_when_attended_assesment_centre_0_0","family_history_of_demen
             "household_occupancy","Sex","dementia_BIN_surv")
 
 ukbdrs.cr.train <- crr(ftime = time_at_risk, fstatus = crr_status, failcode=1, cencode = 0,
-                       cov1=model.matrix(as.formula(UKBDRS_LASSO), train.data[modelvars])[,-1], variance=FALSE)
+                       cov1=model.matrix(as.formula(UKBDRS_LASSO), train.data[modelvars])[,-1], variance=TRUE)
 save(ukbdrs.cr.train, file=paste0(save_pathway,"ukbdrs.cr.train.rda"))
 summary(ukbdrs.cr.train)
-# coef exp(coef) se(coef)  z p-value
-# Age_when_attended_assesment_centre_0_0  0.1766     1.193       NA NA      NA
-# family_history_of_dementia1             0.4401     1.553       NA NA      NA
-# education_years                        -0.0416     0.959       NA NA      NA
-# Diabetes_BIN_FINAL_0_01                 0.5212     1.684       NA NA      NA
-# Townsend_deprivation_Groups_0_01       -0.0345     0.966       NA NA      NA
-# Townsend_deprivation_Groups_0_02        0.0203     1.021       NA NA      NA
-# Townsend_deprivation_Groups_0_03        0.0459     1.047       NA NA      NA
-# Townsend_deprivation_Groups_0_04        0.2443     1.277       NA NA      NA
-# current_history_depression1             0.5528     1.738       NA NA      NA
-# stroke_TIA_BIN_FINAL1                   0.6447     1.905       NA NA      NA
-# hypertensive1                           0.1593     1.173       NA NA      NA
-# cholesterol1                            0.1051     1.111       NA NA      NA
-# household_occupancy1                    0.1222     1.130       NA NA      NA
-# household_occupancy2                   -0.0545     0.947       NA NA      NA
-# Sex1                                    0.1691     1.184       NA NA      NA
+# coef exp(coef) se(coef)      z p-value
+# Age_when_attended_assesment_centre_0_0  0.1766     1.193  0.00480 36.794 0.0e+00
+# family_history_of_dementia1             0.4401     1.553  0.04294 10.248 0.0e+00
+# education_years                        -0.0416     0.959  0.00648 -6.411 1.4e-10
+# Diabetes_BIN_FINAL_0_01                 0.5212     1.684  0.05775  9.025 0.0e+00
+# Townsend_deprivation_Groups_0_01       -0.0345     0.966  0.05983 -0.577 5.6e-01
+# Townsend_deprivation_Groups_0_02        0.0203     1.021  0.05876  0.346 7.3e-01
+# Townsend_deprivation_Groups_0_03        0.0459     1.047  0.05918  0.776 4.4e-01
+# Townsend_deprivation_Groups_0_04        0.2443     1.277  0.05705  4.282 1.9e-05
+# current_history_depression1             0.5528     1.738  0.04623 11.959 0.0e+00
+# stroke_TIA_BIN_FINAL1                   0.6447     1.905  0.07779  8.287 2.2e-16
+# hypertensive1                           0.1593     1.173  0.04092  3.894 9.9e-05
+# cholesterol1                            0.1051     1.111  0.04509  2.330 2.0e-02
+# household_occupancy1                    0.1222     1.130  0.04429  2.760 5.8e-03
+# household_occupancy2                   -0.0545     0.947  0.05579 -0.977 3.3e-01
+# Sex1                                    0.1691     1.184  0.03798  4.452 8.5e-06
 # 
-# exp(coef) exp(-coef) 2.5% 97.5%
-#   Age_when_attended_assesment_centre_0_0     1.193      0.838   NA    NA
-# family_history_of_dementia1                1.553      0.644   NA    NA
-# education_years                            0.959      1.042   NA    NA
-# Diabetes_BIN_FINAL_0_01                    1.684      0.594   NA    NA
-# Townsend_deprivation_Groups_0_01           0.966      1.035   NA    NA
-# Townsend_deprivation_Groups_0_02           1.021      0.980   NA    NA
-# Townsend_deprivation_Groups_0_03           1.047      0.955   NA    NA
-# Townsend_deprivation_Groups_0_04           1.277      0.783   NA    NA
-# current_history_depression1                1.738      0.575   NA    NA
-# stroke_TIA_BIN_FINAL1                      1.905      0.525   NA    NA
-# hypertensive1                              1.173      0.853   NA    NA
-# cholesterol1                               1.111      0.900   NA    NA
-# household_occupancy1                       1.130      0.885   NA    NA
-# household_occupancy2                       0.947      1.056   NA    NA
-# Sex1                                       1.184      0.844   NA    NA
+# exp(coef) exp(-coef)  2.5% 97.5%
+#   Age_when_attended_assesment_centre_0_0     1.193      0.838 1.182 1.204
+# family_history_of_dementia1                1.553      0.644 1.427 1.689
+# education_years                            0.959      1.042 0.947 0.972
+# Diabetes_BIN_FINAL_0_01                    1.684      0.594 1.504 1.886
+# Townsend_deprivation_Groups_0_01           0.966      1.035 0.859 1.086
+# Townsend_deprivation_Groups_0_02           1.021      0.980 0.910 1.145
+# Townsend_deprivation_Groups_0_03           1.047      0.955 0.932 1.176
+# Townsend_deprivation_Groups_0_04           1.277      0.783 1.142 1.428
+# current_history_depression1                1.738      0.575 1.588 1.903
+# stroke_TIA_BIN_FINAL1                      1.905      0.525 1.636 2.219
+# hypertensive1                              1.173      0.853 1.082 1.271
+# cholesterol1                               1.111      0.900 1.017 1.213
+# household_occupancy1                       1.130      0.885 1.036 1.233
+# household_occupancy2                       0.947      1.056 0.849 1.056
+# Sex1                                       1.184      0.844 1.099 1.276
 # 
 # Num. cases = 176611
 # Pseudo Log-likelihood = -34921 
 # Pseudo likelihood ratio test = 3021  on 15 df,
 
 #save the coefficients
-ukbdrs_coefs <- summary(ukbdrs.cr.train)$coef
-df_ukbdrs_coefficients <- as.data.frame(ukbdrs_coefs)
+ukbdrs_coefs <- cbind(summary(ukbdrs.cr.train)$coef,summary(ukbdrs.cr.train)$conf.int[,c(3,4)])
+df_ukbdrs_coefficients <- as.data.frame(ukbdrs_coefs) #5 columns
+write.csv(df_ukbdrs_coefficients, paste0(save_pathway,"cox_ukbdrs_coefficients.csv"))
 
-#formatted coefs
-df_table1 <- as.data.frame(cbind(rownames(ukbdrs_coefs),
-                                 round(ukbdrs_coefs[,1],3),
-                                 round(ukbdrs_coefs[,2],3)))
-names(df_table1) <- c("Predictor","coef","exp(coef)")
 
 
 #### UKBDRS_APOE_LASSO ####
@@ -273,65 +269,60 @@ time_at_risk <- apoe.train.data$time_at_risk
 
 ukbdrs.apoe.cr.train <- crr(ftime = time_at_risk, fstatus = crr_status,
                             failcode=1, cencode = 0,
-                            cov1=model.matrix(as.formula(UKBDRS_APOE_LASSO), apoe.train.data[modelvars])[,-1], variance=FALSE)
+                            cov1=model.matrix(as.formula(UKBDRS_APOE_LASSO), apoe.train.data[modelvars])[,-1], variance=TRUE)
 save(ukbdrs.apoe.cr.train, file=paste0(save_pathway,"ukbdrs.apoe.cr.train.rda"))
 summary(ukbdrs.apoe.cr.train)
-# coef exp(coef) se(coef)  z p-value
-# Age_when_attended_assesment_centre_0_0  0.18447     1.203       NA NA      NA
-# family_history_of_dementia1             0.32582     1.385       NA NA      NA
-# education_years                        -0.03832     0.962       NA NA      NA
-# Diabetes_BIN_FINAL_0_01                 0.53316     1.704       NA NA      NA
-# Townsend_deprivation_Groups_0_01       -0.07518     0.928       NA NA      NA
-# Townsend_deprivation_Groups_0_02       -0.03608     0.965       NA NA      NA
-# Townsend_deprivation_Groups_0_03       -0.00177     0.998       NA NA      NA
-# Townsend_deprivation_Groups_0_04        0.24007     1.271       NA NA      NA
-# current_history_depression1             0.56333     1.757       NA NA      NA
-# stroke_TIA_BIN_FINAL1                   0.61739     1.854       NA NA      NA
-# hypertensive1                           0.19161     1.211       NA NA      NA
-# cholesterol1                            0.02223     1.022       NA NA      NA
-# household_occupancy1                    0.12935     1.138       NA NA      NA
-# household_occupancy2                   -0.00981     0.990       NA NA      NA
-# Sex1                                    0.16291     1.177       NA NA      NA
-# APOE_genotype_bin1                      1.12849     3.091       NA NA      NA
+# coef exp(coef) se(coef)       z p-value
+# Age_when_attended_assesment_centre_0_0  0.18447     1.203  0.00559 33.0261 0.0e+00
+# family_history_of_dementia1             0.32582     1.385  0.04913  6.6315 3.3e-11
+# education_years                        -0.03832     0.962  0.00749 -5.1159 3.1e-07
+# Diabetes_BIN_FINAL_0_01                 0.53316     1.704  0.06884  7.7447 9.5e-15
+# Townsend_deprivation_Groups_0_01       -0.07518     0.928  0.06832 -1.1004 2.7e-01
+# Townsend_deprivation_Groups_0_02       -0.03608     0.965  0.06776 -0.5324 5.9e-01
+# Townsend_deprivation_Groups_0_03       -0.00177     0.998  0.06809 -0.0259 9.8e-01
+# Townsend_deprivation_Groups_0_04        0.24007     1.271  0.06529  3.6768 2.4e-04
+# current_history_depression1             0.56333     1.757  0.05384 10.4630 0.0e+00
+# stroke_TIA_BIN_FINAL1                   0.61739     1.854  0.09292  6.6443 3.0e-11
+# hypertensive1                           0.19161     1.211  0.04736  4.0456 5.2e-05
+# cholesterol1                            0.02223     1.022  0.05195  0.4279 6.7e-01
+# household_occupancy1                    0.12935     1.138  0.05142  2.5157 1.2e-02
+# household_occupancy2                   -0.00981     0.990  0.06370 -0.1540 8.8e-01
+# Sex1                                    0.16291     1.177  0.04366  3.7311 1.9e-04
+# APOE_genotype_bin1                      1.12849     3.091  0.04242 26.6042 0.0e+00
 # 
-# exp(coef) exp(-coef) 2.5% 97.5%
-#   Age_when_attended_assesment_centre_0_0     1.203      0.832   NA    NA
-# family_history_of_dementia1                1.385      0.722   NA    NA
-# education_years                            0.962      1.039   NA    NA
-# Diabetes_BIN_FINAL_0_01                    1.704      0.587   NA    NA
-# Townsend_deprivation_Groups_0_01           0.928      1.078   NA    NA
-# Townsend_deprivation_Groups_0_02           0.965      1.037   NA    NA
-# Townsend_deprivation_Groups_0_03           0.998      1.002   NA    NA
-# Townsend_deprivation_Groups_0_04           1.271      0.787   NA    NA
-# current_history_depression1                1.757      0.569   NA    NA
-# stroke_TIA_BIN_FINAL1                      1.854      0.539   NA    NA
-# hypertensive1                              1.211      0.826   NA    NA
-# cholesterol1                               1.022      0.978   NA    NA
-# household_occupancy1                       1.138      0.879   NA    NA
-# household_occupancy2                       0.990      1.010   NA    NA
-# Sex1                                       1.177      0.850   NA    NA
-# APOE_genotype_bin1                         3.091      0.324   NA    NA
+# exp(coef) exp(-coef)  2.5% 97.5%
+#   Age_when_attended_assesment_centre_0_0     1.203      0.832 1.189 1.216
+# family_history_of_dementia1                1.385      0.722 1.258 1.525
+# education_years                            0.962      1.039 0.948 0.977
+# Diabetes_BIN_FINAL_0_01                    1.704      0.587 1.489 1.951
+# Townsend_deprivation_Groups_0_01           0.928      1.078 0.811 1.060
+# Townsend_deprivation_Groups_0_02           0.965      1.037 0.845 1.102
+# Townsend_deprivation_Groups_0_03           0.998      1.002 0.874 1.141
+# Townsend_deprivation_Groups_0_04           1.271      0.787 1.119 1.445
+# current_history_depression1                1.757      0.569 1.581 1.952
+# stroke_TIA_BIN_FINAL1                      1.854      0.539 1.545 2.224
+# hypertensive1                              1.211      0.826 1.104 1.329
+# cholesterol1                               1.022      0.978 0.923 1.132
+# household_occupancy1                       1.138      0.879 1.029 1.259
+# household_occupancy2                       0.990      1.010 0.874 1.122
+# Sex1                                       1.177      0.850 1.080 1.282
+# APOE_genotype_bin1                         3.091      0.324 2.844 3.359
 # 
 # Num. cases = 125701
 # Pseudo Log-likelihood = -24954 
 # Pseudo likelihood ratio test = 3008  on 16 df,
 
 #save the coefficients
-ukbdrs_apoe_coefs <- summary(ukbdrs.apoe.cr.train)$coef
-df_ukbdrs_apoe_coefficients <- as.data.frame(ukbdrs_apoe_coefs)
+ukbdrs_apoecoefs <- cbind(summary(ukbdrs.apoe.cr.train)$coef,summary(ukbdrs.apoe.cr.train)$conf.int[,c(3,4)])
+df_ukbdrs_apoecoefficients <- as.data.frame(ukbdrs_apoecoefs) 
+write.csv(df_ukbdrs_apoecoefficients, paste0(save_pathway,"cox_ukbdrs_apoe_coefficients.csv"))
 
 #formatted coefs
-x<-as.data.frame(cbind(rownames(ukbdrs_apoe_coefs),
-                      round(ukbdrs_apoe_coefs[,1],3),
-                      round(ukbdrs_apoe_coefs[,2],3)))
-names(x) <- c("Predictor","coef","exp(coef)")
-df_table1 <- rbind(df_table1,x)
+x <- rbind(df_ukbdrs_coefficients, df_ukbdrs_apoecoefficients)
+x$FDR_BH <- p.adjust(x$`p-value`, method="BH") 
 
-#save
-write.csv(df_ukbdrs_coefficients, paste0(save_pathway,"cox_ukbdrs_coefficients.csv"))
-write.csv(df_ukbdrs_apoe_coefficients, paste0(save_pathway,"cox_ukbdrs_apoe_coefficients.csv"))
-
-write.csv(df_table1, paste0(save_pathway,"cox_coefficients_formatted.csv"), row.names = FALSE)
+df_table1_ukbdrs <- x %>% mutate_if(is.numeric, ~round(., 3))
+write.csv(df_table1_ukbdrs, paste0(save_pathway,"cox_coefficients_formatted.csv"))
 rm(apoe.train.data)
 
 
@@ -360,7 +351,7 @@ summary(ageonly.cox)
 df_base <- data.frame(Age_when_attended_assesment_centre_0_0 = mean(train.data$Age_when_attended_assesment_centre_0_0))
 
 ageonly.surv.baseline <- survfit(ageonly.cox, newdata = df_base)
-length(ageonly.surv.baseline$time) #there are 4614 timepoints
+length(ageonly.surv.baseline$time) #there are 4210 timepoints
 #survival over entire time window:
 ageonly.surv.baseline$surv[4210]
 #0.9874905
@@ -375,18 +366,17 @@ covs<-model.matrix(as.formula(age_only), train.data[modelvars])
 
 ageonly.cr.train <- crr(ftime = time_at_risk, fstatus = crr_status,
                             failcode=1, cencode = 0,
-                            cov1=covs[,-1], variance=FALSE)
+                            cov1=covs[,-1], variance=TRUE)
 save(ageonly.cr.train, file=paste0(save_pathway,"ageonly.cr.train.rda"))
 summary(ageonly.cr.train)
-# coef exp(coef) se(coef)  z p-value
-# covs[, -1]1 0.189      1.21       NA NA      NA
+# coef exp(coef) se(coef)    z p-value
+# covs[, -1]1 0.189      1.21  0.00446 42.3       0
 # 
 # exp(coef) exp(-coef) 2.5% 97.5%
-#   covs[, -1]1      1.21      0.828   NA    NA
+#   covs[, -1]1      1.21      0.828  1.2  1.22
 # 
 # Num. cases = 176611
 # Pseudo Log-likelihood = -35242 
-# Pseudo likelihood ratio test = 2379  on 1 df,
 # Pseudo likelihood ratio test = 2379  on 1 df,
 ageonly.cr.train$coef
 # covs[, -1]1 
