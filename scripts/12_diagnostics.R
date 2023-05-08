@@ -78,6 +78,10 @@ depression_fit <- survfit(Surv(time_at_risk, dementia_BIN_surv) ~ current_histor
 library(ggfortify)
 #curves are pretty similar
 plot(log(depression_fit$time), log(-log(depression_fit$surv)))
+png(file="../results/diagnostics/ph/depression_loglog.png",
+    height = 400, width = 600)
+plot(log(depression_fit$time), log(-log(depression_fit$surv)))
+dev.off()
 
 depression.plot <- autoplot(depression_fit)
 depression.plot <- depression.plot + 
@@ -110,6 +114,11 @@ ggsave("../results/diagnostics/ph/famhx_survplot.png",
        dpi = 320)
 #curves are pretty similar
 plot(log(famhx_fit$time), log(-log(famhx_fit$surv)))
+png(file="../results/diagnostics/ph/famhistloglog.png",
+    height = 400, width = 600)
+plot(log(famhx_fit$time), log(-log(famhx_fit$surv)))
+dev.off()
+
 
 diabetes_fit <- survfit(Surv(time_at_risk, dementia_BIN_surv) ~ Diabetes_BIN_FINAL_0_0,
                      data = train.data)
@@ -128,6 +137,10 @@ ggsave("../results/diagnostics/ph/diabetes_survplot.png",
        dpi = 320)
 #curves are pretty similar
 plot(log(diabetes_fit$time), log(-log(diabetes_fit$surv)))
+png(file="../results/diagnostics/ph/diabetes_loglog.png",
+    height = 400, width = 600)
+plot(log(diabetes_fit$time), log(-log(diabetes_fit$surv)))
+dev.off()
 
 #curve of depression is not graphically much diff than those for famhx, diabetes, which satisfied hazards
 #move on
@@ -158,6 +171,13 @@ plot(train.data$Age_when_attended_assesment_centre_0_0, martin.resids[,])
 j <- order(train.data$Age_when_attended_assesment_centre_0_0)
 lines(train.data$Age_when_attended_assesment_centre_0_0[j],age.loess$fitted[j])
 #FLAT
+#save it
+png(file="../results/diagnostics/lin/age.vs.martin.png",
+    height = 400, width = 600)
+plot(train.data$Age_when_attended_assesment_centre_0_0, martin.resids[,], xlab="Age",ylab="Martingale Residual")
+j <- order(train.data$Age_when_attended_assesment_centre_0_0)
+lines(train.data$Age_when_attended_assesment_centre_0_0[j],age.loess$fitted[j])
+dev.off()
 
 #now plot residuals vs education
 education.loess <- loess(martin.resids[,] ~ train.data$education_years)
@@ -165,34 +185,12 @@ plot(train.data$education_years, martin.resids[,])
 j <- order(train.data$education_years)
 lines(train.data$education_years[j],education.loess$fitted[j])
 
-#now repeat with a null model
-#null in age
-null.age.cox <- coxph(Surv(time_at_risk, dementia_BIN_surv) ~  family_history_of_dementia +
-                        education_years + Diabetes_BIN_FINAL_0_0  + Townsend_deprivation_Groups_0_0 +
-                        current_history_depression + stroke_TIA_BIN_FINAL +  
-                        hypertensive + cholesterol + household_occupancy + Sex, data = train.data)
-summary(null.age.cox)
-martin.resids <- as.data.frame(residuals(null.age.cox, type="martingale"))
-
-#now plot residuals vs age
-age.null.loess <- loess(martin.resids[,] ~ train.data$Age_when_attended_assesment_centre_0_0)
-plot(train.data$Age_when_attended_assesment_centre_0_0, martin.resids[,])
-j <- order(train.data$Age_when_attended_assesment_centre_0_0)
-lines(train.data$Age_when_attended_assesment_centre_0_0[j],age.null.loess$fitted[j])
-
-#null in education
-null.education.cox <- coxph(Surv(time_at_risk, dementia_BIN_surv) ~ Age_when_attended_assesment_centre_0_0 + family_history_of_dementia +
-                              Diabetes_BIN_FINAL_0_0  + Townsend_deprivation_Groups_0_0 +
-                              current_history_depression + stroke_TIA_BIN_FINAL +  
-                              hypertensive + cholesterol + household_occupancy + Sex, data = train.data)
-summary(null.education.cox)
-martin.resids <- as.data.frame(residuals(null.education.cox, type="martingale"))
-
-#now plot residuals vs age
-education.null.loess <- loess(martin.resids[,] ~ train.data$education_years)
-plot(train.data$education_years, martin.resids[,])
+png(file="../results/diagnostics/lin/edu.vs.martin.png",
+    height = 400, width = 600)
+plot(train.data$education_years, martin.resids[,], xlab="Education (years)",ylab="Martingale Residual")
 j <- order(train.data$education_years)
-lines(train.data$education_years[j],education.null.loess$fitted[j])
+lines(train.data$education_years[j],education.loess$fitted[j])
+dev.off()
 
 
 #nontheless, lets test nonlinear impact on auc
@@ -246,27 +244,54 @@ crr_status <- train.data$crr_status
 time_at_risk <- train.data$time_at_risk
 nlincovs <- model.matrix(as.formula(UKBDRS_LASSO_nonlinear), train.data[nlinvars])[,-1]
 
-cr.train.nlin <- crr(ftime = time_at_risk, fstatus = crr_status, failcode=1, cencode = 0, cov1=nlincovs, variance=FALSE)
+cr.train.nlin <- crr(ftime = time_at_risk, fstatus = crr_status, failcode=1, cencode = 0, cov1=nlincovs, variance=TRUE)
+save(cr.train.nlin, file=paste0(save_pathway,"ukbdrs.nonlin.cr.train.rda"))
 summary(cr.train.nlin)
-# Age_when_attended_assesment_centre_0_0  0.162334     1.176       NA NA      NA
-# family_history_of_dementia1             0.445328     1.561       NA NA      NA
-# age2o                                   0.003643     1.004       NA NA      NA
-# age3o                                  -0.000621     0.999       NA NA      NA
-# education2o                             0.003635     1.004       NA NA      NA
-# education3o                             0.000144     1.000       NA NA      NA
-# education_years                        -0.040395     0.960       NA NA      NA
-# Diabetes_BIN_FINAL_0_01                 0.519960     1.682       NA NA      NA
-# Townsend_deprivation_Groups_0_01       -0.036296     0.964       NA NA      NA
-# Townsend_deprivation_Groups_0_02        0.016565     1.017       NA NA      NA
-# Townsend_deprivation_Groups_0_03        0.041226     1.042       NA NA      NA
-# Townsend_deprivation_Groups_0_04        0.235028     1.265       NA NA      NA
-# current_history_depression1             0.552648     1.738       NA NA      NA
-# stroke_TIA_BIN_FINAL1                   0.641151     1.899       NA NA      NA
-# hypertensive1                           0.156354     1.169       NA NA      NA
-# cholesterol1                            0.102545     1.108       NA NA      NA
-# household_occupancy1                    0.120786     1.128       NA NA      NA
-# household_occupancy2                   -0.062682     0.939       NA NA      NA
-# Sex1                                    0.165576     1.180       NA NA      NA
+# coef exp(coef) se(coef)      z p-value
+# Age_when_attended_assesment_centre_0_0  0.162334     1.176 5.99e-03 27.089 0.0e+00
+# family_history_of_dementia1             0.445328     1.561 4.30e-02 10.357 0.0e+00
+# age2o                                   0.003643     1.004 8.92e-04  4.085 4.4e-05
+# age3o                                  -0.000621     0.999 1.50e-04 -4.144 3.4e-05
+# education2o                             0.003635     1.004 1.04e-03  3.494 4.8e-04
+# education3o                             0.000144     1.000 8.14e-05  1.767 7.7e-02
+# education_years                        -0.040395     0.960 6.20e-03 -6.515 7.3e-11
+# Diabetes_BIN_FINAL_0_01                 0.519960     1.682 5.77e-02  9.010 0.0e+00
+# Townsend_deprivation_Groups_0_01       -0.036296     0.964 5.98e-02 -0.607 5.4e-01
+# Townsend_deprivation_Groups_0_02        0.016565     1.017 5.88e-02  0.282 7.8e-01
+# Townsend_deprivation_Groups_0_03        0.041226     1.042 5.92e-02  0.697 4.9e-01
+# Townsend_deprivation_Groups_0_04        0.235028     1.265 5.71e-02  4.117 3.8e-05
+# current_history_depression1             0.552648     1.738 4.62e-02 11.950 0.0e+00
+# stroke_TIA_BIN_FINAL1                   0.641151     1.899 7.78e-02  8.246 2.2e-16
+# hypertensive1                           0.156354     1.169 4.10e-02  3.815 1.4e-04
+# cholesterol1                            0.102545     1.108 4.51e-02  2.275 2.3e-02
+# household_occupancy1                    0.120786     1.128 4.43e-02  2.725 6.4e-03
+# household_occupancy2                   -0.062682     0.939 5.65e-02 -1.109 2.7e-01
+# Sex1                                    0.165576     1.180 3.80e-02  4.358 1.3e-05
+# 
+# exp(coef) exp(-coef)  2.5% 97.5%
+#   Age_when_attended_assesment_centre_0_0     1.176      0.850 1.163 1.190
+# family_history_of_dementia1                1.561      0.641 1.435 1.698
+# age2o                                      1.004      0.996 1.002 1.005
+# age3o                                      0.999      1.001 0.999 1.000
+# education2o                                1.004      0.996 1.002 1.006
+# education3o                                1.000      1.000 1.000 1.000
+# education_years                            0.960      1.041 0.949 0.972
+# Diabetes_BIN_FINAL_0_01                    1.682      0.595 1.502 1.883
+# Townsend_deprivation_Groups_0_01           0.964      1.037 0.858 1.084
+# Townsend_deprivation_Groups_0_02           1.017      0.984 0.906 1.141
+# Townsend_deprivation_Groups_0_03           1.042      0.960 0.928 1.170
+# Townsend_deprivation_Groups_0_04           1.265      0.791 1.131 1.415
+# current_history_depression1                1.738      0.575 1.587 1.903
+# stroke_TIA_BIN_FINAL1                      1.899      0.527 1.630 2.211
+# hypertensive1                              1.169      0.855 1.079 1.267
+# cholesterol1                               1.108      0.903 1.014 1.210
+# household_occupancy1                       1.128      0.886 1.035 1.231
+# household_occupancy2                       0.939      1.065 0.841 1.049
+# Sex1                                       1.180      0.847 1.095 1.271
+# 
+# Num. cases = 176611
+# Pseudo Log-likelihood = -34904 
+# Pseudo likelihood ratio test = 3054  on 19 df,
 
 #mape age2o..etc into test
 load(file=paste0(data_pathway,"11_test_data_outliers_removed_fitted.rda"))
@@ -327,6 +352,7 @@ train.data$NLIN_UKBDRS_LASSO_linear_predictor <- 0.1623336309*(train.data$Age_wh
   0.0036433708*train.data$age2o - 0.0006210342*train.data$age3o +
   0.0036349084*train.data$education2o + 0.0001438530*train.data$education3o 
 summary(train.data$NLIN_UKBDRS_LASSO_linear_predictor)  
+#note age2o, age3o, education2o, education3o have mean 0 so no need to subtract training data mean
 
 train.data$NLIN_UKBDRS_LASSO_predicted_prob <- 1 - 0.9908608^exp(train.data$NLIN_UKBDRS_LASSO_linear_predictor)  
 summary(train.data$NLIN_UKBDRS_LASSO_predicted_prob)
@@ -341,11 +367,11 @@ test.data$NLIN_UKBDRS_Tsend_score <- ifelse(test.data$Townsend_deprivation_Group
 test.data$NLIN_UKBDRS_household_score <- ifelse(test.data$household_occupancy==0,0,
                                                 ifelse(test.data$household_occupancy==1,0.1207861952,-0.062682))
 ## LEFT OFF HERE
-test.data$NLIN_UKBDRS_LASSO_linear_predictor <- 0.1623336309*(test.data$Age_when_attended_assesment_centre_0_0 - mean(test.data$Age_when_attended_assesment_centre_0_0)) +
-  0.4453283967*test.data$UKBDRS_familyhistory - 0.0403948791*(test.data$education_years - mean(test.data$education_years)) +
+test.data$NLIN_UKBDRS_LASSO_linear_predictor <- 0.1623336309*(test.data$Age_when_attended_assesment_centre_0_0 - mean(train.data$Age_when_attended_assesment_centre_0_0)) +
+  0.4453283967*test.data$UKBDRS_familyhistory - 0.0403948791*(test.data$education_years - mean(train.data$education_years)) +
   0.5199598637*test.data$UKBDRS_diabetes + test.data$NLIN_UKBDRS_Tsend_score +
-  0.5526476070*test.data$UKBDRS_depression_score + 0.6411513996*test.data$UKBDRS_stroke_score +
-  0.1563540387*test.data$UKBDRS_hypertensive_score + 0.1025447161*test.data$UKBDRS_cholesterol_score +
+  0.5526476070*test.data$UKBDRS_depression+ 0.6411513996*test.data$UKBDRS_stroke +
+  0.1563540387*test.data$UKBDRS_hypertensive + 0.1025447161*test.data$UKBDRS_cholesterol +
   test.data$NLIN_UKBDRS_household_score + 0.1655764383*test.data$UKBDRS_sex_score +
   0.0036433708*test.data$age2o - 0.0006210342*test.data$age3o +
   0.0036349084*test.data$education2o + 0.0001438530*test.data$education3o 
@@ -353,3 +379,8 @@ summary(test.data$NLIN_UKBDRS_LASSO_linear_predictor)
 
 test.data$NLIN_UKBDRS_LASSO_predicted_prob <- 1 - 0.9908608^exp(test.data$NLIN_UKBDRS_LASSO_linear_predictor)  
 summary(test.data$NLIN_UKBDRS_LASSO_predicted_prob)
+
+
+#save train and test, containing lps and predicted probs, for future auc tests
+save(train.data, file=paste0(data_pathway,"12_train_data_outliers_removed_fitted.rda"))
+save(test.data, file=paste0(data_pathway,"12_test_data_outliers_removed_fitted.rda"))
