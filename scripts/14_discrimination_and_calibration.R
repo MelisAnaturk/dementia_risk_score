@@ -43,13 +43,13 @@ library(viridis)
 # report the AUC and 95% confidence intervals for each risk model (using predicted probabilities)
 
 #load train and test data
-load(file="../../raw_data/train_data_outliers_removed_fiftyplusnoapoe_sexstratify.rda")
-load(file="../../raw_data/test_data_outliers_removed_fiftyplusnoapoe_sexstratify.rda")
+load(file="../../raw_data/11_train_data_outliers_removed_fitted.rda")
+load(file="../../raw_data/11_test_data_outliers_removed_fitted.rda")
 
 test.data$dataset <- "test"
 train.data$dataset <- "train"
 
-df_test <- rbind(test.data, train.data) 
+df_test <- rbind(test.data, train.data[,names(test.data)]) 
 
 datasets <- c("test")
 
@@ -57,7 +57,7 @@ savepath = "../results/"
 #note savepath directory must exist
 
 #NB. Anu-adri has to be excluded from calibration calculations
-models <- c("age_only", "UKBDRS_LASSO", "UKBDRS_APOE_LASSO", "UKBDRS_LASSO_sexstratify","CAIDE", "DRS")
+models <- c("age_only", "UKBDRS_LASSO", "UKBDRS_APOE_LASSO", "CAIDE", "DRS")
 
 #dataframe for storing/organizing auc results for each model
 df_table3<-data.frame(matrix(ncol=3))
@@ -187,14 +187,14 @@ data <- test.data[complete.cases(test.data[,c("APOE_genotype_bin")]),]
 data$y <- ifelse(data[,"dementia_BIN_TOTAL"]==1,1,0)
 vec <-val.prob(data[, paste("UKBDRS_APOE_LASSO", "predicted_prob", sep="_")], data$y, g=10, pl=TRUE, smooth=TRUE, logistic.cal=FALSE, lim=c(0,0.4))
 print(vec)
-#Dxy       C (ROC)            R2             D      D:Chi-sq           D:p             U      U:Chi-sq           U:p             Q 
-#6.064106e-01  8.032053e-01  1.401377e-01  2.367054e-02  7.424088e+02            NA -6.359405e-05  8.107143e-03  9.959546e-01  2.373414e-02 
-#Brier     Intercept         Slope          Emax           E90          Eavg           S:z           S:p 
-#1.737301e-02  3.524970e-04  9.990014e-01  5.118644e-02  1.265005e-03  5.779694e-04  1.338517e-01  8.935198e-01 
+#Dxy       C (ROC)            R2             D      D:Chi-sq           D:p             U      U:Chi-sq           U:p             Q         Brier     Intercept 
+# 6.092437e-01  8.046218e-01  1.321154e-01  2.226341e-02  6.998262e+02            NA  1.391624e-03  4.568170e+01  1.203221e-10  2.087179e-02  1.745307e-02 -3.373475e-01 
+# Slope          Emax           E90          Eavg           S:z           S:p 
+# 9.806978e-01  2.620128e-01  1.372074e-02  5.370012e-03 -6.214733e+00  5.141205e-10 
 dev.off()
 print(round(vec[17],2))
 #S:z 
-#0.13
+#-6.21
 
 # Brier score
 print('Brier score')
@@ -204,13 +204,14 @@ print(round(vec[11],2))
 print('Rescaled brier score')
 print(rescale_Brier(vec[17], data$y))
 #S:z 
-#-6.440363
+#347.1811
 print('Spiegelhalter z test')  #intercept_slope
 Spiegelhalter_z(data$y, data[, paste("UKBDRS_APOE_LASSO", "predicted_prob", sep="_")])
-#[1] 0.1338517
-#[1] "fail to reject. calibrated"
-#z score:  0.1338517 
-#p value:  0.4467599 
+# [1] -6.214733
+# [1] "reject null. NOT calibrated"
+# z score:  -6.214733 
+# p value:  2.570603e-10 
+# [1] -6.214733
 #[1] 0.1338517
 
 print(paste0("Intercept: ",round(vec[12],2)))
@@ -301,15 +302,6 @@ all_tests <- combn(list(UKBDRS_LASSO_anu,
 )
 
 
-# create list of names
-#tests_names <-combn(list("UKBDRS_LASSO", "UKBDRS_LASSO_MAN", "UKBDRS_APOE_LASSO", "UKBDRS_APOE_LASSO_MAN",
-#                         "ANU_ADRI"), 
-#                    m = 2, 
-#                    FUN = paste, 
-#                    simplify = TRUE, 
-#                    collapse = "_"
-#)
-
 #create list of model names to be compared, using naming convention in paper
 comparison_names <-combn(list("UKBDRS",
                               "ANUADRI"), 
@@ -357,13 +349,13 @@ merged_results
 # filter data to include only significant
 AUC_comparisons_corrected <- dplyr::filter(merged_results, FDR_BH <= 0.05)
 
-#table 4 only needs some of this, select necessary columns for easy transfer
-df_table4<-data.frame(cbind(AUC_comparisons_corrected$Score1, AUC_comparisons_corrected$Score2,
+#auc comparisons only needs some of this, select necessary columns for easy transfer
+df_auc_compare<-data.frame(cbind(AUC_comparisons_corrected$Score1, AUC_comparisons_corrected$Score2,
                    round(AUC_comparisons_corrected$estimate1,2), round(AUC_comparisons_corrected$estimate2,2),
                    round(AUC_comparisons_corrected$statistic,2), AUC_comparisons_corrected$p.value,
                    AUC_comparisons_corrected$FDR_BH))
-names(df_table4)<-c("Risk Score 1","Risk Score 2","AUC 1","AUC 2","Z","p","pcorr")
-write.csv(df_table4, file="../results/auc_ukb_comparisons.csv")
+names(df_auc_compare)<-c("Risk Score 1","Risk Score 2","AUC 1","AUC 2","Z","p","pcorr")
+write.csv(df_auc_compare, file="../results/auc_ukb_comparisons.csv")
 
 ## plot ROC curves, this is Figure 1
 library(extrafont)
