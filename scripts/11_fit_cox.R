@@ -47,45 +47,45 @@ summary(ukbdrs.cox)
 # n= 176611, number of events= 3051 
 # 
 # coef exp(coef)  se(coef)      z Pr(>|z|)    
-# Age_when_attended_assesment_centre_0_0  0.180696  1.198050  0.004643 38.914  < 2e-16 ***
-#   family_history_of_dementia1             0.433780  1.543079  0.042985 10.091  < 2e-16 ***
-#   education_years                        -0.043925  0.957026  0.006211 -7.072 1.53e-12 ***
-#   Diabetes_BIN_FINAL_0_01                 0.568808  1.766161  0.057648  9.867  < 2e-16 ***
-#   Townsend_deprivation_Groups_0_01       -0.036469  0.964188  0.059765 -0.610  0.54173    
-# Townsend_deprivation_Groups_0_02        0.024363  1.024663  0.058884  0.414  0.67906    
-# Townsend_deprivation_Groups_0_03        0.054756  1.056283  0.059248  0.924  0.35538    
-# Townsend_deprivation_Groups_0_04        0.271078  1.311378  0.057395  4.723 2.32e-06 ***
-#   current_history_depression1             0.560606  1.751735  0.046207 12.132  < 2e-16 ***
-#   stroke_TIA_BIN_FINAL1                   0.695670  2.005053  0.076570  9.085  < 2e-16 ***
-#   hypertensive1                           0.170602  1.186019  0.040738  4.188 2.82e-05 ***
-#   cholesterol1                            0.105227  1.110962  0.044406  2.370  0.01780 *  
-#   household_occupancy1                    0.144535  1.155502  0.044497  3.248  0.00116 ** 
-#   household_occupancy2                   -0.053093  0.948292  0.056009 -0.948  0.34316    
-# Sex1                                    0.204492  1.226901  0.037846  5.403 6.54e-08 ***
+# Age_when_attended_assesment_centre_0_0  0.182118  1.199755  0.004649 39.171  < 2e-16 ***
+#   family_history_of_dementia1             0.423763  1.527699  0.042980  9.860  < 2e-16 ***
+#   education_years                        -0.042787  0.958115  0.006197 -6.905 5.02e-12 ***
+#   Diabetes_BIN_FINAL_0_01                 0.597528  1.817620  0.057579 10.377  < 2e-16 ***
+#   Townsend_deprivation_Groups_0_01       -0.031091  0.969387  0.059760 -0.520 0.602875    
+# Townsend_deprivation_Groups_0_02        0.019710  1.019906  0.058878  0.335 0.737801    
+# Townsend_deprivation_Groups_0_03        0.063439  1.065495  0.059236  1.071 0.284186    
+# Townsend_deprivation_Groups_0_04        0.277068  1.319256  0.057384  4.828 1.38e-06 ***
+#   current_history_depression1             0.570034  1.768327  0.046192 12.340  < 2e-16 ***
+#   stroke_TIA_BIN_FINAL1                   0.717111  2.048507  0.076594  9.363  < 2e-16 ***
+#   hypertensive1                           0.175820  1.192223  0.040815  4.308 1.65e-05 ***
+#   cholesterol1                            0.102253  1.107664  0.044524  2.297 0.021642 *  
+#   household_occupancy1                    0.150660  1.162601  0.044529  3.383 0.000716 ***
+#   household_occupancy2                   -0.062270  0.939629  0.055974 -1.112 0.265930    
+# Sex1                                    0.217989  1.243573  0.037796  5.768 8.04e-09 ***
 #   ---
 #   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 # 
 # exp(coef) exp(-coef) lower .95 upper .95
-# Age_when_attended_assesment_centre_0_0    1.1981     0.8347    1.1872    1.2090
-# family_history_of_dementia1               1.5431     0.6481    1.4184    1.6787
-# education_years                           0.9570     1.0449    0.9454    0.9687
-# Diabetes_BIN_FINAL_0_01                   1.7662     0.5662    1.5775    1.9774
-# Townsend_deprivation_Groups_0_01          0.9642     1.0371    0.8576    1.0840
-# Townsend_deprivation_Groups_0_02          1.0247     0.9759    0.9130    1.1500
-# Townsend_deprivation_Groups_0_03          1.0563     0.9467    0.9405    1.1863
-# Townsend_deprivation_Groups_0_04          1.3114     0.7626    1.1719    1.4675
-# current_history_depression1               1.7517     0.5709    1.6001    1.9178
-# stroke_TIA_BIN_FINAL1                     2.0051     0.4987    1.7256    2.3297
-# hypertensive1                             1.1860     0.8432    1.0950    1.2846
-# cholesterol1                              1.1110     0.9001    1.0184    1.2120
-# household_occupancy1                      1.1555     0.8654    1.0590    1.2608
-# household_occupancy2                      0.9483     1.0545    0.8497    1.0583
-# Sex1                                      1.2269     0.8151    1.1392    1.3214
+# Age_when_attended_assesment_centre_0_0    1.1998     0.8335    1.1889    1.2107
+# family_history_of_dementia1               1.5277     0.6546    1.4043    1.6620
+# education_years                           0.9581     1.0437    0.9465    0.9698
+# Diabetes_BIN_FINAL_0_01                   1.8176     0.5502    1.6236    2.0348
+# Townsend_deprivation_Groups_0_01          0.9694     1.0316    0.8622    1.0898
+# Townsend_deprivation_Groups_0_02          1.0199     0.9805    0.9087    1.1447
+# Townsend_deprivation_Groups_0_03          1.0655     0.9385    0.9487    1.1967
+# Townsend_deprivation_Groups_0_04          1.3193     0.7580    1.1789    1.4763
+# current_history_depression1               1.7683     0.5655    1.6153    1.9359
+# stroke_TIA_BIN_FINAL1                     2.0485     0.4882    1.7630    2.3803
+# hypertensive1                             1.1922     0.8388    1.1006    1.2915
+# cholesterol1                              1.1077     0.9028    1.0151    1.2087
+# household_occupancy1                      1.1626     0.8601    1.0654    1.2686
+# household_occupancy2                      0.9396     1.0642    0.8420    1.0486
+# Sex1                                      1.2436     0.8041    1.1548    1.3392
 # 
-# Concordance= 0.776  (se = 0.004 )
-# Likelihood ratio test= 3189  on 15 df,   p=<2e-16
-# Wald test            = 2746  on 15 df,   p=<2e-16
-# Score (logrank) test = 3176  on 15 df,   p=<2e-16
+# Concordance= 0.777  (se = 0.004 )
+# Likelihood ratio test= 3245  on 15 df,   p=<2e-16
+# Wald test            = 2792  on 15 df,   p=<2e-16
+# Score (logrank) test = 3240  on 15 df,   p=<2e-16
 
 #save the coefficients
 summary(ukbdrs.cox)
@@ -106,8 +106,8 @@ df_base <- data.frame(Age_when_attended_assesment_centre_0_0 = mean(train.data$A
 ukbdrs.surv.baseline <- survfit(ukbdrs.cox, newdata = df_base)
 length(ukbdrs.surv.baseline$time) #there are 4614 timepoints
 #survival over entire time window:
-ukbdrs.surv.baseline$surv[4614]
-#0.9911458
+ukbdrs.surv.baseline$surv[4880]
+#0.9910584
 
 
 
@@ -121,48 +121,47 @@ UKBDRS_APOE_LASSO  <-  paste("Surv(time_at_risk, dementia_BIN_surv) ~  Age_when_
 ukbdrs.apoe.cox <- coxph(as.formula(UKBDRS_APOE_LASSO), data = train.data)
 summary(ukbdrs.apoe.cox)
 # coef exp(coef)  se(coef)      z Pr(>|z|)    
-# Age_when_attended_assesment_centre_0_0  0.188811  1.207813  0.005397 34.987  < 2e-16 ***
-#   family_history_of_dementia1             0.320784  1.378208  0.049463  6.485 8.85e-11 ***
-#   education_years                        -0.040396  0.960409  0.007146 -5.653 1.58e-08 ***
-#   Diabetes_BIN_FINAL_0_01                 0.578210  1.782845  0.068723  8.414  < 2e-16 ***
-#   Townsend_deprivation_Groups_0_01       -0.076188  0.926642  0.068207 -1.117  0.26399    
-# Townsend_deprivation_Groups_0_02       -0.034438  0.966149  0.067806 -0.508  0.61153    
-# Townsend_deprivation_Groups_0_03        0.004195  1.004204  0.068055  0.062  0.95084    
-# Townsend_deprivation_Groups_0_04        0.266213  1.305013  0.065484  4.065 4.80e-05 ***
-#   current_history_depression1             0.568130  1.764963  0.053668 10.586  < 2e-16 ***
-#   stroke_TIA_BIN_FINAL1                   0.670637  1.955482  0.090726  7.392 1.45e-13 ***
-#   hypertensive1                           0.204445  1.226844  0.047102  4.340 1.42e-05 ***
-#   cholesterol1                            0.017352  1.017504  0.051247  0.339  0.73491    
-# household_occupancy1                    0.149911  1.161731  0.051722  2.898  0.00375 ** 
-#   household_occupancy2                   -0.011820  0.988250  0.063830 -0.185  0.85309    
-# Sex1                                    0.197152  1.217929  0.043690  4.512 6.41e-06 ***
-#   APOE_genotype_bin1                      1.132391  3.103066  0.042591 26.587  < 2e-16 ***
+# Age_when_attended_assesment_centre_0_0  0.190923  1.210366  0.005414 35.266  < 2e-16 ***
+#   family_history_of_dementia1             0.304407  1.355821  0.049488  6.151 7.69e-10 ***
+#   education_years                        -0.039707  0.961071  0.007126 -5.572 2.51e-08 ***
+#   Diabetes_BIN_FINAL_0_01                 0.589402  1.802910  0.068621  8.589  < 2e-16 ***
+#   Townsend_deprivation_Groups_0_01       -0.075792  0.927009  0.068217 -1.111 0.266552    
+# Townsend_deprivation_Groups_0_02       -0.045304  0.955707  0.067796 -0.668 0.503974    
+# Townsend_deprivation_Groups_0_03        0.006939  1.006963  0.068052  0.102 0.918783    
+# Townsend_deprivation_Groups_0_04        0.252315  1.287001  0.065548  3.849 0.000118 ***
+#   current_history_depression1             0.579418  1.785000  0.053622 10.806  < 2e-16 ***
+#   stroke_TIA_BIN_FINAL1                   0.704846  2.023534  0.090668  7.774 7.61e-15 ***
+#   hypertensive1                           0.204735  1.227200  0.047107  4.346 1.39e-05 ***
+#   cholesterol1                            0.022505  1.022760  0.051233  0.439 0.660476    
+# household_occupancy1                    0.159235  1.172614  0.051768  3.076 0.002099 ** 
+#   household_occupancy2                   -0.010453  0.989601  0.063845 -0.164 0.869947    
+# Sex1                                    0.209449  1.232999  0.043659  4.797 1.61e-06 ***
+#   APOE_genotype_bin1                      1.132261  3.102665  0.042599 26.579  < 2e-16 ***
 #   ---
 #   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 # 
 # exp(coef) exp(-coef) lower .95 upper .95
-# Age_when_attended_assesment_centre_0_0    1.2078     0.8279    1.1951     1.221
-# family_history_of_dementia1               1.3782     0.7256    1.2509     1.519
-# education_years                           0.9604     1.0412    0.9471     0.974
-# Diabetes_BIN_FINAL_0_01                   1.7828     0.5609    1.5582     2.040
-# Townsend_deprivation_Groups_0_01          0.9266     1.0792    0.8107     1.059
-# Townsend_deprivation_Groups_0_02          0.9661     1.0350    0.8459     1.103
-# Townsend_deprivation_Groups_0_03          1.0042     0.9958    0.8788     1.147
-# Townsend_deprivation_Groups_0_04          1.3050     0.7663    1.1478     1.484
-# current_history_depression1               1.7650     0.5666    1.5887     1.961
-# stroke_TIA_BIN_FINAL1                     1.9555     0.5114    1.6369     2.336
-# hypertensive1                             1.2268     0.8151    1.1187     1.345
-# cholesterol1                              1.0175     0.9828    0.9203     1.125
-# household_occupancy1                      1.1617     0.8608    1.0497     1.286
-# household_occupancy2                      0.9882     1.0119    0.8720     1.120
-# Sex1                                      1.2179     0.8211    1.1180     1.327
-# APOE_genotype_bin1                        3.1031     0.3223    2.8545     3.373
+# Age_when_attended_assesment_centre_0_0    1.2104     0.8262    1.1976    1.2233
+# family_history_of_dementia1               1.3558     0.7376    1.2305    1.4939
+# education_years                           0.9611     1.0405    0.9477    0.9746
+# Diabetes_BIN_FINAL_0_01                   1.8029     0.5547    1.5760    2.0625
+# Townsend_deprivation_Groups_0_01          0.9270     1.0787    0.8110    1.0596
+# Townsend_deprivation_Groups_0_02          0.9557     1.0463    0.8368    1.0915
+# Townsend_deprivation_Groups_0_03          1.0070     0.9931    0.8812    1.1506
+# Townsend_deprivation_Groups_0_04          1.2870     0.7770    1.1318    1.4634
+# current_history_depression1               1.7850     0.5602    1.6069    1.9828
+# stroke_TIA_BIN_FINAL1                     2.0235     0.4942    1.6941    2.4171
+# hypertensive1                             1.2272     0.8149    1.1190    1.3459
+# cholesterol1                              1.0228     0.9777    0.9250    1.1308
+# household_occupancy1                      1.1726     0.8528    1.0595    1.2978
+# household_occupancy2                      0.9896     1.0105    0.8732    1.1215
+# Sex1                                      1.2330     0.8110    1.1319    1.3432
+# APOE_genotype_bin1                        3.1027     0.3223    2.8541    3.3728
 # 
-# Concordance= 0.807  (se = 0.005 )
-# Likelihood ratio test= 3134  on 16 df,   p=<2e-16
-# Wald test            = 2761  on 16 df,   p=<2e-16
-# Score (logrank) test = 3168  on 16 df,   p=<2e-16
-
+# Concordance= 0.808  (se = 0.005 )
+# Likelihood ratio test= 3175  on 16 df,   p=<2e-16
+# Wald test            = 2789  on 16 df,   p=<2e-16
+# Score (logrank) test = 3207  on 16 df,   p=<2e-16
 #save the coefficients
 ukbdrs_apoecoefs <- cbind(summary(ukbdrs.apoe.cox)$coef,summary(ukbdrs.apoe.cox)$conf.int[,c(3,4)])
 df_ukbdrs_apoecoefficients <- as.data.frame(ukbdrs_apoecoefs) 
@@ -186,8 +185,8 @@ df_base <- data.frame(Age_when_attended_assesment_centre_0_0 = mean(train.data$A
 ukbdrs.apoe.surv.baseline <- survfit(ukbdrs.apoe.cox, newdata = df_base)
 length(ukbdrs.apoe.surv.baseline$time) #there are 4210 timepoints
 #survival over entire time window:
-ukbdrs.apoe.surv.baseline$surv[4210]
-#0.9941616
+ukbdrs.apoe.surv.baseline$surv[4556]
+#0.9941051
 
 
 #### AGE ONLY ####
@@ -197,17 +196,17 @@ age_only <-      paste("Surv(time_at_risk, dementia_BIN_surv) ~  Age_when_attend
 ageonly.cox <- coxph(as.formula(age_only), data = train.data)
 summary(ageonly.cox)
 # coef exp(coef) se(coef)     z Pr(>|z|)    
-# Age_when_attended_assesment_centre_0_0 0.193307  1.213255 0.004396 43.98   <2e-16 ***
+# Age_when_attended_assesment_centre_0_0 0.194889  1.215176 0.004404 44.25   <2e-16 ***
 #   ---
 #   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 # 
 # exp(coef) exp(-coef) lower .95 upper .95
-# Age_when_attended_assesment_centre_0_0     1.213     0.8242     1.203     1.224
+# Age_when_attended_assesment_centre_0_0     1.215     0.8229     1.205     1.226
 # 
-# Concordance= 0.749  (se = 0.004 )
-# Likelihood ratio test= 2482  on 1 df,   p=<2e-16
-# Wald test            = 1934  on 1 df,   p=<2e-16
-# Score (logrank) test = 2232  on 1 df,   p=<2e-16
+# Concordance= 0.75  (se = 0.004 )
+# Likelihood ratio test= 2517  on 1 df,   p=<2e-16
+# Wald test            = 1958  on 1 df,   p=<2e-16
+# Score (logrank) test = 2263  on 1 df,   p=<2e-16
 
 #baseline survival
 df_base <- data.frame(Age_when_attended_assesment_centre_0_0 = mean(train.data$Age_when_attended_assesment_centre_0_0))
@@ -215,8 +214,8 @@ df_base <- data.frame(Age_when_attended_assesment_centre_0_0 = mean(train.data$A
 ageonly.surv.baseline <- survfit(ageonly.cox, newdata = df_base)
 length(ageonly.surv.baseline$time) #there are 4614 timepoints
 #survival over entire time window:
-ageonly.surv.baseline$surv[4614]
-#0.9849508
+ageonly.surv.baseline$surv[4880]
+#0.9846693
 
 #### FIT LP ####
 #using the cr adjusted coefficients, build the linear predictor and predicted probablity for each model
@@ -259,43 +258,40 @@ test.data$UKBDRS_sex_score <- ifelse(test.data$Sex==0,0,1)
 #for continuous predictors, subtract the mean of the train data vals
 
 #### UKBDRS LASSO ####
-train.data$UKBDRS_LASSO_cox_linear_predictor <- 0.180695590861614*(train.data$Age_when_attended_assesment_centre_0_0 - mean(train.data$Age_when_attended_assesment_centre_0_0)) +
-  0.433779744348196*train.data$UKBDRS_familyhistory + -0.0439250682154443*(train.data$education_years - mean(train.data$education_years)) +
-  0.568808164096848*train.data$UKBDRS_diabetes + 
-  -0.0364688189274691*train.data$UKBDRS_townsend_group2 + 0.0243634555633536*train.data$UKBDRS_townsend_group3 +
-  0.0547564068743358*train.data$UKBDRS_townsend_group4 + 0.271078208031246*train.data$UKBDRS_townsend_group5 +
-  0.560606497261319*train.data$UKBDRS_depression + 0.695670361087043*train.data$UKBDRS_stroke +
-  0.170602226203275*train.data$UKBDRS_hypertensive + 0.105226745067214*train.data$UKBDRS_cholesterol +
-  0.144535045635076*train.data$UKBDRS_livesalone + -0.053093199368648*train.data$UKBDRS_liveswithmultiple +
-  0.204491820563287*train.data$UKBDRS_sex_score
+train.data$UKBDRS_LASSO_cox_linear_predictor <- 0.182117705330166*(train.data$Age_when_attended_assesment_centre_0_0 - mean(train.data$Age_when_attended_assesment_centre_0_0)) +
+  0.423762823699024*train.data$UKBDRS_familyhistory + -0.0427871312029261*(train.data$education_years - mean(train.data$education_years)) +
+  0.597528076668602*train.data$UKBDRS_diabetes + 
+  -0.0310910753295164*train.data$UKBDRS_townsend_group2 + 0.0197102410695051*train.data$UKBDRS_townsend_group3 +
+  0.0634390217533084*train.data$UKBDRS_townsend_group4 + 0.277067904026735*train.data$UKBDRS_townsend_group5 +
+  0.570033639803766*train.data$UKBDRS_depression + 0.71711132183806*train.data$UKBDRS_stroke +
+  0.175819933388762*train.data$UKBDRS_hypertensive + 0.102253387457651*train.data$UKBDRS_cholesterol +
+  0.150660021680297*train.data$UKBDRS_livesalone + -0.0622701288907812*train.data$UKBDRS_liveswithmultiple +
+  0.217988544195546*train.data$UKBDRS_sex_score
 summary(train.data$UKBDRS_LASSO_cox_linear_predictor)  
 # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-# -2.3967 -0.4345  0.4972  0.4484  1.3137  4.5084 
+# -2.4309 -0.4307  0.5048  0.4591  1.3344  4.6048 
 
-train.data$UKBDRS_LASSO_cox_predicted_prob <- 1 - 0.9911458^exp(train.data$UKBDRS_LASSO_cox_linear_predictor)  
+train.data$UKBDRS_LASSO_cox_predicted_prob <- 1 - 0.9910584^exp(train.data$UKBDRS_LASSO_cox_linear_predictor)  
 summary(train.data$UKBDRS_LASSO_cox_predicted_prob)
 # Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-# 0.0008091 0.0057430 0.0145154 0.0244633 0.0325438 0.5539517 
+# 0.0007897 0.0058217 0.0147699 0.0252265 0.0335347 0.5925421 
 
 
-test.data$UKBDRS_LASSO_cox_linear_predictor <- 0.180695590861614*(test.data$Age_when_attended_assesment_centre_0_0 - mean(train.data$Age_when_attended_assesment_centre_0_0)) +
-  0.433779744348196*test.data$UKBDRS_familyhistory + -0.0439250682154443*(test.data$education_years - mean(train.data$education_years)) +
-  0.568808164096848*test.data$UKBDRS_diabetes + 
-  -0.0364688189274691*test.data$UKBDRS_townsend_group2 + 0.0243634555633536*test.data$UKBDRS_townsend_group3 +
-  0.0547564068743358*test.data$UKBDRS_townsend_group4 + 0.271078208031246*test.data$UKBDRS_townsend_group5 +
-  0.560606497261319*test.data$UKBDRS_depression + 0.695670361087043*test.data$UKBDRS_stroke +
-  0.170602226203275*test.data$UKBDRS_hypertensive + 0.105226745067214*test.data$UKBDRS_cholesterol +
-  0.144535045635076*test.data$UKBDRS_livesalone + -0.053093199368648*test.data$UKBDRS_liveswithmultiple +
-  0.204491820563287*test.data$UKBDRS_sex_score
+test.data$UKBDRS_LASSO_cox_linear_predictor <- 0.182117705330166*(test.data$Age_when_attended_assesment_centre_0_0 - mean(train.data$Age_when_attended_assesment_centre_0_0)) +
+  0.423762823699024*test.data$UKBDRS_familyhistory + -0.0427871312029261*(test.data$education_years - mean(train.data$education_years)) +
+  0.597528076668602*test.data$UKBDRS_diabetes + 
+  -0.0310910753295164*test.data$UKBDRS_townsend_group2 + 0.0197102410695051*test.data$UKBDRS_townsend_group3 +
+  0.0634390217533084*test.data$UKBDRS_townsend_group4 + 0.277067904026735*test.data$UKBDRS_townsend_group5 +
+  0.570033639803766*test.data$UKBDRS_depression + 0.71711132183806*test.data$UKBDRS_stroke +
+  0.175819933388762*test.data$UKBDRS_hypertensive + 0.102253387457651*test.data$UKBDRS_cholesterol +
+  0.150660021680297*test.data$UKBDRS_livesalone + -0.0622701288907812*test.data$UKBDRS_liveswithmultiple +
+  0.217988544195546*test.data$UKBDRS_sex_score
 summary(test.data$UKBDRS_LASSO_cox_linear_predictor)  
 # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-# -2.4332 -0.4298  0.4945  0.4513  1.3147  4.3639 
+# -2.4309 -0.4307  0.5048  0.4591  1.3344  4.6048 
 
-test.data$UKBDRS_LASSO_cox_predicted_prob <- 1 - 0.9911458^exp(test.data$UKBDRS_LASSO_cox_linear_predictor)  
+test.data$UKBDRS_LASSO_cox_predicted_prob <- 1 - 0.9910584^exp(test.data$UKBDRS_LASSO_cox_linear_predictor)  
 summary(test.data$UKBDRS_LASSO_cox_predicted_prob)
-# Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-# 0.0007802 0.0057697 0.0144764 0.0245681 0.0325748 0.5027595
-
 
 
 
@@ -341,10 +337,10 @@ summary(test.data$UKBDRS_APOE_LASSO_cox_predicted_prob)
 
 
 #### age only ####
-train.data$age_only_cox_linear_predictor <- 0.193307*(train.data$Age_when_attended_assesment_centre_0_0 - mean(train.data$Age_when_attended_assesment_centre_0_0))
-train.data$age_only_cox_predicted_prob <- 1 - 0.9874905^exp(train.data$age_only_cox_linear_predictor)  
-test.data$age_only_cox_linear_predictor <- 0.193307*(test.data$Age_when_attended_assesment_centre_0_0 - mean(train.data$Age_when_attended_assesment_centre_0_0))
-test.data$age_only_cox_predicted_prob <- 1 - 0.9874905^exp(test.data$age_only_cox_linear_predictor)  
+train.data$age_only_cox_linear_predictor <- 0.194889*(train.data$Age_when_attended_assesment_centre_0_0 - mean(train.data$Age_when_attended_assesment_centre_0_0))
+train.data$age_only_cox_predicted_prob <- 1 - 0.9846693^exp(train.data$age_only_cox_linear_predictor)  
+test.data$age_only_cox_linear_predictor <- 0.194889*(test.data$Age_when_attended_assesment_centre_0_0 - mean(train.data$Age_when_attended_assesment_centre_0_0))
+test.data$age_only_cox_predicted_prob <- 1 - 0.9846693^exp(test.data$age_only_cox_linear_predictor)  
 summary(train.data$age_only_cox_predicted_prob)
 # Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
 # 0.001830 0.005826 0.012582 0.020094 0.027061 0.144666 

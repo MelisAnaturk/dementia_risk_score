@@ -163,8 +163,33 @@ summary(df_filtered$dementia_BIN_TOTAL)
 #216949   3813  
 
 #we need time to death/censor/dementia
+#update death records
+df_death<-read.csv("../../raw_data/ukb50321_deathvars_refresh.csv", stringsAsFactors = FALSE)
+names(df_death) #date is X40000.0.0
+df_death <- df_death[,c("eid","X40000.0.0")]
+names(df_death) <- c("eid","death_date_refresh")
+df_death$eid <- as.character(df_death$eid)
+df_death$death_date_refresh <- as.Date(df_death$death_date_refresh, format="%Y-%m-%d")
+summary(df_death$death_date_refresh)
+# Min.      1st Qu.       Median         Mean      3rd Qu.         Max.         NA's 
+# "2006-05-10" "2014-04-18" "2017-06-22" "2016-11-21" "2019-12-21" "2021-11-12"     "464516" 
+df_death$death_record_refresh <- ifelse( !is.na(df_death$death_date_refresh) &
+                                           df_death$death_date_refresh<as.Date("2021-10-31",format="%Y-%m-%d"),1,0)
+summary(as.factor(df_death$death_record_refresh))
+# 0      1 
+# 464532  37881 
+
+#merge
+df_filtered <- list(df_filtered, df_death) %>% reduce(left_join, by="eid")
+rm(df_death)
+
+
+
+
+
+
 df_filtered$Date_of_assessment_0_0_new.x <- as.Date(df_filtered$Date_of_assessment_0_0_new.x, format="%Y-%m-%d")
-df_filtered$has_death_record <- ifelse(is.na(df_filtered$date_of_death_all),0,1)
+df_filtered$has_death_record <- ifelse(df_filtered$death_record_refresh==1,1,0)
 
 #dementia
 df_dementia <- df_filtered[which(df_filtered$dementia_BIN_TOTAL==1),]
@@ -175,10 +200,10 @@ summary(as.numeric(df_dementia$time_at_risk))
 
 #deaths
 df_deaths <- df_filtered[which( (df_filtered$dementia_BIN_TOTAL==0) & (df_filtered$has_death_record==1) ),]
-df_deaths$time_at_risk <- df_deaths$date_of_death_all - df_deaths$Date_of_assessment_0_0_new.x
+df_deaths$time_at_risk <- df_deaths$death_date_refresh - df_deaths$Date_of_assessment_0_0_new.x
 summary(as.numeric(df_deaths$time_at_risk))
-#Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-#4    1212    2005    1931    2663    3927 
+# Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+# 4    1859    2989    2836    3912    5254 
 
 #healthy
 df_healthy <- df_filtered[which( (df_filtered$dementia_BIN_TOTAL==0) & (df_filtered$has_death_record==0) ),]
@@ -209,9 +234,9 @@ save(df_filtered, file="../../raw_data/df_filtered_prelasso.rda")
 #define variables of interest
 myvars <- c("time_at_risk","Age_when_attended_assesment_centre_0_0","education_years", "Townsend_deprivation_Groups_0_0", "BMI_0_0",
             "Sex", "Sleeplesness_insomnia_0_0_bin", "family_history_of_dementia", 
-            "Diabetes_BIN_FINAL_0_0", "LDL_0_0","HDL_cholesterol_0_0",
+            "Diabetes_BIN_FINAL_0_0", 
             "current_history_depression","TBI_BIN_FINAL_0_0", "stroke_TIA_BIN_FINAL", "Smoker_bin", "units_combined",
-            "Systolic_BP_auto_mean", "IPAQ_activity_group_0_0", "Hearing_prob", "Sleep_duration_0_0",
+            "IPAQ_activity_group_0_0", "Hearing_prob", "Sleep_duration_0_0",
             "total_fish_intake_per_week_0_0", "Social_engagement_0_2", "Atrial_Fibrillation_BIN_FINAL_0_0",
             "household_occupancy","dementia_BIN_TOTAL", "NSAIDs_0_0", "HRT_0_0",
             "hypertensive","cholesterol")
@@ -236,7 +261,7 @@ save(test.data, file = "../../raw_data/test_data_outliers_removed_prelasso.rda")
 #test.data <- test.data[myvars]
 
 # Create vector of only continous variables
-cont_vars <- c("Age_when_attended_assesment_centre_0_0",  "education_years", "LDL_0_0",  "HDL_cholesterol_0_0", "Systolic_BP_auto_mean", "Sleep_duration_0_0", "BMI_0_0", "total_fish_intake_per_week_0_0", "units_combined")
+cont_vars <- c("Age_when_attended_assesment_centre_0_0",  "education_years", "Sleep_duration_0_0", "BMI_0_0", "total_fish_intake_per_week_0_0", "units_combined")
 
 # scale the data
 scaled.train.data <- scale(train.data[, cont_vars], scale = TRUE, center = TRUE)
@@ -279,18 +304,17 @@ lasso.final.1 <- glmnet(x, y, alpha = 1, family = "cox", lambda = lasso.fit.cv$l
 coef(lasso.final.1, s = lasso.fit.cv$lambda.1se) #lambda.1se
 
 #Output 
-# 32 x 1 sparse Matrix of class "dgCMatrix"
-# Townsend_deprivation_Groups_0_04        0.13382243
-# Sex1                                    0.03082154
-# family_history_of_dementia1             0.25174957
-# Diabetes_BIN_FINAL_0_01                 0.51051696
-# current_history_depression1             0.38285509
-# stroke_TIA_BIN_FINAL1                   0.60957378
-# household_occupancy1                    0.01811039
-# hypertensive1                           0.10868495
-# cholesterol1                            0.09704808
-# Age_when_attended_assesment_centre_0_0  0.88294603
-# education_years                        -0.07321108
+# Townsend_deprivation_Groups_0_04        0.123164107
+# Sex1                                    0.025075906
+# family_history_of_dementia1             0.222155411
+# Diabetes_BIN_FINAL_0_01                 0.530047863
+# current_history_depression1             0.374105120
+# stroke_TIA_BIN_FINAL1                   0.610589869
+# household_occupancy1                    0.009732028
+# hypertensive1                           0.105376272
+# cholesterol1                            0.094987826
+# Age_when_attended_assesment_centre_0_0  0.880455593
+# education_years                        -0.063917765
 
 
 # tidy output
