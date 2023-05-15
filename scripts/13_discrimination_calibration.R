@@ -57,10 +57,10 @@ train.data$y <- ifelse(train.data$dementia_BIN_TOTAL==1,1,0)
 test.data$y <- ifelse(test.data$dementia_BIN_TOTAL==1,1,0)
 
 #### Train auc ####
-auc_train<-Score(list('ukbdrs'=train.data$UKBDRS_LASSO_crr_predicted_prob,
-                'drs'=train.data$DRS_predicted_prob,
-                'age'=train.data$age_only_crr_predicted_prob,
-               'caide'=train.data$CAIDE_predicted_prob),
+auc_train<-Score(list('UKBDRS'=train.data$UKBDRS_LASSO_crr_predicted_prob,
+                'DRS'=train.data$DRS_predicted_prob,
+                'Age_only'=train.data$age_only_crr_predicted_prob,
+               'CAIDE'=train.data$CAIDE_predicted_prob),
            formula=Hist(time_at_risk,crr_status)~1,
            data = train.data,
            null.model = FALSE,
@@ -89,8 +89,8 @@ df_auc <- as.data.frame(auc_train$AUC$score)[,c("model","AUC","lower","upper")]
 
 #anu subset
 anu_train <- train.data[which(!is.na(train.data$ANU_ADRI)),]
-auc_train_anu<-Score(list('ukbdrs'=anu_train$UKBDRS_LASSO_crr_predicted_prob,
-                      'anu'=anu_train$ANU_ADRI),
+auc_train_anu<-Score(list('ukbdrs_anu'=anu_train$UKBDRS_LASSO_crr_predicted_prob,
+                      'ANUADRI'=anu_train$ANU_ADRI),
                  formula=Hist(time_at_risk,crr_status)~1,
                  data = anu_train,
                  null.model = FALSE,
@@ -119,10 +119,10 @@ write.csv(df_train_auc_compare, file="../results/auc_compare_training.csv")
 
 
 #### test data ####
-auc_test<-Score(list('ukbdrs'=test.data$UKBDRS_LASSO_crr_predicted_prob,
-                      'drs'=test.data$DRS_predicted_prob,
-                      'age'=test.data$age_only_crr_predicted_prob,
-                      'caide'=test.data$CAIDE_predicted_prob),
+auc_test<-Score(list('UKBDRS'=test.data$UKBDRS_LASSO_crr_predicted_prob,
+                      'DRS'=test.data$DRS_predicted_prob,
+                      'Age_only'=test.data$age_only_crr_predicted_prob,
+                      'CAIDE'=test.data$CAIDE_predicted_prob),
                  formula=Hist(time_at_risk,crr_status)~1,
                  data = test.data,
                  null.model = FALSE,
@@ -145,8 +145,8 @@ df_auc <- as.data.frame(auc_test$AUC$score)[,c("model","AUC","lower","upper")]
 
 #anu subset
 anu_test <- test.data[which(!is.na(test.data$ANU_ADRI)),]
-auc_test_anu<-Score(list('ukbdrs'=anu_test$UKBDRS_LASSO_crr_predicted_prob,
-                          'anu'=anu_test$ANU_ADRI),
+auc_test_anu<-Score(list('ukbdrs_anu'=anu_test$UKBDRS_LASSO_crr_predicted_prob,
+                          'ANUADRI'=anu_test$ANU_ADRI),
                      formula=Hist(time_at_risk,crr_status)~1,
                      data = anu_test,
                      null.model = FALSE,
@@ -171,3 +171,17 @@ df_test_auc_compare <- rbind(df_test_auc_compare, as.data.frame(auc_test_anu$AUC
                                                                                                   "lower","upper","p")]))
 df_test_auc_compare$p_fdr <- p.adjust(df_test_auc_compare$p, method="BH")
 write.csv(df_test_auc_compare, file="../results/auc_compare_testing.csv")
+
+
+plot_auc_obj <- auc_test
+plot_auc_obj$ROC$plotframe <- rbind(plot_auc_obj$ROC$plotframe, auc_test_anu$ROC$plotframe)
+plot_auc_obj$AUC$score <- rbind(plot_auc_obj$AUC$score , auc_test_anu$AUC$score )
+plotROC(plot_auc_obj, models = c("UKBDRS","DRS","Age_only","CAIDE","ANUADRI"))
+
+plotROC(plot_auc_obj, models = c("UKBDRS","DRS","Age_only","CAIDE","ANUADRI"),auc.in.legend = FALSE)
+
+png(file="../results/roc_plotted_all.png",
+    height = 600, width = 600, res=120)
+plotROC(plot_auc_obj, models = c("UKBDRS","DRS","Age_only","CAIDE","ANUADRI"),auc.in.legend = FALSE)
+dev.off()
+
