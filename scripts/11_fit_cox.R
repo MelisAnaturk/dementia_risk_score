@@ -212,7 +212,7 @@ summary(ageonly.cox)
 df_base <- data.frame(Age_when_attended_assesment_centre_0_0 = mean(train.data$Age_when_attended_assesment_centre_0_0))
 
 ageonly.surv.baseline <- survfit(ageonly.cox, newdata = df_base)
-length(ageonly.surv.baseline$time) #there are 4614 timepoints
+length(ageonly.surv.baseline$time) #there are 4880 timepoints
 #survival over entire time window:
 ageonly.surv.baseline$surv[4880]
 #0.9846693
@@ -288,50 +288,51 @@ test.data$UKBDRS_LASSO_cox_linear_predictor <- 0.182117705330166*(test.data$Age_
   0.217988544195546*test.data$UKBDRS_sex_score
 summary(test.data$UKBDRS_LASSO_cox_linear_predictor)  
 # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-# -2.4309 -0.4307  0.5048  0.4591  1.3344  4.6048 
+# -2.1975 -0.4307  0.5111  0.4649  1.3302  4.5620 
 
 test.data$UKBDRS_LASSO_cox_predicted_prob <- 1 - 0.9910584^exp(test.data$UKBDRS_LASSO_cox_linear_predictor)  
 summary(test.data$UKBDRS_LASSO_cox_predicted_prob)
-
+# Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+# 0.0009972 0.0058215 0.0148625 0.0254736 0.0333959 0.5769280 
 
 
 #### UKBDRS APOE ####
-train.data$UKBDRS_APOE_LASSO_cox_linear_predictor <- 0.188811098734031*(train.data$Age_when_attended_assesment_centre_0_0 - mean(train.data$Age_when_attended_assesment_centre_0_0)) +
-  0.320784372273051*train.data$UKBDRS_familyhistory + -0.0403960218653043*(train.data$education_years - mean(train.data$education_years)) +
-  0.578210406879922*train.data$UKBDRS_diabetes + 
-  -0.0761880900198712*train.data$UKBDRS_townsend_group2 + -0.034437726599586*train.data$UKBDRS_townsend_group3 +
-  0.00419541159982712*train.data$UKBDRS_townsend_group4 + 0.266212713779133*train.data$UKBDRS_townsend_group5 +
-  0.568129949510332*train.data$UKBDRS_depression + 0.670636737314582*train.data$UKBDRS_stroke +
-  0.204445092809709*train.data$UKBDRS_hypertensive + 0.0173523036725743*train.data$UKBDRS_cholesterol +
-  0.149911167963347*train.data$UKBDRS_livesalone + -0.011819789317642*train.data$UKBDRS_liveswithmultiple +
-  0.197151795600108*train.data$UKBDRS_sex_score + 1.13239067599009*train.data$UKBDRS_APOE
+train.data$UKBDRS_APOE_LASSO_cox_linear_predictor <- 0.190922647325301*(train.data$Age_when_attended_assesment_centre_0_0 - mean(train.data$Age_when_attended_assesment_centre_0_0)) +
+  0.304407328114425*train.data$UKBDRS_familyhistory + -0.0397071055598187*(train.data$education_years - mean(train.data$education_years)) +
+  0.58940191568914*train.data$UKBDRS_diabetes + 
+  -0.0757918760267292*train.data$UKBDRS_townsend_group2 + -0.0453043718914188*train.data$UKBDRS_townsend_group3 +
+  0.00693901461196727*train.data$UKBDRS_townsend_group4 + 0.252314521192837*train.data$UKBDRS_townsend_group5 +
+  0.579418204294867*train.data$UKBDRS_depression + 0.704845544426178*train.data$UKBDRS_stroke +
+  0.204735145667873*train.data$UKBDRS_hypertensive + 0.0225045388404213*train.data$UKBDRS_cholesterol +
+  0.159235467633398*train.data$UKBDRS_livesalone + -0.0104530896743045*train.data$UKBDRS_liveswithmultiple +
+  0.209449140689626*train.data$UKBDRS_sex_score + 1.13226135309444*train.data$UKBDRS_APOE
 summary(train.data$UKBDRS_APOE_LASSO_cox_linear_predictor)  
 # Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-#   -2.37   -0.20    0.75    0.73    1.66    5.59   50910 
+#   -2.43   -0.20    0.75    0.74    1.67    5.27   50767 
 
-train.data$UKBDRS_APOE_LASSO_cox_predicted_prob <- 1 - 0.9941616^exp(train.data$UKBDRS_APOE_LASSO_cox_linear_predictor)  
+train.data$UKBDRS_APOE_LASSO_cox_predicted_prob <- 1 - 0.9941051^exp(train.data$UKBDRS_APOE_LASSO_cox_linear_predictor)  
 summary(train.data$UKBDRS_APOE_LASSO_cox_predicted_prob)
-# Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's
-#    0.00    0.00    0.01    0.02    0.03    0.71   50910
+# Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+#    0.00    0.00    0.01    0.03    0.03    0.68   50767 
 
 
-test.data$UKBDRS_APOE_LASSO_cox_linear_predictor <- 0.188811098734031*(test.data$Age_when_attended_assesment_centre_0_0 - mean(train.data$Age_when_attended_assesment_centre_0_0)) +
-  0.320784372273051*test.data$UKBDRS_familyhistory + -0.0403960218653043*(test.data$education_years - mean(train.data$education_years)) +
-  0.578210406879922*test.data$UKBDRS_diabetes + 
-  -0.0761880900198712*test.data$UKBDRS_townsend_group2 + -0.034437726599586*test.data$UKBDRS_townsend_group3 +
-  0.00419541159982712*test.data$UKBDRS_townsend_group4 + 0.266212713779133*test.data$UKBDRS_townsend_group5 +
-  0.568129949510332*test.data$UKBDRS_depression + 0.670636737314582*test.data$UKBDRS_stroke +
-  0.204445092809709*test.data$UKBDRS_hypertensive + 0.0173523036725743*test.data$UKBDRS_cholesterol +
-  0.149911167963347*test.data$UKBDRS_livesalone + -0.011819789317642*test.data$UKBDRS_liveswithmultiple +
-  0.197151795600108*test.data$UKBDRS_sex_score + 1.13239067599009*test.data$UKBDRS_APOE
+test.data$UKBDRS_APOE_LASSO_cox_linear_predictor <- 0.190922647325301*(test.data$Age_when_attended_assesment_centre_0_0 - mean(train.data$Age_when_attended_assesment_centre_0_0)) +
+  0.304407328114425*test.data$UKBDRS_familyhistory + -0.0397071055598187*(test.data$education_years - mean(train.data$education_years)) +
+  0.58940191568914*test.data$UKBDRS_diabetes + 
+  -0.0757918760267292*test.data$UKBDRS_townsend_group2 + -0.0453043718914188*test.data$UKBDRS_townsend_group3 +
+  0.00693901461196727*test.data$UKBDRS_townsend_group4 + 0.252314521192837*test.data$UKBDRS_townsend_group5 +
+  0.579418204294867*test.data$UKBDRS_depression + 0.704845544426178*test.data$UKBDRS_stroke +
+  0.204735145667873*test.data$UKBDRS_hypertensive + 0.0225045388404213*test.data$UKBDRS_cholesterol +
+  0.159235467633398*test.data$UKBDRS_livesalone + -0.0104530896743045*test.data$UKBDRS_liveswithmultiple +
+  0.209449140689626*test.data$UKBDRS_sex_score + 1.13226135309444*test.data$UKBDRS_APOE
 summary(test.data$UKBDRS_APOE_LASSO_cox_linear_predictor)  
 # Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-#  -2.438  -0.193   0.752   0.737   1.659   5.483   12762 
+#  -2.283  -0.189   0.770   0.748   1.662   5.679   12905 
 
-test.data$UKBDRS_APOE_LASSO_cox_predicted_prob <- 1 - 0.9941616^exp(test.data$UKBDRS_APOE_LASSO_cox_linear_predictor)  
+test.data$UKBDRS_APOE_LASSO_cox_predicted_prob <- 1 - 0.9941051^exp(test.data$UKBDRS_APOE_LASSO_cox_linear_predictor)  
 summary(test.data$UKBDRS_APOE_LASSO_cox_predicted_prob)
-# Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's
-#    0.00    0.00    0.01    0.02    0.03    0.71   50910
+# Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+#   0.001   0.005   0.013   0.026   0.031   0.823   12905
 
 
 
@@ -343,10 +344,10 @@ test.data$age_only_cox_linear_predictor <- 0.194889*(test.data$Age_when_attended
 test.data$age_only_cox_predicted_prob <- 1 - 0.9846693^exp(test.data$age_only_cox_linear_predictor)  
 summary(train.data$age_only_cox_predicted_prob)
 # Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-# 0.001830 0.005826 0.012582 0.020094 0.027061 0.144666 
+# 0.002211 0.007103 0.015423 0.024713 0.033324 0.148831 
 summary(test.data$age_only_cox_predicted_prob)
 # Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-# 0.001830 0.005826 0.012582 0.020168 0.027061 0.100717 
+# 0.002211 0.007103 0.015423 0.024893 0.033324 0.177838 
 
 #save train and test, containing lps and predicted probs, for future auc tests
 save(train.data, file=paste0(data_pathway,"11_train_data_outliers_removed_cox_fitted.rda"))
