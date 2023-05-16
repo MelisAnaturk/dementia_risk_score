@@ -15,8 +15,8 @@ library(dplyr)
 library(tidyr)
 
 
-load(file="../../raw_data/12_train_data_outliers_removed_cox_crr_fitted.rda")
-load(file="../../raw_data/12_test_data_outliers_removed_cox_crr_fitted.rda")
+load(file="../../raw_data/modelvar/12_train_data_outliers_removed_cox_crr_fitted.rda")
+load(file="../../raw_data/modelvar/12_test_data_outliers_removed_cox_crr_fitted.rda")
 set.seed(9)
 
 
@@ -74,16 +74,16 @@ auc_train<-Score(list('UKBDRS'=train.data$UKBDRS_LASSO_crr_predicted_prob,
            contrasts = list(c(1,2,3,4)))
 auc_train$AUC$score
 # model   times       AUC           se     lower     upper
-# 1: ukbdrs 5186.55 0.7878599 0.0003003121 0.7872713 0.7884485
-# 2:    drs 5186.55 0.7606576 0.0002831628 0.7601027 0.7612126
-# 3:    age 5186.55 0.7599956 0.0002882494 0.7594306 0.7605605
-# 4:  caide 5186.55 0.6178982 0.0003268553 0.6172576 0.6185388
+# 1:   UKBDRS 5186.55 0.7882975 0.0003002754 0.7877090 0.7888860
+# 2:      DRS 5186.55 0.7606576 0.0002831628 0.7601027 0.7612126
+# 3: Age_only 5186.55 0.7599956 0.0002882494 0.7594306 0.7605605
+# 4:    CAIDE 5186.55 0.6178982 0.0003268553 0.6172576 0.6185388
 
 auc_train$AUC$contrasts
-# times model reference   delta.AUC           se       lower       upper p
-# 1: 5186.55   drs    ukbdrs -0.02720225 0.0001339829 -0.02746486 -0.02693965 0
-# 2: 5186.55   age    ukbdrs -0.02786432 0.0001130753 -0.02808595 -0.02764270 0
-# 3: 5186.55 caide    ukbdrs -0.16996169 0.0003427209 -0.17063341 -0.16928996 0
+# times    model reference   delta.AUC           se       lower       upper p
+# 1: 5186.55      DRS    UKBDRS -0.02763986 0.0001346244 -0.02790371 -0.02737600 0
+# 2: 5186.55 Age_only    UKBDRS -0.02830192 0.0001131428 -0.02852368 -0.02808017 0
+# 3: 5186.55    CAIDE    UKBDRS -0.17039929 0.0003427837 -0.17107113 -0.16972744 0
 
 df_auc <- as.data.frame(auc_train$AUC$score)[,c("model","AUC","lower","upper")]
 
@@ -117,6 +117,22 @@ df_train_auc_compare$p_fdr <- p.adjust(df_train_auc_compare$p, method="BH")
 write.csv(df_train_auc_compare, file="../results/auc_compare_training.csv")
 
 
+#apoe
+train.apoe <- train.data[which(!is.na(train.data$UKBDRS_APOE_LASSO_crr_predicted_prob)),]
+auc_train_apoe<-Score(list('ukbdrs_anu'=train.apoe$UKBDRS_APOE_LASSO_crr_predicted_prob),
+                     formula=Hist(time_at_risk,crr_status)~1,
+                     data = train.apoe,
+                     null.model = FALSE,
+                     conf.int = TRUE,
+                     times = c(365.25*14.2),
+                     plots="ROC",
+                     metrics="AUC",
+                     cens.model = "cox",
+                     conservative=FALSE,
+                     censoring.save.memory=FALSE)
+auc_train_apoe$AUC$score
+# model   times      AUC           se    lower   upper
+# 1: ukbdrs_anu 5186.55 0.809974 0.0006714488 0.808658 0.81129
 
 #### test data ####
 auc_test<-Score(list('UKBDRS'=test.data$UKBDRS_LASSO_crr_predicted_prob,
@@ -136,10 +152,10 @@ auc_test<-Score(list('UKBDRS'=test.data$UKBDRS_LASSO_crr_predicted_prob,
                  contrasts = list(c(1,2,3,4)))
 auc_test$AUC$score
 auc_test$AUC$contrasts
-# times model reference   delta.AUC           se       lower       upper p
-# 1: 5186.55   drs    ukbdrs -0.02720225 0.0001339829 -0.02746486 -0.02693965 0
-# 2: 5186.55   age    ukbdrs -0.02786432 0.0001130753 -0.02808595 -0.02764270 0
-# 3: 5186.55 caide    ukbdrs -0.16996169 0.0003427209 -0.17063341 -0.16928996 0
+# times    model reference   delta.AUC          se       lower       upper            p
+# 1: 5186.55      DRS    UKBDRS -0.03284531 0.007014542 -0.04659356 -0.01909706 2.834532e-06
+# 2: 5186.55 Age_only    UKBDRS -0.02616932 0.006792730 -0.03948283 -0.01285582 1.168948e-04
+# 3: 5186.55    CAIDE    UKBDRS -0.20265112 0.015521148 -0.23307201 -0.17223023 5.838651e-39
 
 df_auc <- as.data.frame(auc_test$AUC$score)[,c("model","AUC","lower","upper")]
 
@@ -185,3 +201,20 @@ png(file="../results/roc_plotted_all.png",
 plotROC(plot_auc_obj, models = c("UKBDRS","DRS","Age_only","CAIDE","ANUADRI"),auc.in.legend = FALSE)
 dev.off()
 
+
+
+test.apoe <- test.data[which(!is.na(test.data$UKBDRS_APOE_LASSO_crr_predicted_prob)),]
+auc_test_apoe<-Score(list('ukbdrs_anu'=test.apoe$UKBDRS_APOE_LASSO_crr_predicted_prob),
+                      formula=Hist(time_at_risk,crr_status)~1,
+                      data = test.apoe,
+                      null.model = FALSE,
+                      conf.int = TRUE,
+                      times = c(365.25*14.2),
+                      plots="ROC",
+                      metrics="AUC",
+                      cens.model = "cox",
+                      conservative=FALSE,
+                      censoring.save.memory=FALSE)
+auc_test_apoe$AUC$score
+# model   times       AUC        se     lower    upper
+# 1: ukbdrs_anu 5186.55 0.8231412 0.0169931 0.7898353 0.856447
