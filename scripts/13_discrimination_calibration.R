@@ -65,7 +65,7 @@ auc_train<-Score(list('UKBDRS'=train.data$UKBDRS_LASSO_crr_predicted_prob,
            data = train.data,
            null.model = FALSE,
            conf.int = TRUE,
-           times = c(365.25*14.2),
+           times = c(365.25*14),
            plots="ROC",
            metrics="AUC",
            cens.model = "cox",
@@ -73,17 +73,17 @@ auc_train<-Score(list('UKBDRS'=train.data$UKBDRS_LASSO_crr_predicted_prob,
            censoring.save.memory=FALSE,
            contrasts = list(c(1,2,3,4)))
 auc_train$AUC$score
-# model   times       AUC           se     lower     upper
-# 1:   UKBDRS 5186.55 0.7882975 0.0003002754 0.7877090 0.7888860
-# 2:      DRS 5186.55 0.7606576 0.0002831628 0.7601027 0.7612126
-# 3: Age_only 5186.55 0.7599956 0.0002882494 0.7594306 0.7605605
-# 4:    CAIDE 5186.55 0.6178982 0.0003268553 0.6172576 0.6185388
+# model  times       AUC           se     lower     upper
+# 1:   UKBDRS 5113.5 0.7853066 0.0002246764 0.7848663 0.7857470
+# 2:      DRS 5113.5 0.7595194 0.0002254273 0.7590775 0.7599612
+# 3: Age_only 5113.5 0.7539931 0.0002227548 0.7535565 0.7544297
+# 4:    CAIDE 5113.5 0.5998509 0.0002563156 0.5993485 0.6003532
 
 auc_train$AUC$contrasts
 # times    model reference   delta.AUC           se       lower       upper p
-# 1: 5186.55      DRS    UKBDRS -0.02763986 0.0001346244 -0.02790371 -0.02737600 0
-# 2: 5186.55 Age_only    UKBDRS -0.02830192 0.0001131428 -0.02852368 -0.02808017 0
-# 3: 5186.55    CAIDE    UKBDRS -0.17039929 0.0003427837 -0.17107113 -0.16972744 0
+# 1: 5113.5      DRS    UKBDRS -0.02578724 1.114554e-04 -0.02600569 -0.02556879 0
+# 2: 5113.5 Age_only    UKBDRS -0.03131353 9.962497e-05 -0.03150879 -0.03111827 0
+# 3: 5113.5    CAIDE    UKBDRS -0.18545574 2.862850e-04 -0.18601685 -0.18489463 0
 
 df_auc <- as.data.frame(auc_train$AUC$score)[,c("model","AUC","lower","upper")]
 
@@ -124,15 +124,15 @@ auc_train_apoe<-Score(list('ukbdrs_anu'=train.apoe$UKBDRS_APOE_LASSO_crr_predict
                      data = train.apoe,
                      null.model = FALSE,
                      conf.int = TRUE,
-                     times = c(365.25*14.2),
+                     times = c(365.25*14),
                      plots="ROC",
                      metrics="AUC",
                      cens.model = "cox",
                      conservative=FALSE,
                      censoring.save.memory=FALSE)
 auc_train_apoe$AUC$score
-# model   times      AUC           se    lower   upper
-# 1: ukbdrs_anu 5186.55 0.809974 0.0006714488 0.808658 0.81129
+# model  times       AUC           se     lower     upper
+# 1: ukbdrs_anu 5113.5 0.8115939 0.0005506572 0.8105146 0.8126731
 
 #### test data ####
 auc_test<-Score(list('UKBDRS'=test.data$UKBDRS_LASSO_crr_predicted_prob,
@@ -143,7 +143,7 @@ auc_test<-Score(list('UKBDRS'=test.data$UKBDRS_LASSO_crr_predicted_prob,
                  data = test.data,
                  null.model = FALSE,
                  conf.int = TRUE,
-                 times = c(365.25*14.2),
+                 times = c(365.25*14),
                  plots="ROC",
                  metrics="AUC",
                  cens.model = "cox",
@@ -153,9 +153,9 @@ auc_test<-Score(list('UKBDRS'=test.data$UKBDRS_LASSO_crr_predicted_prob,
 auc_test$AUC$score
 auc_test$AUC$contrasts
 # times    model reference   delta.AUC          se       lower       upper            p
-# 1: 5186.55      DRS    UKBDRS -0.03284531 0.007014542 -0.04659356 -0.01909706 2.834532e-06
-# 2: 5186.55 Age_only    UKBDRS -0.02616932 0.006792730 -0.03948283 -0.01285582 1.168948e-04
-# 3: 5186.55    CAIDE    UKBDRS -0.20265112 0.015521148 -0.23307201 -0.17223023 5.838651e-39
+# 1: 5113.5      DRS    UKBDRS -0.02717938 0.005432618 -0.03782711 -0.01653164 5.644562e-07
+# 2: 5113.5 Age_only    UKBDRS -0.02772356 0.006262003 -0.03999686 -0.01545026 9.543466e-06
+# 3: 5113.5    CAIDE    UKBDRS -0.20020435 0.014674655 -0.22896614 -0.17144255 2.226380e-42
 
 df_auc <- as.data.frame(auc_test$AUC$score)[,c("model","AUC","lower","upper")]
 
@@ -167,7 +167,7 @@ auc_test_anu<-Score(list('ukbdrs_anu'=anu_test$UKBDRS_LASSO_crr_predicted_prob,
                      data = anu_test,
                      null.model = FALSE,
                      conf.int = TRUE,
-                     times = c(365.25*14.2),
+                     times = c(365.25*14),
                      plots="ROC",
                      metrics="AUC",
                      cens.model = "cox",
@@ -209,12 +209,12 @@ auc_test_apoe<-Score(list('ukbdrs_anu'=test.apoe$UKBDRS_APOE_LASSO_crr_predicted
                       data = test.apoe,
                       null.model = FALSE,
                       conf.int = TRUE,
-                      times = c(365.25*14.2),
+                      times = c(365.25*14),
                       plots="ROC",
                       metrics="AUC",
                       cens.model = "cox",
                       conservative=FALSE,
                       censoring.save.memory=FALSE)
 auc_test_apoe$AUC$score
-# model   times       AUC        se     lower    upper
-# 1: ukbdrs_anu 5186.55 0.8231412 0.0169931 0.7898353 0.856447
+# model  times       AUC          se     lower     upper
+# 1: ukbdrs_anu 5113.5 0.8260386 0.009626646 0.8071707 0.8449065

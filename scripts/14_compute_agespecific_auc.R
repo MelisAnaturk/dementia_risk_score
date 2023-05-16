@@ -67,56 +67,49 @@ rm(train.data, test.data)
 #compute the auc of CAIDE and UKB-DRS in age specific subset of train and test data
 #age range for CAIDE is 39-64
 
-models <- c("age_only", "UKBDRS_LASSO", "CAIDE")
-
 #subset data into caide age range
 caide_data <- subset(df_test, Age_at_recruitment_0_0<65)
+summary(as.factor(caide_data$dataset))
+# test  train 
+# 33476 133965 
 
-data <- subset(caide_data, dataset=="train") #n=133965
+data <- subset(caide_data, dataset=="train") 
 auc_test<-Score(list('UKBDRS'=data$UKBDRS_LASSO_crr_predicted_prob,
-                     'DRS'=data$DRS_predicted_prob,
-                     'Age_only'=data$age_only_crr_predicted_prob,
                      'CAIDE'=data$CAIDE_predicted_prob),
                 formula=Hist(time_at_risk,crr_status)~1,
                 data = data,
                 null.model = FALSE,
                 conf.int = TRUE,
-                times = c(365.25*14.2),
+                times = c(365.25*14),
                 plots="ROC",
                 metrics="AUC",
                 cens.model = "cox",
                 conservative=FALSE,
                 censoring.save.memory=FALSE,
-                contrasts = list(c(1,2,3,4)))
+                contrasts = list(c(1,2)))
 auc_test$AUC$score
-# model   times       AUC           se     lower     upper
-# 1:   UKBDRS 5186.55 0.7641147 0.0004465031 0.7632396 0.7649898
-# 2:      DRS 5186.55 0.7214535 0.0004520721 0.7205674 0.7223395
-# 3: Age_only 5186.55 0.7219440 0.0004285201 0.7211041 0.7227839
-# 4:    CAIDE 5186.55 0.6279616 0.0005195334 0.6269433 0.6289799
+# model  times       AUC           se     lower     upper
+# 1: UKBDRS 5113.5 0.7659735 0.0003962542 0.7651969 0.7667502
+# 2:  CAIDE 5113.5 0.6084587 0.0004486838 0.6075793 0.6093381
 
-data <- subset(caide_data, dataset=="test") #n=33476
+data <- subset(caide_data, dataset=="test") 
 auc_test<-Score(list('UKBDRS'=data$UKBDRS_LASSO_crr_predicted_prob,
-                     'DRS'=data$DRS_predicted_prob,
-                     'Age_only'=data$age_only_crr_predicted_prob,
                      'CAIDE'=data$CAIDE_predicted_prob),
                 formula=Hist(time_at_risk,crr_status)~1,
                 data = data,
                 null.model = FALSE,
                 conf.int = TRUE,
-                times = c(365.25*14.2),
+                times = c(365.25*14),
                 plots="ROC",
                 metrics="AUC",
                 cens.model = "cox",
                 conservative=FALSE,
                 censoring.save.memory=FALSE,
-                contrasts = list(c(1,2,3,4)))
+                contrasts = list(c(1,2)))
 auc_test$AUC$score
-# model   times       AUC         se     lower     upper
-# 1:   UKBDRS 5186.55 0.7704222 0.01578605 0.7394821 0.8013623
-# 2:      DRS 5186.55 0.7142099 0.02194836 0.6711919 0.7572279
-# 3: Age_only 5186.55 0.7182549 0.01987973 0.6792913 0.7572184
-# 4:    CAIDE 5186.55 0.5965240 0.02737856 0.5428630 0.6501850
+# model  times       AUC         se     lower     upper
+# 1: UKBDRS 5113.5 0.7726198 0.01539741 0.7424415 0.8027982
+# 2:  CAIDE 5113.5 0.6233200 0.01876640 0.5865385 0.6601014
 
 rm(caide_data)
 
@@ -133,49 +126,41 @@ summary(as.factor(drs_data$dataset))
 
 data <- subset(drs_data, dataset=="train") 
 auc_test<-Score(list('UKBDRS'=data$UKBDRS_LASSO_crr_predicted_prob,
-                     'DRS'=data$DRS_predicted_prob,
-                     'Age_only'=data$age_only_crr_predicted_prob,
-                     'CAIDE'=data$CAIDE_predicted_prob),
+                     'DRS'=data$DRS_predicted_prob),
                 formula=Hist(time_at_risk,crr_status)~1,
                 data = data,
                 null.model = FALSE,
                 conf.int = TRUE,
-                times = c(365.25*14.2),
+                times = c(365.25*14),
                 plots="ROC",
                 metrics="AUC",
                 cens.model = "cox",
                 conservative=FALSE,
                 censoring.save.memory=FALSE,
-                contrasts = list(c(1,2,3,4)))
+                contrasts = list(c(1,2)))
 auc_test$AUC$score
-# model   times       AUC          se     lower     upper
-# 1:   UKBDRS 5186.55 0.6953488 0.001084213 0.6932238 0.6974738
-# 2:      DRS 5186.55 0.6478113 0.001106159 0.6456433 0.6499793
-# 3: Age_only 5186.55 0.6469872 0.001102189 0.6448270 0.6491475
-# 4:    CAIDE 5186.55 0.5547889 0.001143404 0.5525479 0.5570299
+# model  times       AUC           se     lower     upper
+# 1: UKBDRS 5113.5 0.6934775 0.0008575114 0.6917968 0.6951582
+# 2:    DRS 5113.5 0.6520244 0.0008892761 0.6502814 0.6537673
 
-data <- subset(drs_data, dataset=="test") #n=33476
+data <- subset(drs_data, dataset=="test") 
 auc_test<-Score(list('UKBDRS'=data$UKBDRS_LASSO_crr_predicted_prob,
-                     'DRS'=data$DRS_predicted_prob,
-                     'Age_only'=data$age_only_crr_predicted_prob,
-                     'CAIDE'=data$CAIDE_predicted_prob),
+                     'DRS'=data$DRS_predicted_prob),
                 formula=Hist(time_at_risk,crr_status)~1,
                 data = data,
                 null.model = FALSE,
                 conf.int = TRUE,
-                times = c(365.25*14.2),
+                times = c(365.25*14),
                 plots="ROC",
                 metrics="AUC",
                 cens.model = "cox",
                 conservative=FALSE,
                 censoring.save.memory=FALSE,
-                contrasts = list(c(1,2,3,4)))
+                contrasts = list(c(1,2)))
 auc_test$AUC$score
-# model   times       AUC         se     lower     upper
-# 1:   UKBDRS 5186.55 0.7098931 0.01670061 0.6771605 0.7426257
-# 2:      DRS 5186.55 0.6590201 0.01743919 0.6248399 0.6932003
-# 3: Age_only 5186.55 0.6767813 0.01619058 0.6450483 0.7085142
-# 4:    CAIDE 5186.55 0.5466845 0.01726683 0.5128421 0.5805269
+# model  times       AUC         se     lower     upper
+# 1: UKBDRS 5113.5 0.7132067 0.01262436 0.6884634 0.7379500
+# 2:    DRS 5113.5 0.6673618 0.01409002 0.6397459 0.6949778
 
 rm(drs_data)
 gc()
@@ -200,16 +185,16 @@ auc_test<-Score(list('UKBDRS'=data$UKBDRS_LASSO_crr_predicted_prob,
                 data = data,
                 null.model = FALSE,
                 conf.int = TRUE,
-                times = c(365.25*14.2),
+                times = c(365.25*14),
                 plots="ROC",
                 metrics="AUC",
                 cens.model = "cox",
                 conservative=FALSE,
                 censoring.save.memory=FALSE)
 auc_test$AUC$score
-# model   times       AUC           se     lower     upper
-# 1: UKBDRS 5186.55 0.7585621 0.0002230804 0.7581248 0.7589993
-# 2:    anu 5186.55 0.5666151 0.0002570924 0.5661112 0.5671190
+# model  times      AUC           se     lower     upper
+# 1: UKBDRS 5113.5 0.758261 0.0001405946 0.7579855 0.7585366
+# 2:    anu 5113.5 0.562036 0.0001555521 0.5617312 0.5623409
 
 data <- subset(anu_data, dataset=="test") 
 auc_test<-Score(list('UKBDRS'=data$UKBDRS_LASSO_crr_predicted_prob,
@@ -218,16 +203,16 @@ auc_test<-Score(list('UKBDRS'=data$UKBDRS_LASSO_crr_predicted_prob,
                 data = data,
                 null.model = FALSE,
                 conf.int = TRUE,
-                times = c(365.25*14.2),
+                times = c(365.25*14),
                 plots="ROC",
                 metrics="AUC",
                 cens.model = "cox",
                 conservative=FALSE,
                 censoring.save.memory=FALSE)
 auc_test$AUC$score
-# model   times       AUC         se     lower     upper
-# 1: UKBDRS 5186.55 0.7685242 0.01383943 0.7413994 0.7956490
-# 2:    anu 5186.55 0.5516272 0.01759415 0.5171433 0.5861111
+# model  times       AUC          se     lower     upper
+# 1: UKBDRS 5113.5 0.7711868 0.009912036 0.7517596 0.7906140
+# 2:    anu 5113.5 0.5683208 0.013890332 0.5410962 0.5955453
 
 
 rm(anu_data)
@@ -237,10 +222,10 @@ rm(anu_data)
 #### ANU ADRI (CVHS) ####
 
 #subset data into age range
-anu_data <- subset(df_test, Age_at_recruitment_0_0>=62 & !is.na(df_test$ANU_ADRI))
+anu_data <- subset(df_test, Age_at_recruitment_0_0>=60 & !is.na(df_test$ANU_ADRI))
 summary(as.factor(anu_data$dataset))
 # test train 
-# 18948 75401 
+# 24794 98697 
 
 data <- subset(anu_data, dataset=="train") 
 auc_test<-Score(list('UKBDRS'=data$UKBDRS_LASSO_crr_predicted_prob,
@@ -249,16 +234,16 @@ auc_test<-Score(list('UKBDRS'=data$UKBDRS_LASSO_crr_predicted_prob,
                 data = data,
                 null.model = FALSE,
                 conf.int = TRUE,
-                times = c(365.25*14.2),
+                times = c(365.25*14),
                 plots="ROC",
                 metrics="AUC",
                 cens.model = "cox",
                 conservative=FALSE,
                 censoring.save.memory=FALSE)
 auc_test$AUC$score
-# model   times       AUC          se     lower     upper
-# 1: UKBDRS 5186.55 0.6660904 0.002588970 0.6610161 0.6711647
-# 2:    anu 5186.55 0.5783159 0.002390164 0.5736313 0.5830005
+# model  times       AUC           se     lower     upper
+# 1: UKBDRS 5113.5 0.6934775 0.0008575114 0.6917968 0.6951582
+# 2:    anu 5113.5 0.5817251 0.0008861294 0.5799883 0.5834619
 
 data <- subset(anu_data, dataset=="test") 
 auc_test<-Score(list('UKBDRS'=data$UKBDRS_LASSO_crr_predicted_prob,
@@ -267,16 +252,16 @@ auc_test<-Score(list('UKBDRS'=data$UKBDRS_LASSO_crr_predicted_prob,
                 data = data,
                 null.model = FALSE,
                 conf.int = TRUE,
-                times = c(365.25*14.2),
+                times = c(365.25*14),
                 plots="ROC",
                 metrics="AUC",
                 cens.model = "cox",
                 conservative=FALSE,
                 censoring.save.memory=FALSE)
 auc_test$AUC$score
-# model   times       AUC         se     lower     upper
-# 1: UKBDRS 5186.55 0.6707152 0.02120909 0.6291461 0.7122842
-# 2:    anu 5186.55 0.5704525 0.02124239 0.5288182 0.6120868
+# model  times       AUC         se     lower     upper
+# 1: UKBDRS 5113.5 0.6846833 0.01441278 0.6564348 0.7129319
+# 2:    anu 5113.5 0.5817918 0.01677286 0.5489176 0.6146660
 
 
 rm(anu_data)
