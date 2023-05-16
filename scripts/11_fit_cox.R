@@ -42,6 +42,10 @@ UKBDRS_LASSO  <-  paste("Surv(time_at_risk, dementia_BIN_surv) ~  Age_when_atten
 
 ukbdrs.cox <- coxph(as.formula(UKBDRS_LASSO), data = train.data)
 summary(ukbdrs.cox)
+
+#only most deprived sig
+#only living alone sig
+
 # coxph(formula = as.formula(UKBDRS_LASSO), data = train.data)
 # 
 # n= 176611, number of events= 3051 
