@@ -88,6 +88,24 @@ auc_test$AUC$score
 # 4:    CAIDE 1826.25 0.5592098 0.02640792 0.5074513 0.6109684
 
 
+#anu
+anu_test <- test.data[which(!is.na(test.data$ANU_ADRI)),]
+auc_test<-Score(list('ANU'=anu_test$ANU_ADRI),
+                formula=Hist(time_at_risk,crr_status)~1,
+                data = anu_test,
+                null.model = FALSE,
+                conf.int = TRUE,
+                times = c(365.25*5),
+                plots="ROC",
+                metrics="AUC",
+                cens.model = "cox",
+                conservative=FALSE,
+                censoring.save.memory=FALSE)
+auc_test$AUC$score
+# model   times       AUC         se     lower     upper
+# 1:   ANU 1826.25 0.5355414 0.02792355 0.4808123 0.5902706
+
+
 #mid
 nrow(test.data[which( (test.data$dementia_BIN_TOTAL==1) & (test.data$time_at_risk<=(362.25*10))   ),])
 #441
@@ -113,4 +131,20 @@ auc_test$AUC$score
 # 3: Age_only 3652.5 0.7327285 0.01096800 0.7112316 0.7542254
 # 4:    CAIDE 3652.5 0.5792560 0.01251398 0.5547290 0.6037829
 
+
+#anu
+auc_test<-Score(list('ANU'=anu_test$ANU_ADRI),
+                formula=Hist(time_at_risk,crr_status)~1,
+                data = anu_test,
+                null.model = FALSE,
+                conf.int = TRUE,
+                times = c(365.25*10),
+                plots="ROC",
+                metrics="AUC",
+                cens.model = "cox",
+                conservative=FALSE,
+                censoring.save.memory=FALSE)
+auc_test$AUC$score
+# model  times       AUC         se     lower     upper
+# 1:   ANU 3652.5 0.5776875 0.01318589 0.5518436 0.6035314
 
