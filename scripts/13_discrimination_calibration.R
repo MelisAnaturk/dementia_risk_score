@@ -237,6 +237,11 @@ calib_test<-Score(list('UKBDRS'=test.data$UKBDRS_LASSO_crr_predicted_prob),
 plotCalibration(calib_test,cens.method = "local", method = "quantile", q=10,xlim = (c(0,0.15)), ylim=c(0,0.15))
 #line matches diagonal
 
+png(file="../results/ukbdrs_calib.png",
+    height = 800, width = 800, res=120)
+plotCalibration(calib_test,cens.method = "local", method = "quantile", q=10,xlim = (c(0,0.15)), ylim=c(0,0.15))
+dev.off()
+
 #plotCalibration can return plottable object
 #get the points plotted, model an int and lope
 x<-plotCalibration(calib_test,cens.method = "local", method = "quantile", q=10,xlim = (c(0,0.5)), ylim=c(0,0.5), plot=FALSE)
@@ -244,13 +249,13 @@ x<-plotCalibration(calib_test,cens.method = "local", method = "quantile", q=10,x
 mod <- lm(x$plotFrames$UKBDRS$Obs ~ x$plotFrames$UKBDRS$Pred)
 summary(mod)
 # Estimate Std. Error t value Pr(>|t|)    
-# (Intercept)              -0.000932   0.001298  -0.718    0.493      #intercept
-# x$plotFrames$UKBDRS$Pred  0.966367   0.038600  25.035 6.93e-09 ***  #slope
+# (Intercept)              -0.0008998  0.0013042   -0.69     0.51    
+# x$plotFrames$UKBDRS$Pred  1.0250295  0.0411657   24.90 7.24e-09 ***
 
 confint(mod)
-# 2.5 %     97.5 %
-#   (Intercept)              -0.003925378 0.00206128
-# x$plotFrames$UKBDRS$Pred  0.877355155 1.05537918
+# 2.5 %      97.5 %
+#   (Intercept)              -0.003907166 0.002107643
+# x$plotFrames$UKBDRS$Pred  0.930101201 1.119957834
 
 #now do apoe
 calib_test_apoe<-Score(list('UKBDRS'=test.apoe$UKBDRS_APOE_LASSO_crr_predicted_prob),
@@ -264,15 +269,26 @@ calib_test_apoe<-Score(list('UKBDRS'=test.apoe$UKBDRS_APOE_LASSO_crr_predicted_p
                   cens.model = "cox",
                   conservative=FALSE,
                   censoring.save.memory=FALSE,)
-plotCalibration(calib_test_apoe,cens.method = "jackknife", method = "quantile", q=10,xlim = (c(0,0.5)), ylim=c(0,0.5))
+plotCalibration(calib_test_apoe,cens.method = "local", method = "quantile", q=10,xlim = (c(0,0.15)), ylim=c(0,0.15))
 #line matches diagonal
+
+png(file="../results/ukbdrs.apoe_calib.png",
+    height = 800, width = 800, res=120)
+plotCalibration(calib_test_apoe,cens.method = "local", method = "quantile", q=10,xlim = (c(0,0.15)), ylim=c(0,0.15))
+dev.off()
+
 
 #plotCalibration can return plottable object
 #get the points plotted, model an int and lope
-x<-plotCalibration(calib_test_apoe,cens.method = "jackknife", method = "quantile", q=10,xlim = (c(0,0.5)), ylim=c(0,0.5), plot=FALSE)
+x<-plotCalibration(calib_test_apoe,cens.method = "local", method = "quantile", q=10,xlim = (c(0,0.5)), ylim=c(0,0.5), plot=FALSE)
 
 mod <- lm(x$plotFrames$UKBDRS$Obs ~ x$plotFrames$UKBDRS$Pred)
 summary(mod)
 # Estimate Std. Error t value Pr(>|t|)    
-# (Intercept)              0.001276   0.001865   0.684    0.513    
-# x$plotFrames$UKBDRS$Pred 0.926982   0.048621  19.065 5.93e-08 ***
+# (Intercept)              0.001312   0.001876   0.699    0.504    
+# x$plotFrames$UKBDRS$Pred 0.968970   0.051149  18.944 6.24e-08 ***
+
+confint(mod)
+# 2.5 %      97.5 %
+#   (Intercept)              -0.00301432 0.005637377
+# x$plotFrames$UKBDRS$Pred  0.85101978 1.086920921
