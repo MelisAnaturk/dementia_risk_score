@@ -88,14 +88,14 @@ auc_train$AUC$contrasts
 df_auc <- as.data.frame(auc_train$AUC$score)[,c("model","AUC","lower","upper")]
 
 #anu subset
-anu_train <- train.data[which(!is.na(train.data$ANU_ADRI)),]
+anu_train <- train.data[which(!is.na(train.data$ANU_ADRI)),] #n=174982
 auc_train_anu<-Score(list('ukbdrs_anu'=anu_train$UKBDRS_LASSO_crr_predicted_prob,
                       'ANUADRI'=anu_train$ANU_ADRI),
                  formula=Hist(time_at_risk,crr_status)~1,
                  data = anu_train,
                  null.model = FALSE,
                  conf.int = TRUE,
-                 times = c(365.25*14.2),
+                 times = c(365.25*14),
                  plots="ROC",
                  metrics="AUC",
                  cens.model = "cox",
@@ -218,3 +218,61 @@ auc_test_apoe<-Score(list('ukbdrs_anu'=test.apoe$UKBDRS_APOE_LASSO_crr_predicted
 auc_test_apoe$AUC$score
 # model  times       AUC          se     lower     upper
 # 1: ukbdrs_anu 5113.5 0.8260386 0.009626646 0.8071707 0.8449065
+
+
+
+#### calibration ####
+#use Score and plotCalibration
+calib_test<-Score(list('UKBDRS'=test.data$UKBDRS_LASSO_crr_predicted_prob),
+                formula=Hist(time_at_risk,crr_status)~1,
+                data = test.data,
+                null.model = FALSE,
+                conf.int = TRUE,
+                times = c(365.25*14),
+                plots="calibration",
+                metrics="brier",
+                cens.model = "cox",
+                conservative=FALSE,
+                censoring.save.memory=FALSE,)
+plotCalibration(calib_test,cens.method = "local", method = "quantile", q=10,xlim = (c(0,0.15)), ylim=c(0,0.15))
+#line matches diagonal
+
+#plotCalibration can return plottable object
+#get the points plotted, model an int and lope
+x<-plotCalibration(calib_test,cens.method = "local", method = "quantile", q=10,xlim = (c(0,0.5)), ylim=c(0,0.5), plot=FALSE)
+
+mod <- lm(x$plotFrames$UKBDRS$Obs ~ x$plotFrames$UKBDRS$Pred)
+summary(mod)
+# Estimate Std. Error t value Pr(>|t|)    
+# (Intercept)              -0.000932   0.001298  -0.718    0.493      #intercept
+# x$plotFrames$UKBDRS$Pred  0.966367   0.038600  25.035 6.93e-09 ***  #slope
+
+confint(mod)
+# 2.5 %     97.5 %
+#   (Intercept)              -0.003925378 0.00206128
+# x$plotFrames$UKBDRS$Pred  0.877355155 1.05537918
+
+#now do apoe
+calib_test_apoe<-Score(list('UKBDRS'=test.apoe$UKBDRS_APOE_LASSO_crr_predicted_prob),
+                  formula=Hist(time_at_risk,crr_status)~1,
+                  data = test.apoe,
+                  null.model = FALSE,
+                  conf.int = TRUE,
+                  times = c(365.25*14),
+                  plots="calibration",
+                  metrics="brier",
+                  cens.model = "cox",
+                  conservative=FALSE,
+                  censoring.save.memory=FALSE,)
+plotCalibration(calib_test_apoe,cens.method = "jackknife", method = "quantile", q=10,xlim = (c(0,0.5)), ylim=c(0,0.5))
+#line matches diagonal
+
+#plotCalibration can return plottable object
+#get the points plotted, model an int and lope
+x<-plotCalibration(calib_test_apoe,cens.method = "jackknife", method = "quantile", q=10,xlim = (c(0,0.5)), ylim=c(0,0.5), plot=FALSE)
+
+mod <- lm(x$plotFrames$UKBDRS$Obs ~ x$plotFrames$UKBDRS$Pred)
+summary(mod)
+# Estimate Std. Error t value Pr(>|t|)    
+# (Intercept)              0.001276   0.001865   0.684    0.513    
+# x$plotFrames$UKBDRS$Pred 0.926982   0.048621  19.065 5.93e-08 ***
