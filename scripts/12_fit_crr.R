@@ -103,6 +103,34 @@ df_ukbdrs_coefficients <- as.data.frame(ukbdrs_coefs) #5 columns
 write.csv(df_ukbdrs_coefficients, paste0(save_pathway,"crr_ukbdrs_coefficients.csv"))
 
 
+#get baseline cif
+modelvars <- c("Age_when_attended_assesment_centre_0_0","family_history_of_dementia","education_years","Diabetes_BIN_FINAL_0_0",
+               "Townsend_deprivation_modelvar","current_history_depression","stroke_TIA_BIN_FINAL","hypertensive","cholesterol",
+               "livesalone","Sex")
+
+df_base <- train.data[1,modelvars]
+df_base$Age_when_attended_assesment_centre_0_0=mean(train.data$Age_when_attended_assesment_centre_0_0)
+df_base$family_history_of_dementia <-0
+df_base$Diabetes_BIN_FINAL_0_0<-0
+df_base$current_history_depression<-0
+df_base$stroke_TIA_BIN_FINAL<-0
+df_base$hypertensive<-0
+df_base$cholesterol<-0
+df_base$Townsend_deprivation_modelvar<-0
+df_base$education_years<-mean(train.data$education_years)
+df_base$Sex<-0
+df_base$livesalone<-0
+
+cif_baseline <- predict(ukbdrs.cr.train, df_base)
+#what time do we want?
+cif_baseline[2000:2060,1] #2053 is 13.99 years
+cif_baseline[2053,]
+#5.117000e+03 8.3804896e-03
+#baseline cif for 14 years is 0.008304896
+baseline_surv <- 1 - cif_baseline[2053,2]
+baseline_surv #0.9916195
+
+
 
 #### UKBDRS_APOE_LASSO ####
 UKBDRS_APOE_LASSO  <-  paste("Surv(time_at_risk, dementia_BIN_surv) ~  Age_when_attended_assesment_centre_0_0 +  family_history_of_dementia +
@@ -169,6 +197,35 @@ write.csv(df_table1_ukbdrs, paste0(save_pathway,"crr_coefficients_formatted.csv"
 rm(apoe.train.data)
 
 
+#get baseline cif
+modelvars <- c("Age_when_attended_assesment_centre_0_0","family_history_of_dementia","education_years","Diabetes_BIN_FINAL_0_0",
+               "Townsend_deprivation_modelvar","current_history_depression","stroke_TIA_BIN_FINAL","hypertensive","cholesterol",
+               "livesalone","Sex", "APOE_genotype_bin")
+
+df_base <- apoe.train.data[1,modelvars]
+df_base$Age_when_attended_assesment_centre_0_0=mean(train.data$Age_when_attended_assesment_centre_0_0)
+df_base$family_history_of_dementia <-0
+df_base$Diabetes_BIN_FINAL_0_0<-0
+df_base$current_history_depression<-0
+df_base$stroke_TIA_BIN_FINAL<-0
+df_base$hypertensive<-0
+df_base$cholesterol<-0
+df_base$Townsend_deprivation_modelvar<-0
+df_base$education_years<-mean(train.data$education_years)
+df_base$Sex<-0
+df_base$livesalone<-0
+df_base$APOE_genotype_bin<-0
+
+cif_baseline <- predict(ukbdrs.apoe.cr.train, df_base)
+#what time do we want?
+cif_baseline[1660:1677,1] #1673 is 13.99 years
+cif_baseline[1673,]
+#5.112000e+03 5.447631e-03
+#baseline cif for 14 years is 0.005447631
+baseline_surv <- 1 - cif_baseline[1673,2]
+baseline_surv #0.9945524
+
+
 
 
 #### AGE ONLY ####
@@ -203,6 +260,22 @@ ageonly.cr.train$coef
 # covs[, -1]1 
 # 0.1891088 
 
+#get baseline cif
+modelvars <- c("Age_when_attended_assesment_centre_0_0", "dementia_BIN_surv")
+covs<-model.matrix(as.formula(age_only), train.data[modelvars])
+
+covs[1,2]<-mean(train.data$Age_when_attended_assesment_centre_0_0)
+covs[1,]
+
+cif_baseline <- predict(ageonly.cr.train, covs[1,][-1])
+#what time do we want?
+cif_baseline[2000:2060,1] #2053 is 13.99 years
+cif_baseline[2053,]
+#5.117000e+03 1.381633e-02
+#baseline cif for 14 years is 0.01381633
+baseline_surv <- 1 - cif_baseline[2053,2]
+baseline_surv #0.9861837
+
 
 #### FIT LP ####
 #using the cr adjusted coefficients, build the linear predictor and predicted probablity for each model
@@ -226,12 +299,12 @@ train.data$UKBDRS_LASSO_crr_linear_predictor <- 0.177692959251294*(train.data$Ag
   0.168726275413058*train.data$UKBDRS_sex_score
 summary(train.data$UKBDRS_LASSO_crr_linear_predictor)  
 # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-# -2.3511 -0.4497  0.4570  0.4076  1.2534  4.2815
+# -2.3051 -0.4333  0.4651  0.4189  1.2613  4.2976 
 
-train.data$UKBDRS_LASSO_crr_predicted_prob <- 1 - 0.9910855^exp(train.data$UKBDRS_LASSO_crr_linear_predictor)  
+train.data$UKBDRS_LASSO_crr_predicted_prob <- 1 - 0.9916195^exp(train.data$UKBDRS_LASSO_crr_linear_predictor)  
 summary(train.data$UKBDRS_LASSO_crr_predicted_prob)
 # Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-# 0.0008553 0.0057122 0.0140844 0.0230130 0.0309656 0.4778577 
+# 0.0008391 0.0054418 0.0133106 0.0217947 0.0292720 0.4613910 
 
 
 test.data$UKBDRS_LASSO_crr_linear_predictor <- 0.177692959251294*(test.data$Age_when_attended_assesment_centre_0_0 - mean(train.data$Age_when_attended_assesment_centre_0_0)) +
@@ -244,12 +317,12 @@ test.data$UKBDRS_LASSO_crr_linear_predictor <- 0.177692959251294*(test.data$Age_
   0.168726275413058*test.data$UKBDRS_sex_score
 summary(test.data$UKBDRS_LASSO_crr_linear_predictor)  
 # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-# -2.1414 -0.4490  0.4625  0.4132  1.2544  4.2410 
+# -2.1543 -0.4334  0.4651  0.4245  1.2613  4.2566 
 
-test.data$UKBDRS_LASSO_crr_predicted_prob <- 1 - 0.9910855^exp(test.data$UKBDRS_LASSO_crr_linear_predictor)  
+test.data$UKBDRS_LASSO_crr_predicted_prob <- 1 - 0.9916195^exp(test.data$UKBDRS_LASSO_crr_linear_predictor)  
 summary(test.data$UKBDRS_LASSO_crr_predicted_prob)
-# Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-# 0.001055 0.005717 0.014162 0.023220 0.030996 0.464214 
+# Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+# 0.0009756 0.0054411 0.0133106 0.0219884 0.0292720 0.4478378 
 
 
 
@@ -263,14 +336,11 @@ train.data$UKBDRS_APOE_LASSO_crr_linear_predictor <- 0.185448583498348*(train.da
   0.136570007308125*train.data$UKBDRS_livesalone +
   0.164374628844355*train.data$UKBDRS_sex_score + 1.12865113064495*train.data$UKBDRS_APOE
 summary(train.data$UKBDRS_APOE_LASSO_crr_linear_predictor)  
-# Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-#   -2.39   -0.22    0.71    0.69    1.59    4.99   50767
 
-train.data$UKBDRS_APOE_LASSO_crr_predicted_prob <- 1 - 0.9942871^exp(train.data$UKBDRS_APOE_LASSO_crr_linear_predictor)  
+
+train.data$UKBDRS_APOE_LASSO_crr_predicted_prob <- 1 - 0.9945524^exp(train.data$UKBDRS_APOE_LASSO_crr_linear_predictor)  
 summary(train.data$UKBDRS_APOE_LASSO_crr_predicted_prob)
-# Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-#    0.00    0.00    0.01    0.02    0.03    0.58   50767 
-
+ 
 
 test.data$UKBDRS_APOE_LASSO_crr_linear_predictor <- 0.185448583498348*(test.data$Age_when_attended_assesment_centre_0_0 - mean(train.data$Age_when_attended_assesment_centre_0_0)) +
   0.311285747731805*test.data$UKBDRS_familyhistory + -0.037579578137673*(test.data$education_years - mean(train.data$education_years)) +
@@ -281,25 +351,19 @@ test.data$UKBDRS_APOE_LASSO_crr_linear_predictor <- 0.185448583498348*(test.data
   0.136570007308125*test.data$UKBDRS_livesalone +
   0.164374628844355*test.data$UKBDRS_sex_score + 1.12865113064495*test.data$UKBDRS_APOE
 summary(test.data$UKBDRS_APOE_LASSO_crr_linear_predictor)  
-# Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-#  -2.211  -0.207   0.723   0.700   1.589   5.362   12905 
 
-test.data$UKBDRS_APOE_LASSO_crr_predicted_prob <- 1 - 0.9942871^exp(test.data$UKBDRS_APOE_LASSO_crr_linear_predictor)  
+
+test.data$UKBDRS_APOE_LASSO_crr_predicted_prob <- 1 - 0.9945524^exp(test.data$UKBDRS_APOE_LASSO_crr_linear_predictor)  
 summary(test.data$UKBDRS_APOE_LASSO_crr_predicted_prob)
-# Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-#   0.001   0.005   0.012   0.024   0.029   0.716   12905
+
 
 #### age only ####
 train.data$age_only_crr_linear_predictor <- 0.1891088*(train.data$Age_when_attended_assesment_centre_0_0 - mean(train.data$Age_when_attended_assesment_centre_0_0))
-train.data$age_only_crr_predicted_prob <- 1 - 0.9846693^exp(train.data$age_only_crr_linear_predictor)  
+train.data$age_only_crr_predicted_prob <- 1 - 0.9861837^exp(train.data$age_only_crr_linear_predictor)  
 test.data$age_only_crr_linear_predictor <- 0.1891088*(test.data$Age_when_attended_assesment_centre_0_0 - mean(train.data$Age_when_attended_assesment_centre_0_0))
-test.data$age_only_crr_predicted_prob <- 1 - 0.9846693^exp(test.data$age_only_crr_linear_predictor)  
+test.data$age_only_crr_predicted_prob <- 1 - 0.9861837^exp(test.data$age_only_crr_linear_predictor)  
 summary(train.data$age_only_crr_predicted_prob)
-# Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-# 0.002342 0.007267 0.015420 0.024098 0.032569 0.139566 
 summary(test.data$age_only_crr_predicted_prob)
-# Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-# 0.002342 0.007267 0.015420 0.024267 0.032569 0.166074 
 
 #save train and test, containing lps and predicted probs, for future auc tests
 save(train.data, file=paste0(data_pathway,"12_train_data_outliers_removed_cox_crr_fitted.rda"))
