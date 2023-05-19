@@ -119,7 +119,7 @@ write.csv(df_train_auc_compare, file="../results/auc_compare_training.csv")
 
 #apoe
 train.apoe <- train.data[which(!is.na(train.data$UKBDRS_APOE_LASSO_crr_predicted_prob)),]
-auc_train_apoe<-Score(list('ukbdrs_anu'=train.apoe$UKBDRS_APOE_LASSO_crr_predicted_prob),
+auc_train_apoe<-Score(list('ukbdrs_apoe'=train.apoe$UKBDRS_APOE_LASSO_crr_predicted_prob),
                      formula=Hist(time_at_risk,crr_status)~1,
                      data = train.apoe,
                      null.model = FALSE,
@@ -160,7 +160,7 @@ auc_test$AUC$contrasts
 df_auc <- as.data.frame(auc_test$AUC$score)[,c("model","AUC","lower","upper")]
 
 #anu subset
-anu_test <- test.data[which(!is.na(test.data$ANU_ADRI)),]
+anu_test <- test.data[which(!is.na(test.data$ANU_ADRI)),] #n = 43749
 auc_test_anu<-Score(list('ukbdrs_anu'=anu_test$UKBDRS_LASSO_crr_predicted_prob,
                           'ANUADRI'=anu_test$ANU_ADRI),
                      formula=Hist(time_at_risk,crr_status)~1,
@@ -204,7 +204,7 @@ dev.off()
 
 
 test.apoe <- test.data[which(!is.na(test.data$UKBDRS_APOE_LASSO_crr_predicted_prob)),]
-auc_test_apoe<-Score(list('ukbdrs_anu'=test.apoe$UKBDRS_APOE_LASSO_crr_predicted_prob),
+auc_test_apoe<-Score(list('ukbdrs_apoe'=test.apoe$UKBDRS_APOE_LASSO_crr_predicted_prob),
                       formula=Hist(time_at_risk,crr_status)~1,
                       data = test.apoe,
                       null.model = FALSE,
@@ -292,3 +292,90 @@ confint(mod)
 # 2.5 %      97.5 %
 #   (Intercept)              -0.00301432 0.005637377
 # x$plotFrames$UKBDRS$Pred  0.85101978 1.086920921
+
+
+rm(anu_train, anu_test)
+#sens spec thresholds
+#these can be found in the ROC plotframe of the auc output
+df_sens_spec <- rbind(auc_train$ROC$plotframe, auc_train_apoe$ROC$plotframe)
+
+#only care about ukbdrs
+df_sens_spec <- df_sens_spec[which(df_sens_spec$model=="UKBDRS" |
+                                     df_sens_spec$model=="ukbdrs_apoe")]
+#we have sensitivity already as TPR
+#we have FPR which can give specificity
+df_sens_spec$sensitivity <- df_sens_spec$TPR
+df_sens_spec$specificity <- 1 - df_sens_spec$FPR
+
+#how about ppv npv..
+summary(train.data$dementia_BIN_TOTAL)
+prev <- 3051/176611
+
+df_sens_spec$ppv <- (df_sens_spec$sensitivity*prev) /
+  (df_sens_spec$sensitivity*prev + (1 - df_sens_spec$specificity)*(1-prev))
+
+df_sens_spec$npv <- (df_sens_spec$specificity*(1-prev)) /
+  (df_sens_spec$specificity*(1-prev) + (1 - df_sens_spec$sensitivity)*prev)
+
+
+#Sensitivity = 80
+threshold <-  df_sens_spec[df_sens_spec$sensitivity >= .799 & df_sens_spec$sensitivity <= 0.801, ] %>% mutate_if(is.numeric, ~round(., 3))
+print(threshold[which(threshold$model=="UKBDRS"),c("model","risk","sensitivity","specificity","ppv","npv")])
+#UKBDRS 0.018       0.800       0.642 0.038 0.995
+print(threshold[which(threshold$model=="ukbdrs_apoe"),c("model","risk","sensitivity","specificity","ppv","npv")])
+#ukbdrs_apoe 0.019       0.800       0.676 0.042 0.995
+
+#Sensitivity = 85
+threshold <-  df_sens_spec[df_sens_spec$sensitivity >= .849 & df_sens_spec$sensitivity <= 0.8501, ] %>% mutate_if(is.numeric, ~round(., 3))
+print(threshold[which(threshold$model=="UKBDRS"),c("model","risk","sensitivity","specificity","ppv","npv")])
+#UKBDRS 0.015       0.850       0.569 0.034 0.995
+print(threshold[which(threshold$model=="ukbdrs_apoe"),c("model","risk","sensitivity","specificity","ppv","npv")])
+#ukbdrs_apoe 0.015       0.850       0.607 0.037 0.996
+
+#Sensitivity = 90
+threshold <-  df_sens_spec[df_sens_spec$sensitivity >= .8995 & df_sens_spec$sensitivity <= 0.901, ] %>% mutate_if(is.numeric, ~round(., 3))
+print(threshold[which(threshold$model=="UKBDRS"),c("model","risk","sensitivity","specificity","ppv","npv")])
+#UKBDRS 0.011       0.900       0.499 0.031 0.997
+print(threshold[which(threshold$model=="ukbdrs_apoe"),c("model","risk","sensitivity","specificity","ppv","npv")])
+#ukbdrs_apoe 0.01       0.900       0.504 0.031 0.997
+
+#Sensitivity = 95
+threshold <-  df_sens_spec[df_sens_spec$sensitivity >= .949 & df_sens_spec$sensitivity <= 0.9501, ] %>% mutate_if(is.numeric, ~round(., 3))
+print(threshold[which(threshold$model=="UKBDRS"),c("model","risk","sensitivity","specificity","ppv","npv")])
+#UKBDRS 0.007       0.950       0.345 0.025 0.997
+print(threshold[which(threshold$model=="ukbdrs_apoe"),c("model","risk","sensitivity","specificity","ppv","npv")])
+#ukbdrs_apoe 0.006       0.950       0.343 0.025 0.997
+
+
+
+
+
+
+
+#Specificity = 80
+threshold <-  df_sens_spec[df_sens_spec$specificity >= .799 & df_sens_spec$specificity <= 0.801, ] %>% mutate_if(is.numeric, ~round(., 3))
+print(threshold[which(threshold$model=="UKBDRS"),c("model","risk","sensitivity","specificity","ppv","npv")])
+#UKBDRS 0.032       0.585       0.800 0.049 0.991
+print(threshold[which(threshold$model=="ukbdrs_apoe"),c("model","risk","sensitivity","specificity","ppv","npv")])
+#ukbdrs_apoe 0.03       0.661       0.800 0.055 0.993
+
+#Specificity = 85
+threshold <-  df_sens_spec[df_sens_spec$specificity >= .849 & df_sens_spec$specificity <= 0.8505, ] %>% mutate_if(is.numeric, ~round(., 3))
+print(threshold[which(threshold$model=="UKBDRS"),c("model","risk","sensitivity","specificity","ppv","npv")])
+#UKBDRS 0.038       0.493       0.850 0.055 0.99
+print(threshold[which(threshold$model=="ukbdrs_apoe"),c("model","risk","sensitivity","specificity","ppv","npv")])
+#kbdrs_apoe 0.037       0.591       0.850 0.065 0.992
+
+#Specificity = 90
+threshold <-  df_sens_spec[df_sens_spec$specificity >= .8995 & df_sens_spec$specificity <= 0.901, ] %>% mutate_if(is.numeric, ~round(., 3))
+print(threshold[which(threshold$model=="UKBDRS"),c("model","risk","sensitivity","specificity","ppv","npv")])
+#UKBDRS 0.048       0.370       0.900 0.061 0.988
+print(threshold[which(threshold$model=="ukbdrs_apoe"),c("model","risk","sensitivity","specificity","ppv","npv")])
+#ukbdrs_apoe 0.050       0.477       0.900 0.077 0.99
+
+#Specificity = 95
+threshold <-  df_sens_spec[df_sens_spec$specificity >= .949 & df_sens_spec$specificity <= 0.9501, ] %>% mutate_if(is.numeric, ~round(., 3))
+print(threshold[which(threshold$model=="UKBDRS"),c("model","risk","sensitivity","specificity","ppv","npv")])
+#UKBDRS 0.064       0.236       0.950 0.076 0.986
+print(threshold[which(threshold$model=="ukbdrs_apoe"),c("model","risk","sensitivity","specificity","ppv","npv")])
+#ukbdrs_apoe 0.075       0.321       0.950 0.101 0.988
