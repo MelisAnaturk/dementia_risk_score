@@ -319,32 +319,32 @@ df_sens_spec$npv <- (df_sens_spec$specificity*(1-prev)) /
 
 
 #Sensitivity = 80
-threshold <-  df_sens_spec[df_sens_spec$sensitivity >= .799 & df_sens_spec$sensitivity <= 0.801, ] %>% mutate_if(is.numeric, ~round(., 3))
+threshold <-  df_sens_spec[df_sens_spec$sensitivity >= .799 & df_sens_spec$sensitivity <= 0.801, ] %>% mutate_if(is.numeric, ~round(., 6))
 print(threshold[which(threshold$model=="UKBDRS"),c("model","risk","sensitivity","specificity","ppv","npv")])
-#UKBDRS 0.018       0.800       0.642 0.038 0.995
+#UKBDRS 0.018432    0.800150    0.643462 0.037954 0.994570
 print(threshold[which(threshold$model=="ukbdrs_apoe"),c("model","risk","sensitivity","specificity","ppv","npv")])
-#ukbdrs_apoe 0.019       0.800       0.676 0.042 0.995
+#ukbdrs_apoe ukbdrs_apoe 0.018620    0.800089    0.676096 0.041615 0.994829
 
 #Sensitivity = 85
-threshold <-  df_sens_spec[df_sens_spec$sensitivity >= .849 & df_sens_spec$sensitivity <= 0.8501, ] %>% mutate_if(is.numeric, ~round(., 3))
+threshold <-  df_sens_spec[df_sens_spec$sensitivity >= .849 & df_sens_spec$sensitivity <= 0.8501, ] %>% mutate_if(is.numeric, ~round(., 6))
 print(threshold[which(threshold$model=="UKBDRS"),c("model","risk","sensitivity","specificity","ppv","npv")])
-#UKBDRS 0.015       0.850       0.569 0.034 0.995
+#UKBDRS 0.014506    0.849899    0.569271 0.033523 0.995386
 print(threshold[which(threshold$model=="ukbdrs_apoe"),c("model","risk","sensitivity","specificity","ppv","npv")])
-#ukbdrs_apoe 0.015       0.850       0.607 0.037 0.996
+#ukbdrs_apoe  0.014577    0.849780    0.606564 0.036580 0.995665
 
 #Sensitivity = 90
-threshold <-  df_sens_spec[df_sens_spec$sensitivity >= .8995 & df_sens_spec$sensitivity <= 0.901, ] %>% mutate_if(is.numeric, ~round(., 3))
+threshold <-  df_sens_spec[df_sens_spec$sensitivity >= .8995 & df_sens_spec$sensitivity <= 0.901, ] %>% mutate_if(is.numeric, ~round(.,6))
 print(threshold[which(threshold$model=="UKBDRS"),c("model","risk","sensitivity","specificity","ppv","npv")])
-#UKBDRS 0.011       0.900       0.499 0.031 0.997
+#UKBDRS 0.011402    0.900092    0.499999 0.030675 0.996500
 print(threshold[which(threshold$model=="ukbdrs_apoe"),c("model","risk","sensitivity","specificity","ppv","npv")])
-#ukbdrs_apoe 0.01       0.900       0.504 0.031 0.997
+#ukbdrs_apoe0.010014    0.900023    0.504218 0.030925 0.996527
 
 #Sensitivity = 95
-threshold <-  df_sens_spec[df_sens_spec$sensitivity >= .949 & df_sens_spec$sensitivity <= 0.9501, ] %>% mutate_if(is.numeric, ~round(., 3))
+threshold <-  df_sens_spec[df_sens_spec$sensitivity >= .949 & df_sens_spec$sensitivity <= 0.9501, ] %>% mutate_if(is.numeric, ~round(., 6))
 print(threshold[which(threshold$model=="UKBDRS"),c("model","risk","sensitivity","specificity","ppv","npv")])
-#UKBDRS 0.007       0.950       0.345 0.025 0.997
+#UKBDRS 0.006714    0.949919    0.344727 0.024850 0.997453
 print(threshold[which(threshold$model=="ukbdrs_apoe"),c("model","risk","sensitivity","specificity","ppv","npv")])
-#ukbdrs_apoe 0.006       0.950       0.343 0.025 0.997
+#ukbdrs_apoe 0.005672    0.949932    0.342535 0.024770 0.997437
 
 
 
@@ -353,29 +353,29 @@ print(threshold[which(threshold$model=="ukbdrs_apoe"),c("model","risk","sensitiv
 
 
 #Specificity = 80
-threshold <-  df_sens_spec[df_sens_spec$specificity >= .799 & df_sens_spec$specificity <= 0.801, ] %>% mutate_if(is.numeric, ~round(., 3))
+threshold <-  df_sens_spec[df_sens_spec$specificity >= .799 & df_sens_spec$specificity <= 0.801, ] %>% mutate_if(is.numeric, ~round(., 5))
 print(threshold[which(threshold$model=="UKBDRS"),c("model","risk","sensitivity","specificity","ppv","npv")])
-#UKBDRS 0.032       0.585       0.800 0.049 0.991
+#UKBDRS 0.03201     0.58450     0.80015 0.04890 0.99095
 print(threshold[which(threshold$model=="ukbdrs_apoe"),c("model","risk","sensitivity","specificity","ppv","npv")])
-#ukbdrs_apoe 0.03       0.661       0.800 0.055 0.993
+#ukbdrs_apoe 0.03038     0.66103     0.80004 0.05492 0.99261
 
 #Specificity = 85
-threshold <-  df_sens_spec[df_sens_spec$specificity >= .849 & df_sens_spec$specificity <= 0.8505, ] %>% mutate_if(is.numeric, ~round(., 3))
+threshold <-  df_sens_spec[df_sens_spec$specificity >= .849 & df_sens_spec$specificity <= 0.8505, ] %>% mutate_if(is.numeric, ~round(., 5))
 print(threshold[which(threshold$model=="UKBDRS"),c("model","risk","sensitivity","specificity","ppv","npv")])
-#UKBDRS 0.038       0.493       0.850 0.055 0.99
+#UKBDRS 0.03848     0.49284     0.85033 0.05472 0.98962
 print(threshold[which(threshold$model=="ukbdrs_apoe"),c("model","risk","sensitivity","specificity","ppv","npv")])
-#kbdrs_apoe 0.037       0.591       0.850 0.065 0.992
+#kbdrs_apoe  0.03746     0.59061     0.85001 0.06474 0.99160
 
 #Specificity = 90
-threshold <-  df_sens_spec[df_sens_spec$specificity >= .8995 & df_sens_spec$specificity <= 0.901, ] %>% mutate_if(is.numeric, ~round(., 3))
+threshold <-  df_sens_spec[df_sens_spec$specificity >= .8995 & df_sens_spec$specificity <= 0.901, ] %>% mutate_if(is.numeric, ~round(., 5))
 print(threshold[which(threshold$model=="UKBDRS"),c("model","risk","sensitivity","specificity","ppv","npv")])
-#UKBDRS 0.048       0.370       0.900 0.061 0.988
+#UKBDRS 0..04804     0.36777     0.90009 0.06077 0.98780
 print(threshold[which(threshold$model=="ukbdrs_apoe"),c("model","risk","sensitivity","specificity","ppv","npv")])
-#ukbdrs_apoe 0.050       0.477       0.900 0.077 0.99
+#ukbdrs_apoe 0.05052     0.47431     0.90005 0.07700 0.98984
 
 #Specificity = 95
-threshold <-  df_sens_spec[df_sens_spec$specificity >= .949 & df_sens_spec$specificity <= 0.9501, ] %>% mutate_if(is.numeric, ~round(., 3))
+threshold <-  df_sens_spec[df_sens_spec$specificity >= .949 & df_sens_spec$specificity <= 0.9501, ] %>% mutate_if(is.numeric, ~round(., 5))
 print(threshold[which(threshold$model=="UKBDRS"),c("model","risk","sensitivity","specificity","ppv","npv")])
-#UKBDRS 0.064       0.236       0.950 0.076 0.986
+#UKBDRS 0.06373     0.23446     0.95000 0.07616 0.98603
 print(threshold[which(threshold$model=="ukbdrs_apoe"),c("model","risk","sensitivity","specificity","ppv","npv")])
-#ukbdrs_apoe 0.075       0.321       0.950 0.101 0.988
+#ukbdrs_apoe 0.07563     0.31919     0.94998 0.10086 0.98756
