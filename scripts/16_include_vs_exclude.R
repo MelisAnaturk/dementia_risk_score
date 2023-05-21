@@ -14,9 +14,9 @@ rawdata_demo<-subset(rawdata_demo, rawdata_demo$Age_when_attended_assesment_cent
 #n=384642
 
 #get analysis sample
-load("../../raw_data/train_data_outliers_removed_fiftyplusnoapoe.rda")
-load("../../raw_data/test_data_outliers_removed_fiftyplusnoapoe.rda")
-df_analysis<-rbind(train.data,test.data)
+load("../../raw_data/modelvar/12_test_data_outliers_removed_cox_crr_fitted.rda")
+load("../../raw_data/modelvar/12_train_data_outliers_removed_cox_crr_fitted.rda")
+df_analysis<-rbind(train.data[,names(test.data)],test.data)
 rm(train.data, test.data)
 
 analysis_sample<-data.frame(df_analysis[,c("eid")])
@@ -50,7 +50,7 @@ age_test<-t.test(Age_when_attended_assesment_centre_0_0 ~ dataset, data = df_mer
 #  mean in group excluded mean in group included 
 #60.21101               59.97442 
 sd(excluded_sample$Age_when_attended_assesment_centre_0_0) #5.46
-sd(included_sample$Age_when_attended_assesment_centre_0_0) #5.44
+sd(included_sample$Age_when_attended_assesment_centre_0_0) #5.43
 
 
 edu_test<-t.test(education_years ~ dataset, data = df_merged, var.equal = FALSE)
