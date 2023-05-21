@@ -1,13 +1,13 @@
 #this script is used to check demographic descriptives for Table 1
 library(qwraps2)
 
-load("../../raw_data/train_data_outliers_removed_fiftyplusnoapoe_sexstratify.rda")
-load("../../raw_data/test_data_outliers_removed_fiftyplusnoapoe_sexstratify.rda")
+load(file="../../raw_data/modelvar/12_train_data_outliers_removed_cox_crr_fitted.rda")
+load(file="../../raw_data/modelvar/12_test_data_outliers_removed_cox_crr_fitted.rda")
 
 test.data$dataset <- "UKBtest"
 train.data$dataset <- "UKB_train"
 
-df <- rbind(test.data, train.data) 
+df <- rbind(test.data, train.data[,names(test.data)]) 
 #### basic stats ####
 summary(df$Age_when_attended_assesment_centre_0_0)
 #Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
@@ -17,11 +17,11 @@ sd(df$Age_when_attended_assesment_centre_0_0)
 summary(df$dementia_BIN_TOTAL)
 #0      1 
 #216949   3813 1.7%
-summary(df$years_diff_all_cause_dementia_0_0)
-#Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-#   1.02    6.85    9.38    8.87   11.24   14.23  216949
-sd(df$years_diff_all_cause_dementia_0_0, na.rm = TRUE)
-#2.961354
+summary(df$time_at_risk/365.25)
+# Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+# 0.01095 11.79192 12.56673 12.24303 13.21561 14.86653 
+
+df$time_at_risk_years <- df$time_at_risk/365.25
 
 #### by train/test ####
 #variables i need stats on
@@ -153,7 +153,7 @@ summary_medical <-
        "Incident dementia" = 
          list("Incident dementia" = ~ qwraps2::n_perc(dementia_BIN_TOTAL == 1, show_denom = "never")),
        "Years to diagnosis" = 
-         list("Years to diagnosis" = ~ qwraps2::mean_sd(years_diff_all_cause_dementia_0_0, denote_sd = "paren", na_rm = TRUE))
+         list("Years to diagnosis" = ~ qwraps2::mean_sd(time_at_risk_years, denote_sd = "paren", na_rm = TRUE))
   )
 
 df_medical <- summary_table(df, summary_medical, by = c("dataset"))
@@ -292,7 +292,7 @@ summary_medical <-
        "Incident dementia" = 
          list("Incident dementia" = ~ qwraps2::n_perc(dementia_BIN_TOTAL == 1, show_denom = "never")),
        "Years to diagnosis" = 
-         list("Years to diagnosis" = ~ qwraps2::mean_sd(years_diff_all_cause_dementia_0_0, denote_sd = "paren", na_rm = TRUE))
+         list("Years to diagnosis" = ~ qwraps2::mean_sd(time_at_risk_years, denote_sd = "paren", na_rm = TRUE))
   )
 
 df_medical <- summary_table(df, summary_medical, by = c("dementia_BIN_TOTAL"))
