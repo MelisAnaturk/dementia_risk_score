@@ -234,12 +234,13 @@ save(df_filtered, file="../../raw_data/df_filtered_prelasso.rda")
 #define variables of interest
 myvars <- c("time_at_risk","Age_when_attended_assesment_centre_0_0","education_years", "Townsend_deprivation_Groups_0_0", "BMI_0_0",
             "Sex", "Sleeplesness_insomnia_0_0_bin", "family_history_of_dementia", 
-            "Diabetes_BIN_FINAL_0_0", 
+            "Diabetes_BIN_FINAL_0_0", "LDL_0_0","HDL_cholesterol_0_0",
             "current_history_depression","TBI_BIN_FINAL_0_0", "stroke_TIA_BIN_FINAL", "Smoker_bin", "units_combined",
-            "IPAQ_activity_group_0_0", "Hearing_prob", "Sleep_duration_0_0",
+            "Systolic_BP_auto_mean", "IPAQ_activity_group_0_0", "Hearing_prob", "Sleep_duration_0_0", 
             "total_fish_intake_per_week_0_0", "Social_engagement_0_2", "Atrial_Fibrillation_BIN_FINAL_0_0",
             "household_occupancy","dementia_BIN_TOTAL", "NSAIDs_0_0", "HRT_0_0",
             "hypertensive","cholesterol")
+
 
 
 # split df into train and test sets (we're using 80/20 split here)
@@ -250,8 +251,8 @@ training.samples <- df_filtered$dementia_BIN_TOTAL %>% createDataPartition(p = 0
 train.data  <- df_filtered[training.samples, ][myvars]
 test.data <- df_filtered[-training.samples, ][myvars]
 
-save(train.data, file = "../../raw_data/train_data_outliers_removed_prelasso.rda")
-save(test.data, file = "../../raw_data/test_data_outliers_removed_prelasso.rda")
+save(train.data, file = "../../raw_data/modelvar/train_data_outliers_removed_prelasso.rda")
+save(test.data, file = "../../raw_data/modelvar/test_data_outliers_removed_prelasso.rda")
 
 
 # OR ALTERNATIVELY YOU CAN load train/test data
@@ -261,7 +262,7 @@ save(test.data, file = "../../raw_data/test_data_outliers_removed_prelasso.rda")
 #test.data <- test.data[myvars]
 
 # Create vector of only continous variables
-cont_vars <- c("Age_when_attended_assesment_centre_0_0",  "education_years", "Sleep_duration_0_0", "BMI_0_0", "total_fish_intake_per_week_0_0", "units_combined")
+cont_vars <- c("Age_when_attended_assesment_centre_0_0",  "education_years", "LDL_0_0","HDL_cholesterol_0_0","Systolic_BP_auto_mean","Sleep_duration_0_0", "BMI_0_0", "total_fish_intake_per_week_0_0", "units_combined")
 
 # scale the data
 scaled.train.data <- scale(train.data[, cont_vars], scale = TRUE, center = TRUE)
@@ -337,6 +338,6 @@ summary(as.factor(df_filtered$dementia_BIN_surv))
 train.data  <- df_filtered[training.samples, ]
 test.data <- df_filtered[-training.samples, ]
 
-save(train.data, file = paste0(data_pathway, "train_data_outliers_removed_postlasso.rda"))
-save(test.data, file = paste0(data_pathway, "test_data_outliers_removed_postlasso.rda"))
+save(train.data, file = paste0("../../raw_data/modelvar/train_data_outliers_removed_postlasso.rda"))
+save(test.data, file = paste0("../../raw_data/modelvar/test_data_outliers_removed_postlasso.rda"))
 

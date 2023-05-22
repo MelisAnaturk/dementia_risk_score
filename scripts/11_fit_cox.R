@@ -19,13 +19,13 @@ library(corrplot)
 library(survival)
 
 # specify data, model and results pathway
-data_pathway = "../../raw_data/"
+data_pathway = "../../raw_data/modelvar/"
 model_pathway = "../models/"
 save_pathway = "../results/"
 
 load(file= paste0(data_pathway, "train_data_outliers_removed_postlasso.rda"))
 load(file= paste0(data_pathway, "test_data_outliers_removed_postlasso.rda"))
-data_pathway = "../../raw_data/modelvar/"
+
 
 #----- 1. COX REGRESSION ------------------------------------------
 # cox regression is now run to calculate the beta-weights for each of the 
