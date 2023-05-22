@@ -188,37 +188,36 @@ df_test_auc_compare <- rbind(df_test_auc_compare, as.data.frame(auc_test_anu$AUC
 df_test_auc_compare$p_fdr <- p.adjust(df_test_auc_compare$p, method="BH")
 write.csv(df_test_auc_compare, file="../results/auc_compare_testing.csv")
 
+test.apoe <- test.data[which(!is.na(test.data$UKBDRS_APOE_LASSO_crr_predicted_prob)),]
+auc_test_apoe<-Score(list('UKBDRS-APOE'=test.apoe$UKBDRS_APOE_LASSO_crr_predicted_prob),
+                     formula=Hist(time_at_risk,crr_status)~1,
+                     data = test.apoe,
+                     null.model = FALSE,
+                     conf.int = TRUE,
+                     times = c(365.25*14),
+                     plots="ROC",
+                     metrics="AUC",
+                     cens.model = "cox",
+                     conservative=FALSE,
+                     censoring.save.memory=FALSE)
+auc_test_apoe$AUC$score
+# model  times       AUC          se     lower     upper
+# 1: UKBDRS-APOE 5113.5 0.8260386 0.009626646 0.8071707 0.8449065
+
 
 plot_auc_obj <- auc_test
 plot_auc_obj$ROC$plotframe <- rbind(plot_auc_obj$ROC$plotframe, auc_test_anu$ROC$plotframe)
+plot_auc_obj$ROC$plotframe <- rbind(plot_auc_obj$ROC$plotframe, auc_test_apoe$ROC$plotframe)
 plot_auc_obj$AUC$score <- rbind(plot_auc_obj$AUC$score , auc_test_anu$AUC$score )
-plotROC(plot_auc_obj, models = c("UKBDRS","DRS","Age_only","CAIDE","ANUADRI"))
+plot_auc_obj$AUC$score <- rbind(plot_auc_obj$AUC$score , auc_test_apoe$AUC$score )
+plotROC(plot_auc_obj, models = c("UKBDRS-APOE","UKBDRS","DRS","Age_only","CAIDE","ANUADRI"))
 
-plotROC(plot_auc_obj, models = c("UKBDRS","DRS","Age_only","CAIDE","ANUADRI"),auc.in.legend = FALSE)
+plotROC(plot_auc_obj, models = c("UKBDRS-APOE","UKBDRS","DRS","Age_only","CAIDE","ANUADRI"),auc.in.legend = FALSE)
 
 png(file="../results/roc_plotted_all.png",
-    height = 600, width = 600, res=120)
-plotROC(plot_auc_obj, models = c("UKBDRS","DRS","Age_only","CAIDE","ANUADRI"),auc.in.legend = FALSE)
+    height = 800, width = 800, res=120)
+plotROC(plot_auc_obj, models = c("UKBDRS-APOE","UKBDRS","DRS","Age_only","CAIDE","ANUADRI"),auc.in.legend = FALSE)
 dev.off()
-
-
-
-test.apoe <- test.data[which(!is.na(test.data$UKBDRS_APOE_LASSO_crr_predicted_prob)),]
-auc_test_apoe<-Score(list('ukbdrs_apoe'=test.apoe$UKBDRS_APOE_LASSO_crr_predicted_prob),
-                      formula=Hist(time_at_risk,crr_status)~1,
-                      data = test.apoe,
-                      null.model = FALSE,
-                      conf.int = TRUE,
-                      times = c(365.25*14),
-                      plots="ROC",
-                      metrics="AUC",
-                      cens.model = "cox",
-                      conservative=FALSE,
-                      censoring.save.memory=FALSE)
-auc_test_apoe$AUC$score
-# model  times       AUC          se     lower     upper
-# 1: ukbdrs_anu 5113.5 0.8260386 0.009626646 0.8071707 0.8449065
-
 
 
 #### calibration ####
