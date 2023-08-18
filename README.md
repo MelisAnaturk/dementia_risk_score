@@ -51,6 +51,6 @@ The main analysis is performed using a series of R scripts. A brief description 
 
 15. ```15_sensitivity_time_to_diagnosis.R```: Test performance in shorter time windows
 
-15. ```16_include_vs_exclude.R```: Compare included vs excluded subjects
+16. ```16_include_vs_exclude.R```: Compare included vs excluded subjects
 
  
