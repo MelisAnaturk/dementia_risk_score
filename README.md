@@ -37,7 +37,20 @@ The main analysis is performed using a series of R scripts. A brief description 
 
 7. ```7_DRS.R```: Computing the DRS risk score.
  
-9. ```9_logistic_regression_LASSO.R```: This is where the main analysis is performed. First LASSO regression is performed for feature selection, followed by logistic regression to calculate the beta-weights to be used in the UKB-DRS.
-10. ```10_discrimination_and_calibration.R``` : This r script computes performance, via discriminative ability and calibration, of each model.
+9. ```9_derive_hypertension_cholesterol_Dx.R```: Derive some extra diagnoses
+
+10. ```10_cox_regression_LASSO.R```: Run LASSO for feature selection, identify most predictive factors
+
+11. ```11_fit_cox.R```: Fit a cox model, derive coefficients
+
+12. ```12_fit_crr.R```: Fit a competing risk model, derive coefficients
+
+13. ```13_discrimination_and_calibration.R``` : This r script computes performance, via discriminative ability and calibration, of each model.
+
+14. ```14_compute_agespecific_auc.R```: Test performance in age specific subsets
+
+15. ```15_sensitivity_time_to_diagnosis.R```: Test performance in shorter time windows
+
+15. ```16_include_vs_exclude.R```: Compare included vs excluded subjects
 
  
